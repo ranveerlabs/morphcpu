@@ -1,0 +1,95 @@
+# ---------------------------------------------------------------------------
+# MorphCPU — build artifacts and tool cruft
+# ---------------------------------------------------------------------------
+
+# --- FPGA toolchain: yosys / nextpnr / icestorm -----------------------------
+build/
+gateware/build/
+*.blif
+*.asc
+*.bin
+*.bit
+*.rpt
+*.log
+# yosys JSON netlists (scoped so KiCad JSON project files are unaffected)
+gateware/**/*.json
+gateware/**/*.edif
+# nextpnr / timing outputs
+*.timing
+*.place
+*.route
+
+# --- Simulation: Icarus Verilog / Verilator / GTKWave -----------------------
+*.vcd
+*.fst
+*.fst.hier
+*.lxt
+*.lxt2
+*.ghw
+*.vvp
+*.out
+a.out
+obj_dir/
+gateware/sim/work/
+*.gtkw.bak
+
+# --- KiCad ------------------------------------------------------------------
+# Backups and autosaves
+*.bak
+*-bak
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_prl
+_autosave-*
+*~
+# Project-local cache / lock files
+fp-info-cache
+*.lck
+~*.lck
+*.kicad_pro.lck
+# Generated netlists and reports
+*.net
+*.xml
+*.dsn
+*.ses
+*.drc
+*.erc
+# Fabrication + assembly outputs (regenerate these; zip the release instead)
+hardware/gerbers/
+hardware/production/
+hardware/fab/
+*.gbr
+*.gbl
+*.gbo
+*.gbp
+*.gbs
+*.gtl
+*.gto
+*.gtp
+*.gts
+*.drl
+*.gm1
+# 3D viewer / raytrace exports
+*.wrl.bak
+
+# --- CAD / case -------------------------------------------------------------
+# Keep source CAD and exported STLs tracked; ignore solver + backup cruft.
+*.FCStd1
+*.FCBak
+*.f3d.bak
+case/export/tmp/
+
+# --- Editors / OS -----------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Python helper scripts --------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
