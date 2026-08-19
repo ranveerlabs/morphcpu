@@ -34,7 +34,12 @@ module morphcpu_top #(
     parameter BAUD   = 115_200,
     parameter DATA_W = 8,
     parameter ROWS   = 4,
-    parameter COLS   = 4
+    parameter COLS   = 4,
+    // 0 = LED anode on the FPGA pin, cathode to GND via a resistor (pin
+    //     sources current, a high lights it).
+    // 1 = cathode on the pin, anode to 3V3 via a resistor (pin sinks).
+    // The schematic decides this; flipping it here is cheaper than a respin.
+    parameter LED_ACTIVE_LOW = 0
 ) (
     input  wire        clk,          // 12 MHz crystal
     input  wire        rst_n,        // reset button, active low
@@ -219,7 +224,7 @@ module morphcpu_top #(
                 else if (str_tick && hold != 4'd0)
                     hold <= hold - 4'd1;
             end
-            assign led[gi] = (hold != 4'd0);
+            assign led[gi] = LED_ACTIVE_LOW ? ~(hold != 4'd0) : (hold != 4'd0);
         end
     endgenerate
 
