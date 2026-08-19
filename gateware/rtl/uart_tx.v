@@ -7,6 +7,7 @@
 // small FIFO for exactly this reason).
 // ---------------------------------------------------------------------------
 
+`timescale 1ns / 1ps
 `default_nettype none
 
 module uart_tx #(

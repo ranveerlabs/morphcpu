@@ -43,6 +43,7 @@
 // anything. The cost is one crossed-over wire here, which is free in fabric.
 // ---------------------------------------------------------------------------
 
+`timescale 1ns / 1ps
 `default_nettype none
 
 module grid #(

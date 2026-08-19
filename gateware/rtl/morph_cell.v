@@ -27,6 +27,7 @@
 // a delay line out of this fabric.
 // ---------------------------------------------------------------------------
 
+`timescale 1ns / 1ps
 `default_nettype none
 
 module morph_cell #(

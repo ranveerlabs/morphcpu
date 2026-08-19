@@ -27,6 +27,7 @@
 // command cheap: send 0x04 and carry on.
 // ---------------------------------------------------------------------------
 
+`timescale 1ns / 1ps
 `default_nettype none
 
 module config_loader #(
@@ -42,7 +43,7 @@ module config_loader #(
     input  wire                   rx_valid,
 
     // --- to the grid configuration chain ------------------------------------
-    output reg                    cfg_shift,
+    output wire                   cfg_shift,
     output wire                   cfg_bit,
 
     // --- fabric control -----------------------------------------------------
@@ -81,7 +82,8 @@ module config_loader #(
     reg        tick_auto;
     reg        tick_step;
 
-    assign cfg_bit = cfg_sr[63];
+    assign cfg_shift = (state == S_SHIFT);
+    assign cfg_bit   = cfg_sr[63];
     assign loading = (state == S_SHIFT);
     assign tick    = tick_auto | tick_step;
 
@@ -96,7 +98,6 @@ module config_loader #(
             arg_cnt      <= 4'd0;
             argbuf       <= 64'd0;
             cfg_sr       <= 64'd0;
-            cfg_shift    <= 1'b0;
             shift_cnt    <= 7'd0;
             clr          <= 1'b0;
             tick_step    <= 1'b0;
@@ -106,7 +107,6 @@ module config_loader #(
         end else begin
             clr       <= 1'b0;
             tick_step <= 1'b0;
-            cfg_shift <= 1'b0;
 
             // An injected value stays presented until a tick consumes it.
             if (tick)
@@ -155,7 +155,6 @@ module config_loader #(
                 end
 
                 S_SHIFT: begin
-                    cfg_shift <= 1'b1;
                     cfg_sr    <= {cfg_sr[62:0], 1'b0};
                     shift_cnt <= shift_cnt - 7'd1;
                     if (shift_cnt == 7'd1)

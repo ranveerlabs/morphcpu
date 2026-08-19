@@ -1,0 +1,77 @@
+# ---------------------------------------------------------------------------
+# morphcpu.pcf - pin constraints for iCE40UP5K-SG48
+#
+# !! CANDIDATE ASSIGNMENT - NOT YET LOCKED !!
+#
+# The pin numbers below are a starting point, not a verified mapping. They must
+# be checked against the iCE40 UltraPlus family pinout (Lattice FPGA-DS-02008,
+# SG48 pinout table) and then made to agree with the schematic, because these
+# two have to match exactly or the board does nothing. The schematic is the
+# thing that fixes them; this file follows it, not the other way round.
+#
+# Before layout, confirm each of the following:
+#
+#  1. CLOCK. clk must land on a global-buffer-capable (GBIN) pin, or nextpnr
+#     will route the 12 MHz clock through general fabric and timing closure
+#     gets much harder. Check which SG48 pins are GBIN in the pinout table.
+#
+#  2. SPI CONFIG PINS ARE RESERVED. The dedicated SPI configuration pins that
+#     load the bitstream from the config flash at power-on must not be reused
+#     for LEDs or UART. Reserve them in the schematic and leave them out here.
+#     See the iCE40 Programming and Configuration technical note (FPGA-TN-02001).
+#
+#  3. RGB DRIVER PINS ARE SPECIAL. Three SG48 pins are the SB_RGBA_DRV
+#     constant-current open-drain LED driver outputs. They are not ordinary
+#     I/O and should not be used for the plain 16-LED grid unless you
+#     instantiate the RGB driver primitive. Keep the grid off them.
+#
+#  4. VCCIO BANKING. Every pin used here must sit in a bank whose VCCIO is
+#     tied to the right rail in the schematic. Mixed-bank assignments that
+#     look fine in nextpnr will not work if VCCIO is not connected.
+#
+# Once verified, delete this header block and record the pin table in
+# JOURNAL.md with the datasheet page it came from.
+# ---------------------------------------------------------------------------
+
+# --- clock ------------------------------------------------------------------
+# 12 MHz crystal oscillator. MUST be a GBIN pin - verify before locking.
+set_io -nowarn clk        35
+
+# --- reset ------------------------------------------------------------------
+# Momentary button to GND, external pull-up. Active low.
+set_io -nowarn rst_n      10
+
+# --- UART to FT231X ---------------------------------------------------------
+# Named from the FPGA's point of view:
+#   uart_rx_i  <- FT231X TXD   (host to board)
+#   uart_tx_o  -> FT231X RXD   (board to host)
+set_io -nowarn uart_rx_i   6
+set_io -nowarn uart_tx_o   9
+
+# --- 16 LED grid ------------------------------------------------------------
+# Cell index maps to the physical 4x4 grid, cell 0 top-left, row-major:
+#
+#     led[0]  led[1]  led[2]  led[3]      <- row 0
+#     led[4]  led[5]  led[6]  led[7]      <- row 1
+#     led[8]  led[9]  led[10] led[11]     <- row 2
+#     led[12] led[13] led[14] led[15]     <- row 3
+#
+# The PCB silkscreen and the LED placement must follow this same order or the
+# ripple will look scrambled. This mapping is the one thing that has to stay
+# consistent across gateware, schematic and layout.
+set_io -nowarn led[0]      2
+set_io -nowarn led[1]      3
+set_io -nowarn led[2]      4
+set_io -nowarn led[3]     11
+set_io -nowarn led[4]     12
+set_io -nowarn led[5]     13
+set_io -nowarn led[6]     18
+set_io -nowarn led[7]     19
+set_io -nowarn led[8]     20
+set_io -nowarn led[9]     21
+set_io -nowarn led[10]    23
+set_io -nowarn led[11]    25
+set_io -nowarn led[12]    26
+set_io -nowarn led[13]    27
+set_io -nowarn led[14]    28
+set_io -nowarn led[15]    31

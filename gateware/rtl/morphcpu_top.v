@@ -26,6 +26,7 @@
 // will be dropped - that is expected, and is why STEP exists.
 // ---------------------------------------------------------------------------
 
+`timescale 1ns / 1ps
 `default_nettype none
 
 module morphcpu_top #(
@@ -157,6 +158,15 @@ module morphcpu_top #(
     reg [ROWS-1:0]        pend;
     reg [ROWS*DATA_W-1:0] pend_data;
 
+    // The fabric registers update on the tick edge, so east_out_* only shows
+    // the post-tick state on the following cycle. Sampling on tick itself
+    // captures the previous hop's result, one tick stale, every time.
+    reg tick_d;
+    always @(posedge clk) begin
+        if (rst || clr) tick_d <= 1'b0;
+        else            tick_d <= tick;
+    end
+
     wire [1:0] nxt_row = pend[0] ? 2'd0 :
                          pend[1] ? 2'd1 :
                          pend[2] ? 2'd2 : 2'd3;
@@ -169,7 +179,7 @@ module morphcpu_top #(
             tx_byte   <= 8'd0;
         end else begin
             tx_send <= 1'b0;
-            if (tick) begin
+            if (tick_d) begin
                 pend      <= east_out_val;
                 pend_data <= east_out_data;
             end else if (|pend && !tx_busy && !tx_send) begin
