@@ -1,83 +1,177 @@
 # MorphCPU
 
-**A processor where the hardware topology *is* the program.**
+<!-- ==================================================================== -->
+<!-- WRITE THIS YOURSELF                                                  -->
+<!-- One-line tagline for the project. Everything in this file wrapped in -->
+<!-- a "WRITE THIS YOURSELF" marker is deliberately left blank - the      -->
+<!-- submission rules do not allow AI-generated prose in the README.      -->
+<!-- Tables, headings, commands and part numbers below are generated;     -->
+<!-- all narrative text is yours.                                         -->
+<!-- ==================================================================== -->
 
-MorphCPU is a reconfigurable spatial processor built on a Lattice iCE40UP5K FPGA. Instead of a
-control unit pulling instructions from memory and grinding them through a fetch-decode-execute
-loop, MorphCPU is a small grid of identical reconfigurable cells. Each cell holds two things: an
-**operation** (add, xor, shift, mask, compare, pass-through, …) and a **routing direction**
-(north, south, east, west) telling it where to hand its result next. Configure the grid and you
-have configured the program — the wiring between cells is the control flow, and the operations
-sitting in those cells are the instruction stream.
+_TAGLINE GOES HERE_
 
-Data enters at the edge of the grid and *ripples* through it. A value moving from one cell to the
-next is transformed by that cell's operation on arrival, then forwarded along that cell's routing
-direction to a neighbour, where it is transformed again. There is no program counter, no
-instruction fetch, and no register file being read and written between steps — the intermediate
-results live in the wires and cell registers themselves as the data physically moves. A
-computation is literally a path through the grid, and its length in cells is its length in cycles.
-Independent paths through different regions of the grid run at the same time without any
-scheduling logic, because nothing is contending for a shared execution unit.
+## What it is
 
-The grid is reconfigured at runtime over USB. A UART configuration loader on the FPGA accepts a
-stream of cell descriptors — one opcode plus one direction per cell — and shifts them into the
-grid's configuration registers, so rewriting the "program" means rewriting the topology. That
-makes the machine's behaviour observable in a way a conventional CPU's isn't: 16 status LEDs tap
-the grid so you can watch data propagate through the fabric as it computes. The goal is a
-processor you can *see* thinking.
+<!-- WRITE THIS YOURSELF -->
+<!-- 2-3 paragraphs in your own words. Suggested ground to cover:         -->
+<!--   - what the thing physically is (a small round FPGA board)          -->
+<!--   - what makes it different from a normal processor                  -->
+<!--   - why you wanted to build it                                       -->
+<!-- Do not paste anything from the other docs in this repo - those are   -->
+<!-- AI-written and would defeat the point.                               -->
 
-## Architecture at a glance
+_WRITE THIS SECTION._
 
-| Component | Part / Choice | Purpose |
+## How it works
+
+<!-- WRITE THIS YOURSELF -->
+<!-- Your own explanation of the concept. Reference material you can work -->
+<!-- from, but must not copy:                                             -->
+<!--   - gateware/README.md   cell ops, routing, the grid map             -->
+<!--   - hardware/DESIGN.md   power tree and board architecture           -->
+<!-- Facts you may want to state: 4x4 grid, 16 cells, each cell holds one -->
+<!-- of 4 operations plus one of 4 routing directions, one tick moves     -->
+<!-- data one cell, the topology is loaded over USB.                      -->
+
+_WRITE THIS SECTION._
+
+## Status
+
+| Area | Status | Notes |
 |---|---|---|
-| FPGA | Lattice iCE40UP5K (SG48) | Hosts the cell grid, routing, and config loader |
-| USB bridge | FTDI FT231X | USB-C to UART for configuration + host I/O |
-| Config flash | SPI NOR flash | Holds the FPGA bitstream for standalone boot |
-| Clock | Crystal oscillator | System clock reference |
-| Status | 16 LEDs | Live view of data propagating through the grid |
-| Control | Reset button | FPGA / system reset |
-| Connector | USB-C | Power + data |
+| Concept / architecture | 🟢 Done | Cell ISA and routing scheme defined and simulated |
+| Gateware | 🟢 Done | 4×4 fabric, UART config loader, LED taps |
+| Simulation / testbenches | 🟢 Done | 18/18 checks passing under Icarus Verilog |
+| Synthesis / bitstream | 🔴 Blocked | Flow written, not run — OSS CAD Suite not installed |
+| Electrical design | 🟡 In progress | Spec written, 8 datasheet items open |
+| Schematic | ⚪ Not started | |
+| PCB layout | ⚪ Not started | |
+| Gerbers | ⚪ Not started | |
+| Case | 🟢 Done | Parametric OpenSCAD, STL + 3MF exported |
+| BOM | 🟡 In progress | 6 parts verified, 2 need selecting |
+| Bring-up | ⚪ Not started | |
+
+**Legend:** ⚪ Not started · 🟡 In progress · 🟢 Done · 🔴 Blocked
+
+### Next up
+
+- [ ] Read the 8 open datasheet items in [hardware/DESIGN.md](hardware/DESIGN.md#open-items)
+- [ ] Pick a 12 MHz oscillator and a 1.2 V LDO, confirm JLCPCB stock
+- [ ] Draw the schematic in KiCad
+- [ ] Install the OSS CAD Suite and run `gateware/build.sh` for real LUT/Fmax numbers
+- [ ] Lay out the board, LED grid dead centre
+- [ ] Export gerbers to `hardware/fab_output/`
+
+## Hardware
+
+| Block | Part | Package | LCSC |
+|---|---|---|---|
+| FPGA | ICE40UP5K-SG48I | QFN-48-EP (7×7) | [C2678152](https://www.lcsc.com/product-detail/C2678152.html) |
+| USB–UART bridge | FT231XS-R | SSOP-20-150mil | [C132160](https://www.lcsc.com/product-detail/C132160.html) |
+| SPI config flash | W25Q32JVSSIQ (32 Mbit) | SOIC-8-208mil | [C179173](https://www.lcsc.com/product-detail/C179173.html) |
+| USB-C receptacle | TYPE-C-31-M-12 | SMD, 16-pin | [C165948](https://www.lcsc.com/product-detail/C165948.html) |
+| 3.3 V regulator | AMS1117-3.3 | SOT-223 | [C6186](https://www.lcsc.com/product-detail/C6186.html) |
+| 1.2 V regulator | TBC | — | — |
+| Clock | 12 MHz active oscillator | SMD 3225, 4-pad | TBC |
+| Status LEDs | KT-0603R × 16 | 0603 | [C2286](https://www.lcsc.com/product-detail/C2286.html) |
+
+Board: round, 60 mm diameter, 2-layer, JLCPCB SMT assembled.
+
+Full electrical design in **[hardware/DESIGN.md](hardware/DESIGN.md)** ·
+costed BOM in **[docs/BOM.md](docs/BOM.md)**.
+
+## Gateware
+
+| Cell op | Result | | Routing dir |
+|---|---|---|---|
+| `0` PASS | `a` | | `0` North |
+| `1` INV | `~a` | | `1` East |
+| `2` ADD | `a + b` | | `2` South |
+| `3` XOR | `a ^ b` | | `3` West |
+
+```
+        c0    c1    c2    c3
+      +-----+-----+-----+-----+
+  r0  |  0  |  1  |  2  |  3  |  -> result out
+      +-----+-----+-----+-----+
+  r1  |  4  |  5  |  6  |  7  |  -> result out
+      +-----+-----+-----+-----+
+  r2  |  8  |  9  | 10  | 11  |  -> result out
+      +-----+-----+-----+-----+
+  r3  | 12  | 13  | 14  | 15  |  -> result out
+      +-----+-----+-----+-----+
+         ^
+     data in
+```
+
+Run the testbenches (needs only Icarus Verilog):
+
+```sh
+cd gateware/sim
+./run_sims.sh
+```
+
+Build a bitstream (needs the OSS CAD Suite):
+
+```sh
+cd gateware
+./build.sh
+```
+
+Protocol, cell semantics and a worked example: **[gateware/README.md](gateware/README.md)**.
+
+## Case
+
+![MorphCPU case, open-face frame with a board fitted](docs/img/case-assembly-preview.png)
+
+Parametric OpenSCAD, exported to STL and 3MF: **[case/](case/)**.
+
+```sh
+cd case
+./export.sh
+```
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| [gateware/](gateware/) | Verilog source — cell logic, routing fabric, UART config loader |
+| [gateware/](gateware/) | Verilog: cell logic, routing fabric, UART config loader |
 | [gateware/sim/](gateware/sim/) | Testbenches |
-| [hardware/](hardware/) | KiCad schematic + PCB project files |
-| [case/](case/) | 3D case CAD source + exported STL |
-| [docs/](docs/) | Datasheets, reference links, BOM |
+| [hardware/](hardware/) | Electrical design spec; KiCad project when it exists |
+| [case/](case/) | OpenSCAD source + exported STL/3MF |
+| [docs/](docs/) | BOM, datasheet links, images |
+| [JOURNAL.md](JOURNAL.md) | Build log |
 
-## Toolchain
+## Screenshots
 
-Open-source iCE40 flow: **yosys** (synthesis) → **nextpnr-ice40** (place & route) →
-**icepack** (bitstream) → **iceprog** (flash). Simulation with **Icarus Verilog** / **Verilator**,
-waveforms in **GTKWave**. PCB in **KiCad**.
+<!-- WRITE THIS YOURSELF -->
+<!-- Captions for each image are yours to write. Drop new images into     -->
+<!-- docs/img/ and add them here. Worth capturing:                        -->
+<!--   - GTKWave trace of a value rippling across the grid                -->
+<!--   - nextpnr utilisation output once the bitstream builds             -->
+<!--   - KiCad schematic sheets and the PCB 3D view                       -->
+<!--   - the assembled board with the LED grid mid-computation            -->
 
-## Status
+### Case render
 
-> Keep this section updated as the build progresses.
+![Case frame](docs/img/case-frame-preview.png)
 
-**Current phase:** Project setup
+_CAPTION GOES HERE._
 
-| Area | Status | Notes |
-|---|---|---|
-| Concept / architecture | 🟡 In progress | Cell ISA and routing scheme being defined |
-| Gateware | ⚪ Not started | |
-| Simulation / testbenches | ⚪ Not started | |
-| Schematic | ⚪ Not started | |
-| PCB layout | ⚪ Not started | |
-| Case | ⚪ Not started | |
-| BOM / ordering | ⚪ Not started | |
-| Bring-up | ⚪ Not started | |
+<!-- ==================================================================== -->
+<!-- Add schematic / PCB / bring-up screenshots here as they exist.       -->
+<!-- ==================================================================== -->
 
-**Legend:** ⚪ Not started · 🟡 In progress · 🟢 Done · 🔴 Blocked
+## Building it yourself
 
-**Next up:**
-- [ ] Define the cell opcode + direction encoding
-- [ ] First single-cell Verilog module and testbench
-- [ ] Pull iCE40UP5K / FT231X datasheets into [docs/](docs/)
+<!-- WRITE THIS YOURSELF -->
+<!-- Any assembly notes, ordering notes, or warnings in your own words.   -->
 
----
+_WRITE THIS SECTION._
 
-*Built for the Gadget Market hardware submission — deadline 21 Aug 2026.*
+## Licence
+
+<!-- WRITE THIS YOURSELF - pick a licence -->
+
+_CHOOSE A LICENCE._
