@@ -33,7 +33,7 @@
 module config_loader #(
     parameter DATA_W          = 8,
     parameter ROWS            = 4,
-    parameter DEFAULT_TICKDIV = 24'd3000000   // 12 MHz / 3e6 = 4 ticks/sec
+    parameter DEFAULT_TICKDIV = 24'd4000000   // 16 MHz / 4e6 = 4 ticks/sec
 ) (
     input  wire                   clk,
     input  wire                   rst,

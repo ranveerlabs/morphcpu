@@ -12,7 +12,7 @@ Verilog for the MorphCPU fabric, targeting the Lattice iCE40UP5K-SG48.
 | [rtl/uart_tx.v](rtl/uart_tx.v) | 8N1 transmitter |
 | [rtl/config_loader.v](rtl/config_loader.v) | Host command decoder, config shifter, tick generator |
 | [rtl/morphcpu_top.v](rtl/morphcpu_top.v) | Top level: clock, reset, UART, LEDs |
-| [morphcpu.pcf](morphcpu.pcf) | Pin constraints (**candidate — not yet locked**) |
+| [morphcpu.pcf](morphcpu.pcf) | Pin constraints (locked, verified against the datasheet) |
 | [build.sh](build.sh) | yosys → nextpnr → icepack |
 | [sim/](sim/) | Testbenches |
 
@@ -175,7 +175,7 @@ nextpnr-ice40 --up5k --package sg48 \
     --json build/morphcpu_top.json \
     --pcf morphcpu.pcf \
     --asc build/morphcpu_top.asc \
-    --freq 12
+    --freq 16
 
 icepack build/morphcpu_top.asc build/morphcpu_top.bin
 
@@ -192,7 +192,7 @@ can go straight into `JOURNAL.md`.
 
 ## Demo notes
 
-The tick defaults to **4 Hz**, not 12 MHz. A hop every 83 ns is invisible, and
+The tick defaults to **4 Hz**, not 16 MHz. A hop every 62.5 ns is invisible, and
 the point of the board is watching data cross the LED grid. LEDs are also
 pulse-stretched to ~150 ms so a single-tick visit stays legible.
 

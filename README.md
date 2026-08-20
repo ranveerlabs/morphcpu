@@ -44,20 +44,18 @@ _WRITE THIS SECTION._
 | Gateware | 🟢 Done | 4×4 fabric, UART config loader, LED taps |
 | Simulation / testbenches | 🟢 Done | 18/18 checks passing under Icarus Verilog |
 | Synthesis / bitstream | 🔴 Blocked | Flow written, not run — OSS CAD Suite not installed |
-| Electrical design | 🟡 In progress | Spec written, 8 datasheet items open |
+| Electrical design | 🟢 Done | All 8 datasheet items resolved and cited |
 | Schematic | ⚪ Not started | |
 | PCB layout | ⚪ Not started | |
 | Gerbers | ⚪ Not started | |
 | Case | 🟢 Done | Parametric OpenSCAD, STL + 3MF exported |
-| BOM | 🟡 In progress | 6 parts verified, 2 need selecting |
+| BOM | 🟡 In progress | 8 parts verified with prices; passives still to pin |
 | Bring-up | ⚪ Not started | |
 
 **Legend:** ⚪ Not started · 🟡 In progress · 🟢 Done · 🔴 Blocked
 
 ### Next up
 
-- [ ] Read the 8 open datasheet items in [hardware/DESIGN.md](hardware/DESIGN.md#open-items)
-- [ ] Pick a 12 MHz oscillator and a 1.2 V LDO, confirm JLCPCB stock
 - [ ] Draw the schematic in KiCad
 - [ ] Install the OSS CAD Suite and run `gateware/build.sh` for real LUT/Fmax numbers
 - [ ] Lay out the board, LED grid dead centre
@@ -71,9 +69,9 @@ _WRITE THIS SECTION._
 | USB–UART bridge | FT231XS-R | SSOP-20-150mil | [C132160](https://www.lcsc.com/product-detail/C132160.html) |
 | SPI config flash | W25Q32JVSSIQ (32 Mbit) | SOIC-8-208mil | [C179173](https://www.lcsc.com/product-detail/C179173.html) |
 | USB-C receptacle | TYPE-C-31-M-12 | SMD, 16-pin | [C165948](https://www.lcsc.com/product-detail/C165948.html) |
-| 3.3 V regulator | AMS1117-3.3 | SOT-223 | [C6186](https://www.lcsc.com/product-detail/C6186.html) |
-| 1.2 V regulator | TBC | — | — |
-| Clock | 12 MHz active oscillator | SMD 3225, 4-pad | TBC |
+| 3.3 V regulator | ME6211C33M5G-N | SOT-23-5 | [C82942](https://www.lcsc.com/product-detail/C82942.html) |
+| 1.2 V regulator | ME6211C12M5G-N | SOT-23-5 | [C236672](https://www.lcsc.com/product-detail/C236672.html) |
+| Clock | 1532H4-16000JWPDTSNL, 16 MHz XO | SMD3225-4P | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) |
 | Status LEDs | KT-0603R × 16 | 0603 | [C2286](https://www.lcsc.com/product-detail/C2286.html) |
 
 Board: round, 60 mm diameter, 2-layer, JLCPCB SMT assembled.

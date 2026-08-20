@@ -3,7 +3,7 @@
 //
 // Ties the fabric to the outside world:
 //
-//   12 MHz crystal ---> clk
+//   16 MHz oscillator ---> clk
 //   FT231X TXD     ---> uart_rx_i   (host -> board: config, inject, control)
 //   FT231X RXD     <--- uart_tx_o   (board -> host: east-edge results)
 //   reset button   ---> rst_n       (active low, external pull-up)
@@ -11,7 +11,7 @@
 //
 // Two deliberate choices worth knowing about:
 //
-// 1. The fabric tick defaults to 4 Hz, not 12 MHz. The whole point of the
+// 1. The fabric tick defaults to 4 Hz, not 16 MHz. The whole point of the
 //    board is watching data ripple across the LED grid, and a hop every 83 ns
 //    is invisible. Send TICKDIV to speed it up, or drive it by hand with STEP.
 //
@@ -30,7 +30,7 @@
 `default_nettype none
 
 module morphcpu_top #(
-    parameter CLK_HZ = 12_000_000,
+    parameter CLK_HZ = 16_000_000,
     parameter BAUD   = 115_200,
     parameter DATA_W = 8,
     parameter ROWS   = 4,
@@ -41,7 +41,7 @@ module morphcpu_top #(
     // The schematic decides this; flipping it here is cheaper than a respin.
     parameter LED_ACTIVE_LOW = 0
 ) (
-    input  wire        clk,          // 12 MHz crystal
+    input  wire        clk,          // 16 MHz oscillator (XO module)
     input  wire        rst_n,        // reset button, active low
     input  wire        uart_rx_i,    // from FT231X TXD
     output wire        uart_tx_o,    // to   FT231X RXD

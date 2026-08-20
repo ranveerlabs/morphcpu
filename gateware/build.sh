@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------------
 # MorphCPU bitstream build: yosys -> nextpnr-ice40 -> icepack
 #
-# Target: Lattice iCE40UP5K, SG48 package, 12 MHz external clock.
+# Target: Lattice iCE40UP5K, SG48 package, 16 MHz external oscillator.
 #
 #   ./build.sh          synthesise, place and route, pack a bitstream
 #   ./build.sh prog     ...then flash it to the SPI config flash via iceprog
@@ -20,7 +20,7 @@ PCF=morphcpu.pcf
 BUILD=build
 DEVICE=up5k
 PACKAGE=sg48
-FREQ=12          # MHz, must match the crystal and the CLK_HZ parameter
+FREQ=16          # MHz, must match the XO and the CLK_HZ parameter
 
 if [ "${1:-}" = "clean" ]; then
     rm -rf "$BUILD"

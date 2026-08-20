@@ -16,11 +16,11 @@
 
 module tb_morphcpu_top;
 
-    localparam real CLK_HZ  = 12_000_000.0;
+    localparam real CLK_HZ  = 16_000_000.0;
     localparam integer BAUD = 115_200;
 
-    // 12 MHz -> 83.333 ns period, so half a period is 41.667 ns.
-    localparam real HALF_CLK = 41.667;
+    // 16 MHz -> 62.5 ns period, so half a period is 31.25 ns.
+    localparam real HALF_CLK = 31.25;
     // One bit time at 115200 baud, in ns.
     localparam real BIT_NS   = 8680.0;
 

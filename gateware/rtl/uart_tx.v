@@ -11,7 +11,7 @@
 `default_nettype none
 
 module uart_tx #(
-    parameter CLK_HZ = 12_000_000,
+    parameter CLK_HZ = 16_000_000,
     parameter BAUD   = 115_200
 ) (
     input  wire       clk,

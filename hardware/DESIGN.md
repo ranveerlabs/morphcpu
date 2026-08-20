@@ -1,7 +1,6 @@
 # MorphCPU board — electrical design specification
 
-**Status: all eight blocking items resolved except one sourcing choice (item 7,
-the oscillator), which needs a decision before schematic capture.** Every value
+**Status: all eight blocking items resolved.** Schematic capture is unblocked. Every value
 below is taken from a datasheet, a symbol library, or a distributor page, and
 each is cited. No placeholder values remain.
 
@@ -21,7 +20,7 @@ checked on **20 Aug 2026**.
 | 4 | Dedicated SPI config pins | **14 = SPI_SO · 15 = SPI_SCK · 16 = SPI_SS · 17 = SPI_SI**, plus **8 = CRESET_B** and **7 = CDONE** | FPGA-DS-02008 §5.1 Signal Descriptions (IOB_32a/34a/35b/33b); pin numbers from the KiCad symbol |
 | 5 | I/O current limit for the LEDs | **LVCMOS 3.3: IOL 8 mA / IOH −8 mA max.** 5 mA per LED is inside spec | FPGA-DS-02008 Table 4.13 sysI/O Single-Ended DC Electrical Characteristics (p.34) |
 | 6 | VCCPLL treatment | **VCCPLL is a 1.2 V rail, not 3.3 V.** 1.14–1.26 V, same as VCC. Tie to VCC through an RC noise filter | FPGA-DS-02008 Table 4.2 (p.29) and Note 1: "VCC and VCCPLL are recommended to be tied together to the same supply with an RC-based noise filter between them" |
-| 7 | 12 MHz oscillator | **Decision outstanding — three verified candidates below.** All are real, priced and stock-checked; the choice is a sourcing/frequency trade-off | LCSC C7503622 / C5383161 / C2451123 |
+| 7 | Oscillator | **1532H4-16000JWPDTSNL, LCSC C5383161**, 16 MHz active XO, 1.8-3.3 V, HCMOS, SMD3225-4P, tri-state enable on pad 1. $0.36, 147 in stock. Clock moves 12 -> 16 MHz | [LCSC C5383161](https://www.lcsc.com/product-detail/C5383161.html) |
 | 8 | 1.2 V LDO | **ME6211C12M5G-N, LCSC C236672**, SOT-23-5, 1.2 V, 300 mA, has CE. $0.0606, 28,080 in stock | [LCSC C236672](https://www.lcsc.com/product-detail/C236672.html) |
 
 ### Bonus finding: the power-up sequence was wrong
@@ -86,7 +85,7 @@ rather than papering over it.
 
 ---
 
-## Item 7: the oscillator decision
+## Item 7: the oscillator - resolved
 
 The 12 MHz active-XO supply at LCSC is genuinely thin. Three parts were
 verified — all real, all priced, all stock-checked on 20 Aug 2026:
@@ -94,7 +93,7 @@ verified — all real, all priced, all stock-checked on 20 Aug 2026:
 | Option | MPN | LCSC | Freq | Pkg | Price @1 | **Stock** | Verdict |
 |---|---|---|---|---|---|---|---|
 | **A** | 1575H-12.000G33DTSTL | [C7503622](https://www.lcsc.com/product-detail/C7503622.html) | **12 MHz** | SMD**7050**-4P | $0.87 | **9** | Design unchanged, but 9 units is no margin at all |
-| **B** | 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | **16 MHz** | SMD3225-4P | $0.36 | **147** | Healthy stock, cheaper, smaller. Needs a clock change |
+| **B (chosen)** | 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | **16 MHz** | SMD3225-4P | $0.36 | **147** | Healthy stock, cheaper, smaller. Needs a clock change |
 | **C** | ECS-TXO-3225-120-TR | [C2451123](https://www.lcsc.com/product-detail/C2451123.html) | 12 MHz TCXO | SMD3225-4P | $5.94 | **1** | Ruled out — one unit, and 16× the price for ±2.5 ppm nobody needs |
 
 Both A and B are confirmed active oscillators, not crystals: each specifies a
@@ -104,10 +103,10 @@ crystal. Several 4-pad 3225 parts at 12 MHz *are* crystals and were rejected —
 `X322512MSB4SI` (C9002), for instance, quotes a 20 pF load capacitance, which
 only a passive resonator has.
 
-### Option B costs one parameter
+### The 16 MHz change, applied
 
 The system clock is not load-bearing at 12 MHz specifically. Moving to 16 MHz
-touches:
+touched exactly these, all of which are done:
 
 | Where | Change |
 |---|---|
@@ -117,12 +116,11 @@ touches:
 | UART divisor | 16e6 / 115200 = 138.89 → **139, error 0.08%** (12 MHz gives 104 → 0.16%, so 16 MHz is actually *better*) |
 | Fabric tick divider | `DEFAULT_TICKDIV` 3,000,000 → 4,000,000 to keep 4 Hz |
 
-**Recommendation: option B.** Stock of 9 on a hard-deadline build is the kind of
-thing that turns into a redesign the week before submission, and the frequency
-change is genuinely a parameter edit that also improves UART accuracy.
-
-This is a sourcing/risk trade-off with a design consequence, so it is flagged
-for a decision rather than taken unilaterally.
+**Resolved: option B, C5383161 at 16 MHz.** Stock of 9 on a hard-deadline build
+is the kind of thing that becomes a redesign the week before submission. The
+frequency change is a parameter edit that also improves UART divisor error, and
+it has been applied: gateware CLK_HZ is 16_000_000, DEFAULT_TICKDIV is
+4,000,000, build.sh targets --freq 16, and both testbenches still pass 18/18.
 
 ---
 
@@ -147,7 +145,7 @@ USB-C VBUS 5V
    |                   --> FPGA VCCIO_2    (pin 1)
    |                   --> FPGA VPP_2V5    (pin 24) via ferrite
    |                   --> SPI config flash
-   |                   --> 12 MHz XO
+   |                   --> 16 MHz XO
    |                   --> 16 LEDs via resistors
    |
    +--> FT231XS-R VCC (5 V part with its own internal 3V3 LDO)
@@ -381,7 +379,7 @@ and chargers will not deliver power at all.
 | VCC | — | +3V3, 100 nF local |
 | GND | — | GND |
 
-### Oscillator (SMD 4-pad, either candidate)
+### Oscillator - 1532H4-16000JWPDTSNL (LCSC C5383161), SMD3225-4P
 
 | XO pad | Net | Notes |
 |---|---|---|
@@ -390,8 +388,9 @@ and chargers will not deliver power at all.
 | 3 | OUT | To FPGA **pin 35** (IOT_46b_G0) |
 | 4 | VDD | +3V3, 100 nF right at the pad |
 
-Both candidates use the same 4-pad arrangement; only the body size differs
-(3225 vs 7050), so this is a footprint choice, not a wiring one.
+The 4-pad arrangement is standard across SMD XOs; the chosen part is 3225
+(3.2 x 2.5 mm). Pad 1 is a tri-state enable - tying it high through 10 kOhm keeps
+the output permanently enabled and leaves the option of gating it later.
 
 ### Configuration control
 
@@ -469,7 +468,7 @@ Pour ground on both layers, stitch it, leave no isolated islands.
 | ME6211C33M5G-N | C82942 | Basic | 272,820 |
 | ME6211C12M5G-N | C236672 | Basic | 28,080 |
 | KT-0603R | C2286 | Basic | 3,752,200 |
-| Oscillator | see item 7 | Extended | **9 or 147 depending on choice** |
+| 1532H4-16000JWPDTSNL | C5383161 | Extended | 147 |
 
 Both regulators are **Basic** parts, so replacing AMS1117-3.3 with ME6211C33M5G-N
 costs nothing in extended-part fees and actually removes one (AMS1117 was Basic
