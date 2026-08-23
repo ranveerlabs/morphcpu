@@ -30,9 +30,9 @@ assumption*:
 
 | Parameter | Assumed | Set from |
 |---|---|---|
-| `pcb_dia` | 60.0 mm | Final board outline |
+| `pcb_dia` | 70.0 mm | Final board outline |
 | `pcb_thickness` | 1.6 mm | JLCPCB default stackup |
-| `mount_hole_r` | 24.0 mm | Mounting hole bolt circle |
+| `mount_hole_r` | 29.0 mm | Mounting hole bolt circle |
 | `mount_hole_count` | 4 | Layout |
 | `mount_hole_angle_offset` | 45° | Layout |
 | `usb_angle` | 0° (+X edge) | Where the connector ends up |

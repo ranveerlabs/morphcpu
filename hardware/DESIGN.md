@@ -430,32 +430,64 @@ on `morphcpu_top`:
 
 ## PCB brief
 
+**Placement is done; routing is not.** Open `morphcpu.kicad_pcb` and route by
+hand - see [What is not here](#what-is-not-here).
+
 | Item | Value |
 |---|---|
-| Shape | Round, 60 mm diameter (matches `pcb_dia` in [case/morphcpu_case.scad](../case/morphcpu_case.scad)) |
-| Layers | 2, 1.6 mm, 1 oz — JLCPCB default stackup |
-| Mounting | 4 × M2 on a 48 mm bolt circle (24 mm radius) at 45°/135°/225°/315° |
+| Shape | Round, **70 mm** diameter (matches `pcb_dia` in [case/morphcpu_case.scad](../case/morphcpu_case.scad)) |
+| Layers | 2, 1.6 mm, 1 oz - JLCPCB default stackup |
+| Mounting | 4 x M2 on a 58 mm bolt circle (29 mm radius) at 45/135/225/315 deg |
 | Min track / clearance | 6 mil / 6 mil |
 | Min via | 0.3 mm hole / 0.6 mm pad |
 
-**The LED grid is the product.** 4×4 dead centre on the front face, 9 mm pitch
-(36 mm across), matching `led_pitch` in the case source. Cell 0 top-left,
-row-major, so the physical grid reads the same as the fabric map in
-[gateware/README.md](../gateware/README.md). Everything else goes on the back.
+### Why 70 mm and not 60 mm
 
-Silkscreen artwork space is reserved on the front annulus between roughly
-r = 22 mm and r = 29 mm — keep parts and reference designators out of it.
+The first placement pass was attempted at 60 mm and did not fit. 79 footprints
+including a QFN-48, an SSOP-20, a SOIC-8 and an edge-mounted USB-C left no room
+between the LED-resistor ring and the outer parts - DRC reported courtyard
+overlaps and shorting pads that could only be cleared by stacking parts on top
+of the mounting holes.
 
-USB-C at the 0° (+X) edge; the case cutout follows `usb_angle`.
+70 mm clears it with margin: zero courtyard overlaps, zero shorting pads, zero
+clearance violations. The case is parametric, so following the change was a
+two-number edit (`pcb_dia`, `mount_hole_r`) and a re-export.
 
-**Paddle grounding is critical** — it is the only ground path to the die. Give
-it a 3×3 or 4×4 field of 0.3 mm vias to the ground pour, and window the paste
+### Placement scheme
+
+The LED grid owns the centre of the **front** face. Everything else is on the
+**back**, arranged in concentric rings around the FPGA:
+
+| Radius | What |
+|---|---|
+| 0 | FPGA, QFN-48 |
+| 6.5 mm | One 100 nF per supply pin - seven of them |
+| 9.0 mm | VCCPLL 100R filter and the VPP_2V5 ferrite, just outboard of their caps |
+| 11.5 mm | The 16 LED series resistors, each roughly outboard of its own LED |
+| >= 17 mm | Everything with a real body, on the four cardinal directions |
+
+The diagonals are kept clear from r=22 to r=26 for the mounting holes.
+
+Outer parts group by function: **east** is USB-C with the FT231X directly
+behind it, **west** is the configuration flash and the oscillator (both close
+to the FPGA, which matters for the SPI and clock nets), **north** is the 3.3 V
+regulator with its enable RC, **south** is the 1.2 V regulator.
+
+The 4x4 grid sits on a **9 mm pitch, 27 mm across** (four columns spans three
+gaps), matching `led_pitch` in the case source. Cell 0 top-left, row-major, so
+the physical grid reads the same as the fabric map in
+[gateware/README.md](../gateware/README.md).
+
+Silkscreen artwork space is the outer annulus beyond r=20, minus the four
+mounting holes on the diagonals and the two front-face parts (SW1 at the top,
+the CDONE LED at the bottom).
+
+**Paddle grounding is critical** - it is the only ground path to the die. Give
+it a 3x3 or 4x4 field of 0.3 mm vias to the ground pour, and window the paste
 stencil into four or five squares rather than one large aperture so the part
 does not float during reflow.
 
 Pour ground on both layers, stitch it, leave no isolated islands.
-
----
 
 ## JLCPCB assembly notes
 
@@ -510,22 +542,49 @@ not this one's.
 - [ ] **3D view screenshot** for the README:
       `kicad-cli pcb render` (or KiCad's 3D viewer) → `docs/img/pcb-3d.png`.
 - [ ] **Composite render** of case + PCB together for the README hero image.
-- [ ] **Re-cost the BOM** in `docs/BOM.md` with final quantities and the
-      oscillator choice resolved.
+- [ ] **Re-cost the BOM** in `docs/BOM.md` with final quantities.
+- [ ] **Confirm the USB-C overhang** against the board edge and the case
+      cutout once the outline is final.
+- [ ] **Tidy silkscreen.** Three cosmetic text overlaps remain from the
+      placement pass; they will move as you adjust parts anyway.
 
 ---
 
 ## What is not here
 
-There is no PCB **routing** in this repository, and no gerbers. Placement is
-done; routing is not, and is deliberately left for a human.
+**There is no routing in this repository, and no gerbers.** Placement is done
+and the board opens clean; the copper between the pads is deliberately absent.
 
-Placement is a solvable layout problem — parts go in logical groups at known
-coordinates. Routing is a spatial judgment call made by looking at the board,
-and KiCad has no autorouter. Emitting trace coordinates without that feedback
-loop produces a file that opens, looks plausible, and is not manufacturable.
-With a funding tier of $210 and a hard deadline, a board that looks finished and
-is not is the worst available outcome.
+Placement is a solvable layout problem: parts go in logical groups at known
+coordinates, and DRC confirms nothing collides. Routing is a spatial judgment
+call made by looking at the board, and KiCad has no autorouter. Emitting trace
+coordinates without that feedback loop produces a file that looks finished and
+is not - and with a $210 tier and a hard deadline, a board that looks finished
+and is not is the worst available outcome.
 
 So the board is taken to the point where it can be opened and routed by hand,
 and no further.
+
+### State of the board file
+
+`morphcpu.kicad_pcb`: 79 footprints, 90 nets, **0 tracks**.
+
+DRC, `kicad-cli 10.0.5 --severity-all`:
+
+| Category | Count | Note |
+|---|---|---|
+| `unconnected_items` | 163 | Expected - nothing is routed yet |
+| `silk_overlap` | 2 | Cosmetic reference text, moves when you adjust parts |
+| `silk_over_copper` | 1 | Cosmetic |
+| courtyard overlaps | **0** | |
+| shorting pads | **0** | |
+| clearance | **0** | |
+
+Check when you open it, before routing:
+
+- **J1 overhang.** The USB-C receptacle is placed at the +X edge so a plug can
+  seat. Confirm the shell position against the board outline and against
+  `usb_angle` / the cutout in the case source - this is the one dimension the
+  render cannot settle.
+- **Front/back assignment.** The 16 LEDs, SW1 and the CDONE LED are on the
+  front; everything else is on the back.

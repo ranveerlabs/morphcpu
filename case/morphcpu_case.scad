@@ -21,11 +21,11 @@
 /* [Board - set these from the finished PCB] */
 
 // Diameter of the round PCB (mm).
-pcb_dia = 60.0;
+pcb_dia = 70.0;
 // PCB thickness (mm). 1.6 is the JLCPCB default.
 pcb_thickness = 1.6;
 // Radius of the mounting hole bolt circle, from board centre (mm).
-mount_hole_r = 24.0;
+mount_hole_r = 29.0;
 // How many mounting holes.
 mount_hole_count = 4;
 // Rotation of the first mounting hole (degrees).

@@ -93,3 +93,6 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# Exported netlist is regenerated from the schematic
+hardware/morphcpu.net

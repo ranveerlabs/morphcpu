@@ -23,10 +23,98 @@ built, so time can be attributed per chunk rather than guessed at afterwards.
 | 004 | 2026-08-18 | _fill in_ | Case, parametric OpenSCAD |
 | 005 | 2026-08-18 | _fill in_ | Electrical design spec + BOM |
 | 006 | 2026-08-18 | _fill in_ | README restructure |
+| 007 | 2026-08-22 | _fill in_ | Datasheet items resolved, schematic, PCB placement |
 
 ---
 
 # Sessions
+
+## Session 007 - 2026-08-22
+
+**Time spent:** _fill in_ &nbsp;&nbsp;|&nbsp;&nbsp; **Running total:** _fill in_
+**Focus:** Closing the eight blocking datasheet items, schematic capture, PCB placement
+
+### What I did
+- Resolved all eight open items in `hardware/DESIGN.md` against
+  FPGA-DS-02008-2.0 and the KiCad `ICE40UP5K-SG48ITR` symbol, with a citation
+  per item. Full SG48 pin table now in DESIGN.md.
+- Chose the oscillator: 1532H4-16000JWPDTSNL (LCSC C5383161), 16 MHz active XO.
+  Applied the clock change through the gateware, PCF and build script.
+- Generated the KiCad schematic from a netlist transcribed out of DESIGN.md.
+  **ERC: 0 errors, 0 warnings** with `--severity-all`.
+- Generated first-pass PCB placement via the `pcbnew` Python API. 79 footprints,
+  90 nets, 0 tracks. Zero courtyard overlaps, zero shorting pads.
+- Grew the board from 60 mm to 70 mm because the part count would not fit, and
+  followed the change through the case parameters.
+
+### What I learned
+_(fill in)_
+
+### Design decisions
+
+**Decision:** Both regulators fed from 5 V in parallel, with an RC delay on the 3.3 V enable
+- **Alternatives considered:** The original cascade 5V -> 3V3 -> 1V2, which is simpler and one fewer rail off USB.
+- **Rationale:** DS section 4.5 requires VCC and VCCPLL up first, then SPI_VCCIO1, then VPP_2V5. The cascade brings 3.3 V up first - exactly backwards. Since every 3.3 V consumer on the FPGA is sequenced after VCC, the rule collapses to "1.2 V must reach 0.5 V before 3.3 V is applied".
+- **Source:** FPGA-DS-02008-2.0 section 4.5 Power-up Supply Sequence, p.31; section 4.4 for which rails the POR monitors.
+- **Consequences / risks:** The 3.3 V regulator now needs an enable pin, so AMS1117-3.3 is out. 1.2 V from 5 V dissipates ~114 mW in a SOT-23-5, about a 28 C rise.
+
+**Decision:** 16 MHz oscillator instead of 12 MHz
+- **Alternatives considered:** 12 MHz C7503622 (9 in stock), 12 MHz TCXO C2451123 (1 in stock, $5.94).
+- **Rationale:** 147 in stock against 9, cheaper, smaller package. The system clock is a gateware parameter, not a fixed requirement.
+- **Source:** LCSC stock checked 20 Aug 2026.
+- **Consequences / risks:** UART divisor becomes 139 (0.08% error) rather than 104 (0.16%) - slightly better. Fabric tick divider rescaled to hold 4 Hz.
+
+**Decision:** Board grown from 60 mm to 70 mm
+- **Alternatives considered:** Staying at 60 mm and packing tighter.
+- **Rationale:** 60 mm produced courtyard overlaps and shorting pads that could only be cleared by putting parts over the mounting holes. 70 mm clears everything with margin.
+- **Consequences / risks:** Case parameters followed in two numbers. Slightly more PCB area cost, which is negligible.
+
+### Parts & references touched this session
+
+| Part / doc | Exact P/N or link | What I needed from it |
+|---|---|---|
+| Datasheet | FPGA-DS-02008-2.0 | Pin summary p.45, Table 4.2 p.29, Table 4.13 p.34, section 4.5 p.31 |
+| KiCad symbol | `ICE40UP5K-SG48ITR` in FPGA_Lattice.kicad_sym | SG48 package pin numbers |
+| Oscillator | 1532H4-16000JWPDTSNL / LCSC C5383161 | 16 MHz, 1.8-3.3 V, HCMOS, SMD3225-4P, $0.36, 147 stock |
+| 3.3 V LDO | ME6211C33M5G-N / LCSC C82942 | 500 mA, CE pin, Basic tier, $0.053 |
+| 1.2 V LDO | ME6211C12M5G-N / LCSC C236672 | 300 mA, CE pin, $0.0606 |
+
+### Numbers
+
+| Metric | Value | Notes |
+|---|---|---|
+| FPGA supply pins | 7 | 2 VCC, 3 VCCIO, VCCPLL, VPP_2V5 - so 7 x 100 nF |
+| Dedicated GND pins | **0** | Ground reaches the die only via the exposed paddle |
+| LED drive | 5 mA of an 8 mA ceiling | LVCMOS33 IOL/IOH, Table 4.13 |
+| Schematic | 87 symbols, 90 nets, 257 pins | ERC 0/0 |
+| PCB | 79 footprints, 0 tracks | DRC: 0 courtyard, 0 shorting, 0 clearance |
+| Board | 70 mm dia, 2 layer | LED grid 9 mm pitch, 27 mm across |
+
+### What broke / dead ends
+- **Symptom:** `kicad-cli` reported only "Failed to load schematic", no detail.
+- **Actual root cause:** `ME6211C12M5` only *extends* `ME6211C33M5`. Emitting the parent body under the child's name leaves the nested per-unit sub-symbols named after the parent, which makes the file unloadable. Fixing only the names then trips ERC `lib_symbol_mismatch`, because the properties still read as the parent. The real fix is to embed the derived symbol fully flattened.
+- **Fix:** `lib_symbol_node()` in `gen_schematic.py`.
+
+- **Symptom:** `gen_pcb.py` segfaulted with no traceback.
+- **Actual root cause:** Calling `footprint.Flip()` on a footprint that had not yet been added to the board. The pcbnew bindings do not check ownership.
+- **Fix:** `board.Add(fp)` before `Flip()`.
+
+- **Symptom:** First placement pass had 87 DRC violations including pads shorting across the FPGA.
+- **Actual root cause:** The 16 LED series resistors were placed 3.2 mm from each LED, which put them directly on top of the QFN in the centre of the board. Then 60 mm simply was not enough area.
+- **Fix:** Moved the resistors to a ring at r=11.5 mm and grew the board to 70 mm.
+
+### Screenshots / photos
+![PCB placement, front](docs/img/pcb-placement-front.png)
+*(caption to fill in - the 4x4 grid is the front face)*
+
+![PCB placement, back](docs/img/pcb-placement-back.png)
+*(caption to fill in)*
+
+### Next session
+- [ ] Route the board by hand
+- [ ] Work the post-routing checklist at the bottom of hardware/DESIGN.md
+
+---
 
 ## Session 006 — 2026-08-18
 

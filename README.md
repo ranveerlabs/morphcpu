@@ -74,7 +74,7 @@ _WRITE THIS SECTION._
 | Clock | 1532H4-16000JWPDTSNL, 16 MHz XO | SMD3225-4P | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) |
 | Status LEDs | KT-0603R × 16 | 0603 | [C2286](https://www.lcsc.com/product-detail/C2286.html) |
 
-Board: round, 60 mm diameter, 2-layer, JLCPCB SMT assembled.
+Board: round, 70 mm diameter, 2-layer, JLCPCB SMT assembled.
 
 Full electrical design in **[hardware/DESIGN.md](hardware/DESIGN.md)** ·
 costed BOM in **[docs/BOM.md](docs/BOM.md)**.
