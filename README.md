@@ -45,8 +45,8 @@ _WRITE THIS SECTION._
 | Simulation / testbenches | 🟢 Done | 18/18 checks passing under Icarus Verilog |
 | Synthesis / bitstream | 🔴 Blocked | Flow written, not run — OSS CAD Suite not installed |
 | Electrical design | 🟢 Done | All 8 datasheet items resolved and cited |
-| Schematic | ⚪ Not started | |
-| PCB layout | ⚪ Not started | |
+| Schematic | 🟢 Done | ERC clean, 0 errors 0 warnings |
+| PCB layout | 🟡 In progress | Placement done and DRC-clean; routing is manual |
 | Gerbers | ⚪ Not started | |
 | Case | 🟢 Done | Parametric OpenSCAD, STL + 3MF exported |
 | BOM | 🟡 In progress | 8 parts verified with prices; passives still to pin |
