@@ -1,6 +1,7 @@
 # MorphCPU — bill of materials
 
-**Quantity basis: 5 units.** Every row is pinned to an LCSC part number and
+**Quantity basis: 5 units** for everything on the PCB; **1 unit** for the case,
+which is off-PCB. Every row is pinned to an LCSC part number and
 priced. Rows 1–8 were checked **20 Aug 2026**; rows 9–22, added when the
 schematic was reconciled against this document, were checked **23 Aug 2026**.
 
@@ -46,6 +47,19 @@ schematic was reconciled against this document, were checked **23 Aug 2026**.
 **$17.61 of components per board.** Rounding each line to the cent and summing
 gives the same $88.06 as summing the unrounded lines, so the figure is not a
 rounding artefact.
+
+### Grand total
+
+| Item | Basis | Cost |
+|---|---|---|
+| Components, rows 1–22 | 5 units | $88.06 |
+| Case filament | 1 unit (off-PCB) | $0.26 |
+| | | **$88.32** |
+
+**$88.32** is the total for everything with a real price attached. PCB
+fabrication, SMT assembly setup, Extended-part feeder fees, and shipping are
+still unquoted — see [Costs that are not components](#costs-that-are-not-components)
+— and for a 5-unit run they are expected to exceed this figure.
 
 ### Resistor and capacitor counts
 
@@ -156,7 +170,49 @@ the **Complex ($210)** tier.
 | **Extended-part feeder fees** | Charged **per distinct extended part**. Between 7 and 9 parts here are Extended depending on how C7519 and C136491 resolve. Fixed cost, so across 5 boards it lands hard per unit |
 | Stencil | Usually included with assembly |
 | Shipping + duty | Varies |
-| Case | ~15 g of filament per frame, negligible |
+| Case | **Case material: $0.26 (12.9 g PLA @ 20% infill, $19.99/kg)** — 1 unit. See below |
+
+### Case filament cost
+
+**Quantity basis: 1 unit**, not 5. The Gadget Market rule is that off-PCB parts
+only have to cover one assembled demo unit, and the case is off-PCB. Five
+frames would be 64.5 g and $1.29 if they are ever wanted.
+
+**Case material: $0.26 (12.9 g PLA @ 20% infill, $19.99/kg)**
+
+How that number was reached:
+
+| Step | Value | Source |
+|---|---|---|
+| Solid volume of the exported frame | **11,627.47 mm³** | [../case/morphcpu_case.stl](../case/morphcpu_case.stl), re-exported from the `.scad` and byte-identical to the committed file. Volume by signed-tetrahedron sum over all 9,586 facets |
+| — floor slab (z 0–2.0 mm) | 8,707.51 mm³ | Same mesh, intersected with the floor slab |
+| — wall ring (z 2.0–7.8 mm) | 2,711.66 mm³ | Same, less the post footprints |
+| — four standoff posts | 208.30 mm³ | Same, intersected with the post cylinders |
+| Extruded volume after infill | **10,410.40 mm³** | See the infill note below |
+| Filament mass | **12.91 g** | × 1.24 g/cm³, the standard PLA density |
+| Filament price | **$19.99/kg** | Median 1 kg spool across ten manufacturers' own stores, 11 Jun 2026. Overture's own store corroborates: $20.99–22.99 list, $13.99–14.99 on sale |
+| **Cost** | **$0.2580 → $0.26** | |
+
+**The 20% infill assumption barely applies to this part, and saying so matters
+more than the number.** At the print settings in
+[../case/README.md](../case/README.md) — 0.4 mm nozzle, 0.2 mm layers, 3
+perimeters — three perimeters are 1.2 mm per side, so every feature thinner
+than 2.4 mm prints as solid perimeter with no infill region at all:
+
+- **Wall, 2.4 mm** — exactly two perimeter stacks. 100% solid.
+- **Standoff posts, 5.0 mm OD with a 1.7 mm pilot hole** — the outer and pilot
+  perimeter shells overlap. 100% solid.
+- **Floor, 2.0 mm** — 4 top + 4 bottom solid layers are 1.6 mm of the 2.0 mm,
+  leaving 0.4 mm at 20%, so the floor is 84% dense. The 1,100.81 mm³ annulus of
+  floor directly under the wall is solid too.
+
+Printed 100% solid the frame is 14.42 g and **$0.29** — three cents more. Any
+infill setting between 0% and 100% lands in that three-cent band, so the case
+cost is insensitive to the assumption. The earlier "~15 g, negligible" estimate
+in this document was close and its conclusion was right.
+
+Not included: skirt, purge line, and failed prints. A common rule of thumb adds
+about 25% for those, which would take the line to $0.32.
 
 Component cost is **$17.61 per board**, but fixed per-order fees across a
 5-unit run can rival the whole BOM. Moving the two regulators to Basic-tier
@@ -196,6 +252,8 @@ uploaded. Those files now exist in
 - [0402WGF1003TCE — LCSC C25741](https://www.lcsc.com/product-detail/C25741.html)
 - [BSMD1206-050-6V — LCSC C883122](https://www.lcsc.com/product-detail/C883122.html)
 - [MMZ1608Y601BTA00 — LCSC C136491](https://www.lcsc.com/product-detail/Ferrite-Beads_TDK_C136491.html)
+- [PLA filament price per gram and per kg, 11 Jun 2026 — 3DPCC](https://3dprintingcostcalculator.com/news/filament-price-per-gram)
+- [Overture PLA filament store listing](https://www.overture3d.com/collections/pla-filament)
 - [JLCPCB parts library — tier and category listings](https://jlcpcb.com/parts)
 - [JLCPCB PCBA price breakdown](https://jlcpcb.com/help/article/pcb-assembly-price)
 - [iCE40 UltraPlus Family Data Sheet FPGA-DS-02008](https://www.latticesemi.com/-/media/LatticeSemi/Documents/DataSheets/iCE/iCE40-UltraPlus-Family-Data-Sheet.ashx)
