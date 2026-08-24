@@ -34,3 +34,18 @@ gtkwave tb_grid.vcd
 
 `out/` and any `*.vcd` / `*.fst` are gitignored. commit the testbench, not the
 dump.
+
+## pictures out of the dump
+
+[vcd_png.js](vcd_png.js) turns a dump into a png of the activity taps, one row
+per cell, one column per tick. no deps, node only.
+
+```sh
+node vcd_png.js out/tb_grid.vcd ../../docs/img/sim-002-grid-activity.png
+```
+
+a value moving across the fabric shows up as a diagonal streak, one cell per
+tick, so a routing bug slopes the wrong way and you see it instantly. the top
+level dump has no `tick` in scope so there it samples on led changes instead,
+which makes a filled triangle rather than a diagonal because the leds are pulse
+stretched.
