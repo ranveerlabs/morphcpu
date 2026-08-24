@@ -1,27 +1,27 @@
 # hardware/scripts/
 
-Generators for the KiCad project. The schematic and the PCB placement are both
-produced from source rather than drawn by hand, so the netlist has exactly one
-authority and regenerating is cheap.
+generators for the KiCad project. the schematic and the placement are both
+produced from source instead of drawn by hand, so the netlist has exactly one
+authority and regenerating costs nothing.
 
 | File | What it does |
 |---|---|
-| [netlist.py](netlist.py) | The netlist, transcribed from [../DESIGN.md](../DESIGN.md). Every connection here maps to a row in a DESIGN.md table |
-| [ksym.py](ksym.py) | Small KiCad s-expression reader/writer and symbol-pin extractor |
-| [gen_schematic.py](gen_schematic.py) | Emits `../morphcpu.kicad_sch` |
-| [gen_pcb.py](gen_pcb.py) | Emits `../morphcpu.kicad_pcb` — outline + placement, no routing |
-| [gen_fab.py](gen_fab.py) | Emits `../fab_output/` — Gerbers, drill, JLC BOM and CPL, gerber zip |
+| [netlist.py](netlist.py) | the netlist, transcribed from [../DESIGN.md](../DESIGN.md). every connection maps to a row in a DESIGN.md table |
+| [ksym.py](ksym.py) | small KiCad s-expression reader/writer + symbol pin extractor |
+| [gen_schematic.py](gen_schematic.py) | emits `../morphcpu.kicad_sch` |
+| [gen_pcb.py](gen_pcb.py) | emits `../morphcpu.kicad_pcb`, outline + placement, no routing |
+| [gen_fab.py](gen_fab.py) | emits `../fab_output/`: gerbers, drill, JLC BOM and CPL, zip |
 
-## Running
+## running
 
-Use KiCad's bundled Python — no extra packages needed:
+use KiCad's bundled python, nothing extra to install:
 
 ```sh
 KP="/c/Users/ranve/AppData/Local/Programs/KiCad/10.0/bin/python.exe"
 "$KP" hardware/scripts/gen_schematic.py
 ```
 
-Then check it:
+then check it:
 
 ```sh
 CLI="/c/Users/ranve/AppData/Local/Programs/KiCad/10.0/bin/kicad-cli.exe"
@@ -29,51 +29,59 @@ CLI="/c/Users/ranve/AppData/Local/Programs/KiCad/10.0/bin/kicad-cli.exe"
 "$CLI" sch export netlist --output morphcpu.net hardware/morphcpu.kicad_sch
 ```
 
-## Fabrication output
+**regenerating the PCB blows away hand routing.** placement is generated, tracks
+are not. once you start routing, stop running `gen_pcb.py` or keep the routed
+file somewhere safe first.
+
+## fab output
 
 ```sh
 "$KP" hardware/scripts/gen_fab.py
 ```
 
-Writes `../fab_output/`: `morphcpu-gerbers.zip` (the file JLC's uploader wants),
-`morphcpu-bom.csv`, `morphcpu-cpl.csv`, and a `gerbers/` directory holding the
-loose plots. Per [../../.gitignore](../../.gitignore) the loose plots are not
-tracked — the zip and the two CSVs are, and the loose files regenerate.
+writes `../fab_output/`: `morphcpu-gerbers.zip` (the file JLC's uploader wants),
+`morphcpu-bom.csv`, `morphcpu-cpl.csv`, and a `gerbers/` dir with the loose
+plots. the loose plots aren't tracked, the zip and the two CSVs are, and the
+loose files regenerate.
 
-The LCSC column is filled from a table in `gen_fab.py` transcribed from
-[../../docs/BOM.md](../../docs/BOM.md). Rows BOM.md has not pinned to an LCSC
-number get an **empty** LCSC field, never a guess, and the script lists them on
-stderr when it finishes.
+the LCSC column comes from a table inside `gen_fab.py` transcribed out of
+[../../docs/BOM.md](../../docs/BOM.md). any row BOM.md hasn't pinned gets an
+**empty** LCSC field, never a guess, and the script lists them on stderr when it
+finishes. right now all 22 are pinned so it should print nothing.
 
-Gerbers, drill and CPL are all plotted in **absolute** coordinates. The board
-sets no aux axis origin, so the drill/place origin and the page origin coincide
-and all three files share one coordinate system. If an aux origin is ever added
-to the board, every one of those three exports has to switch to
-`--use-drill-file-origin` together, or the CPL will be offset from the copper.
+gerbers, drill and CPL are all plotted in **absolute** coordinates. the board
+sets no aux axis origin, so the drill/place origin and the page origin are the
+same point and all three files share one coordinate system. if an aux origin
+ever gets added, all three exports have to switch to `--use-drill-file-origin`
+together, or the CPL ends up offset from the copper and you find out at
+assembly.
 
-## Why global labels instead of drawn wires
+## why global labels instead of drawn wires
 
-Connectivity is expressed with global labels, not wire segments. A global label
-joins nets **by name**, so every pin carrying the same net name is connected
-regardless of where its symbol sits.
+connectivity is expressed with global labels, not wire segments. a global label
+joins nets **by name**, so every pin carrying the same net name is connected no
+matter where its symbol sits.
 
-Drawing wires programmatically means computing polylines between pin endpoints
-and trusting that they land exactly on them — a wire that stops 0.01 mm short
-looks connected and is not. Labels remove that entire failure mode, and ERC
-plus the exported netlist confirm the result. It is a legitimate schematic
-style for a dense board, and it is what makes a generated schematic
-trustworthy.
+drawing wires programmatically means computing polylines between pin endpoints
+and trusting they land exactly on them. a wire that stops 0.01 mm short looks
+connected and isn't. labels delete that failure mode entirely, and ERC plus the
+exported netlist confirm the result. it's a legitimate schematic style for a
+dense board and it's what makes a generated schematic trustworthy.
 
-## Gotchas found while building this
+## gotchas found the hard way
 
-- **Derived symbols must be embedded flattened.** `ME6211C12M5` only extends
-  `ME6211C33M5`. Emitting the parent body under the child's name loads, but
-  trips ERC `lib_symbol_mismatch` because the properties still read as the
-  parent. The nested per-unit sub-symbols also have to be renamed to the child,
-  or the file will not load at all.
-- **References need a trailing digit.** `C_EN` reads as unannotated; `C19` does
-  not.
-- **Symbol origins belong on the 1.27 mm grid.** Pin offsets are multiples of
-  1.27, so an off-grid origin puts every pin off-grid.
-- **Unit 0 pins apply to all units.** Look pins up in the requested unit first,
+- **derived symbols have to be embedded flattened.** `ME6211C12M5` only extends
+  `ME6211C33M5`. emitting the parent body under the child's name loads fine but
+  trips ERC `lib_symbol_mismatch`, because the properties still read as the
+  parent. the nested per-unit sub-symbols also have to be renamed to the child
+  or the file won't load at all. `kicad-cli` says "Failed to load schematic" and
+  nothing else, which is not much to go on.
+- **references need a trailing digit.** `C_EN` reads as unannotated, `C19`
+  doesn't.
+- **symbol origins belong on the 1.27 mm grid.** pin offsets are multiples of
+  1.27, so an off-grid origin puts every single pin off-grid.
+- **unit 0 pins apply to all units.** look pins up in the requested unit first,
   then fall back to unit 0.
+- **`board.Add(fp)` before `fp.Flip()`.** pcbnew segfaults with no traceback if
+  you flip a footprint that isn't on the board yet. the bindings don't check
+  ownership.
