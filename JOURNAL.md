@@ -10,7 +10,7 @@ up sequence properly and finding out the hard way that 60mm of board is nowhere
 near enough for 79 footprints
 
 btw 002 through 006 are all the same day just split by what got built not by the
-clock. template's in [docs/journal-template.md](docs/journal-template.md)
+clock. template's in [docs/journal-template.txt](docs/journal-template.txt)
 
 ![board front, the 4x4 led grid](docs/img/pcb-placement-front.png)
 
@@ -227,6 +227,14 @@ dependent decoupling qty as an explicitly open item, 8 of them, all listed in
 the spec. guessing here quietly propagates into the schematic and then you never
 catch it
 
+**screenshots**
+
+![board back, showing the parts this session picked](docs/img/pcb-3d-back.png)
+*nothing visual existed this session, its all tables. this is the back of the
+board from two sessions later, but its every part the power tree here settled
+on, the two regulators, the flash, the oscillator and the bridge, sat where they
+ended up. easier to check a parts list against a picture than against a netlist*
+
 **next session**
 - [ ] close the 8 open datasheet items
 - [ ] pick the osc and the 1v2 reg
@@ -335,6 +343,16 @@ neither bug was visible to the fabric level testbench cause that one drives the
 config chain directly and reads the edge after the tick. good argument for
 testing thru the real interface and not just the convenient one
 
+**screenshots**
+
+![led state through the end to end run, rendered from the sim dump](docs/img/sim-003-uart-activity.png)
+*leds through the end to end run, every column is a state change. this one is
+driven entirely over the serial link, nothing reaching into the hierarchy. fills
+in as a triangle rather than a diagonal cause the leds are pulse stretched to
+~150ms so a single tick visit stays visible, so the trail hangs around. cells 0
+thru 7 light in order which is the worked add example, 0 south into 4 then east
+out thru 5 6 7*
+
 **next session**
 - [ ] get the synth toolchain installed, run the build for real utilisation numbers
 
@@ -388,6 +406,15 @@ then every fabric test failed with nothing lighting up at all. testbench race,
 not an rtl bug. stimulus was driven on the same rising edge the design samples
 on so the tick got cleared before the design ever saw it. fix is all stimulus
 changing on the falling edge
+
+**screenshots**
+
+![activity taps over 28 ticks, rendered from the fabric testbench dump](docs/img/sim-002-grid-activity.png)
+*the 16 activity taps, one row per cell, one column per tick. straight off the
+sim dump w `vcd_png.js`. every diagonal streak is one value physically walking
+east one cell per tick, 0 -> 1 -> 2 -> 3 along the top row and 4 -> 5 -> 6 along
+the next. thats the whole idea of the thing in one picture. also the fastest way
+to spot a routing bug, a value going the wrong way slopes the wrong direction*
 
 **next session**
 - [ ] test thru the real serial interface not just the fabric ports

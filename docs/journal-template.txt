@@ -1,0 +1,74 @@
+journal entry template
+======================
+
+kept as .txt on purpose. the submission platform scans every .md in the repo and
+splits it by heading, so a template full of empty headings gets parsed as a pile
+of real entries and every one of them fails validation. .txt is invisible to it.
+
+same reason the entries themselves use **bold labels** instead of ### headings.
+every ### becomes its own entry needing 100+ chars and an image, which no
+subsection is ever going to satisfy.
+
+three things each entry has to have or it gets flagged:
+  - Time spent: on its own line, capitalised, nothing after it on that line.
+    "19m" or "1h 47m" or "3:15". thats what the parser matches on
+  - 100+ characters of content, links dont count toward it
+  - at least one image
+
+be specific. this thing is the evidence that real work happened:
+  - exact part numbers. ICE40UP5K-SG48I not "the fpga"
+  - the datasheet section you actually read, with the page or table number
+  - why you picked something AND what you rejected. a decision with no
+    alternative considered isnt a decision its a default
+  - real numbers. clock freqs, utilisation, current draw, trace widths, timing
+    slack, baud rates, resistor values and the maths behind them
+  - failures in as much detail as successes. what broke, the exact error text,
+    what the cause actually turned out to be
+
+write it like you talk. no symptom/cause/fix label scaffolding, just say what
+happened and what fixed it.
+
+--- copy from here ---
+
+## session NNN - YYYY-MM-DD
+
+**Time spent:** Xm
+**Running total:** Xh Ym
+**Focus:** one line, what this chunk was for
+
+**what i did**
+
+prose. what got built. real numbers where you have them.
+
+**decisions**
+
+what you chose, what you passed on and why, where the number came from, what it
+locks in or makes harder later. flowing text, not fields.
+
+**parts and refs touched**
+
+| part / doc | exact p/n or ref | what i needed |
+|---|---|---|
+| | | |
+
+**numbers**
+
+| metric | value | notes |
+|---|---|---|
+| | | |
+
+**what broke**
+
+what happened, what you thought it was, what it actually was, what fixed it. all
+in prose. the wrong guess is worth writing down too, thats the useful part.
+
+**screenshots**
+
+![alt](docs/img/session-NNN-description.png)
+*what this shows and why it matters*
+
+**next session**
+- [ ]
+- [ ]
+
+--- to here ---
