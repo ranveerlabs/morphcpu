@@ -1,27 +1,28 @@
 # gateware/
 
-Verilog for the MorphCPU fabric, targeting the Lattice iCE40UP5K-SG48.
+verilog for the MorphCPU fabric. targets the Lattice iCE40UP5K-SG48.
 
-## Layout
+## layout
 
 | Path | What it is |
 |---|---|
-| [rtl/morph_cell.v](rtl/morph_cell.v) | One reconfigurable cell: config register, 4-op ALU, routing |
-| [rtl/grid.v](rtl/grid.v) | The 4x4 fabric and its neighbour interconnect |
-| [rtl/uart_rx.v](rtl/uart_rx.v) | 8N1 receiver, synchronised, with stop-bit checking |
+| [rtl/morph_cell.v](rtl/morph_cell.v) | one cell: config register, 4-op ALU, routing |
+| [rtl/grid.v](rtl/grid.v) | the 4x4 fabric and the neighbour interconnect |
+| [rtl/uart_rx.v](rtl/uart_rx.v) | 8N1 receiver, synchronised, checks the stop bit |
 | [rtl/uart_tx.v](rtl/uart_tx.v) | 8N1 transmitter |
-| [rtl/config_loader.v](rtl/config_loader.v) | Host command decoder, config shifter, tick generator |
-| [rtl/morphcpu_top.v](rtl/morphcpu_top.v) | Top level: clock, reset, UART, LEDs |
-| [morphcpu.pcf](morphcpu.pcf) | Pin constraints (locked, verified against the datasheet) |
-| [build.sh](build.sh) | yosys → nextpnr → icepack |
-| [sim/](sim/) | Testbenches |
+| [rtl/config_loader.v](rtl/config_loader.v) | command decoder, config shifter, tick generator |
+| [rtl/morphcpu_top.v](rtl/morphcpu_top.v) | top level: clock, reset, UART, LEDs |
+| [morphcpu.pcf](morphcpu.pcf) | pin constraints |
+| [build.sh](build.sh) | yosys -> nextpnr -> icepack |
+| [sim/](sim/) | testbenches |
 
-`morph_cell` is not called `cell` because `cell` is a reserved word in
-Verilog-2001 — it belongs to the `config`/`design` construct.
+it's `morph_cell` and not `cell` because `cell` is a reserved word in
+Verilog-2001, it belongs to the `config`/`design` construct. found that one the
+hard way.
 
-## How a cell works
+## how a cell works
 
-Each cell holds 4 configuration bits: an operation and a routing direction.
+4 config bits per cell. an operation and a direction.
 
 | `op` | Operation | Result |
 |---|---|---|
@@ -30,23 +31,26 @@ Each cell holds 4 configuration bits: an operation and a routing direction.
 | `2` | ADD | `a + b` (8-bit, wraps) |
 | `3` | XOR | `a ^ b` |
 
-| `dir` | Routes its result to |
+| `dir` | Sends its result |
 |---|---|
-| `0` | North |
-| `1` | East |
-| `2` | South |
-| `3` | West |
+| `0` | north |
+| `1` | east |
+| `2` | south |
+| `3` | west |
 
-Inputs are scanned in priority order N, E, S, W. The first valid input is `a`;
-a second valid input is `b`. If only one input is valid, `b` falls back to the
-value the cell is already holding. That is what gives ADD and XOR meaning:
-**two streams converging on a cell get combined by it**, and a lone stream
-passing through an ADD cell accumulates.
+inputs get scanned in a fixed priority order, N then E then S then W. first
+valid one is `a`, second valid one is `b`. only one input showed up? `b` falls
+back to whatever the cell is already holding.
 
-One `tick` moves data exactly one cell. A value therefore takes as many ticks
-as the number of cells on its path — the path length *is* the latency.
+that fallback is the whole trick. it's what gives ADD and XOR meaning:
+**two streams converging on a cell get combined**, and a lone stream walking
+through an ADD cell accumulates against itself instead.
 
-## Grid and edges
+one `tick` moves data exactly one cell. so a value takes as many ticks as there
+are cells on its path. the path length *is* the latency, there's nothing else to
+it.
+
+## grid and edges
 
 ```
         c0    c1    c2    c3
@@ -63,31 +67,31 @@ as the number of cells on its path — the path length *is* the latency.
      west_in[r] injects into column 0
 ```
 
-Data routed off the north, south, or west edges is dropped. Data routed east
-out of column 3 leaves the fabric and is sent to the host over UART.
+anything routed off the north, south or west edges is dropped. anything going
+east out of column 3 leaves the fabric and goes back to the host over UART.
 `led[i]` follows cell `i`.
 
-## Host protocol
+## host protocol
 
-8N1 UART, 115200 baud, over the FT231X. One command byte, then a fixed number
+8N1 UART, 115200 baud, through the FT231X. one command byte then a fixed number
 of argument bytes.
 
 | Cmd | Name | Args | Effect |
 |---|---|---|---|
-| `0x01` | CONFIG | 8 | Load the whole topology (see packing below) |
-| `0x02` | INJECT | 2 | `[row, value]` — present `value` at the west edge of `row` until the next tick |
-| `0x03` | TICKDIV | 3 | 24-bit big-endian clock divider for the tick; `<=1` runs at full clock rate |
-| `0x04` | CLEAR | 0 | Drop all in-flight data; configuration survives |
-| `0x05` | STEP | 0 | Advance the fabric exactly one tick |
+| `0x01` | CONFIG | 8 | load the whole topology, packing below |
+| `0x02` | INJECT | 2 | `[row, value]`, presents `value` at the west edge of `row` until the next tick |
+| `0x03` | TICKDIV | 3 | 24-bit big-endian tick divider. `<=1` runs at full clock rate |
+| `0x04` | CLEAR | 0 | drop all in-flight data, config survives |
+| `0x05` | STEP | 0 | advance exactly one tick |
 
-Unknown command bytes are ignored, so recovering from a half-sent command is
-just: send `0x04` and carry on.
+unknown command bytes get ignored, so recovering from a half-sent command is
+just: send `0x04`, carry on.
 
-Results leaving the east edge are sent back as single bytes, lowest row first.
+results leaving the east edge come back as single bytes, lowest row first.
 
-### Config packing
+### config packing
 
-The 8 CONFIG bytes are one nibble per cell, in ascending cell order:
+the 8 CONFIG bytes are one nibble per cell, ascending cell order:
 
 ```
 byte i, upper nibble -> cell (2i)
@@ -95,8 +99,7 @@ byte i, lower nibble -> cell (2i + 1)
 nibble = {op[1:0], dir[1:0]}
 ```
 
-So a straight PASS chain along row 0 (cells 0–3 all PASS/EAST, nibble `0x1`)
-is:
+so a straight PASS chain along row 0, cells 0-3 all PASS/EAST, nibble `0x1`:
 
 ```
 01 11 11 00 00 00 00 00 00
@@ -104,12 +107,12 @@ is:
 CONFIG
 ```
 
-The chain is wired highest-cell-index-first inside the fabric precisely so the
-host can send cells in plain ascending order without reversing anything.
+the chain is wired highest-cell-index-first inside the fabric on purpose, so the
+host sends cells in plain ascending order and never has to reverse anything.
 
-### Worked example — add two numbers as they travel
+### worked example: add two numbers while they travel
 
-Route cell 0 south into cell 4, make cell 4 an adder, then run east to the edge:
+route cell 0 south into cell 4, make cell 4 an adder, run east to the edge.
 
 | Cell | op | dir | nibble |
 |---|---|---|---|
@@ -120,53 +123,55 @@ Route cell 0 south into cell 4, make cell 4 an adder, then run east to the edge:
 ```
 01 20 00 91 11 00 00 00 00     CONFIG
 02 00 C8                       INJECT row 0, 200
-05                             STEP   (200 now in cell 0, aimed south)
+05                             STEP   (200 in cell 0 now, pointed south)
 02 01 64                       INJECT row 1, 100
 05                             STEP   (cell 4 adds north + west -> 44)
 05 05 05                       STEP x3 (across cells 5, 6, 7)
                                -> board sends 0x2C (300 truncated to 8 bits)
 ```
 
-That exchange is exactly what `sim/tb_morphcpu_top.v` asserts, byte for byte.
+that exchange is exactly what `sim/tb_morphcpu_top.v` asserts, byte for byte.
 
-## Simulation
+## simulation
 
-Icarus Verilog only — no vendor tools needed.
+Icarus Verilog only, no vendor tools.
 
 ```sh
 cd gateware/sim
 ./run_sims.sh
 ```
 
+18/18 passing.
+
 | Testbench | Covers |
 |---|---|
-| [sim/tb_grid.v](sim/tb_grid.v) | Fabric: per-tick latency, all four ops, convergence, activity taps |
-| [sim/tb_morphcpu_top.v](sim/tb_morphcpu_top.v) | End-to-end over the real UART protocol |
+| [sim/tb_grid.v](sim/tb_grid.v) | fabric: per-tick latency, all four ops, convergence, activity taps |
+| [sim/tb_morphcpu_top.v](sim/tb_morphcpu_top.v) | end to end over the real UART protocol |
 
-`tb_grid` drives the config chain directly; `tb_morphcpu_top` goes through the
-UART and never reaches into the hierarchy, so it also validates the wire
-protocol and the config bit ordering.
+`tb_grid` drives the config chain directly. `tb_morphcpu_top` goes in through the
+UART and never reaches into the hierarchy, so it validates the wire protocol and
+the config bit ordering too.
 
-To look at waveforms:
+waveforms:
 
 ```sh
 cd gateware/sim/out
 gtkwave tb_grid.vcd
 ```
 
-## Building a bitstream
+## building a bitstream
 
-Needs the [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build/releases)
+needs the [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build/releases)
 (yosys, nextpnr-ice40, icepack, iceprog) on `PATH`.
 
 ```sh
 cd gateware
-./build.sh          # synthesise, place and route, pack
-./build.sh prog     # ...and flash it via iceprog
+./build.sh          # synth, place and route, pack
+./build.sh prog     # ...and flash it with iceprog
 ./build.sh clean
 ```
 
-The exact commands `build.sh` runs:
+what it actually runs:
 
 ```sh
 yosys -p "read_verilog rtl/*.v; synth_ice40 -top morphcpu_top -json build/morphcpu_top.json"
@@ -182,20 +187,24 @@ icepack build/morphcpu_top.asc build/morphcpu_top.bin
 iceprog build/morphcpu_top.bin
 ```
 
-`build.sh` also greps the nextpnr log for utilisation and Fmax so the numbers
-can go straight into `JOURNAL.md`.
+it also greps the nextpnr log for utilisation and Fmax so the numbers can go
+straight into `JOURNAL.md`.
 
-> **Not yet run.** The OSS CAD Suite is not installed on this machine, so the
-> synthesis and place-and-route flow above is written but unexercised. The
-> simulation flow is the part that has actually been run. Record real LUT
-> counts and Fmax in the journal the first time `build.sh` completes.
+> **never actually run.** the OSS CAD Suite isn't installed on this machine, so
+> the synth and PnR flow above is written but unexercised. simulation is the part
+> that's genuinely been run. put real LUT counts and Fmax in the journal the
+> first time `build.sh` completes.
 
-## Demo notes
+`morphcpu.pcf` also still needs updating from the
+[user I/O assignment](../hardware/DESIGN.md#user-io-assignment) in DESIGN.md
+before a bitstream means anything, its current pin numbers are candidates.
 
-The tick defaults to **4 Hz**, not 16 MHz. A hop every 62.5 ns is invisible, and
-the point of the board is watching data cross the LED grid. LEDs are also
-pulse-stretched to ~150 ms so a single-tick visit stays legible.
+## demo notes
 
-At full tick rate the fabric outruns 115200 baud and east-edge results get
-dropped. That is expected — use `STEP` or a slow `TICKDIV` when you want every
+the tick defaults to **4 Hz**, not 16 MHz. a hop every 62.5 ns is invisible and
+the entire point of the board is watching data cross the LED grid. LEDs are also
+pulse-stretched to about 150 ms so a single-tick visit stays legible.
+
+at full tick rate the fabric outruns 115200 baud and east-edge results get
+dropped. that's expected. use `STEP` or a slow `TICKDIV` when you want every
 result back.

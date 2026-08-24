@@ -1,17 +1,36 @@
 # gateware/sim/
 
-Testbenches and simulation harnesses.
+testbenches. Icarus Verilog only, no vendor tools.
 
-Run with Icarus Verilog:
+```sh
+./run_sims.sh
+```
 
-    iverilog -g2012 -o tb_cell.vvp tb_cell.v ../cell.v
-    vvp tb_cell.vvp
-    gtkwave tb_cell.vcd
-
-Waveform dumps (`*.vcd`, `*.fst`) are gitignored — commit the testbench, not the output.
+18/18 checks passing.
 
 | Testbench | Covers |
 |---|---|
-| _(tbd)_ `tb_cell.v` | Single-cell operation + routing behaviour |
-| _(tbd)_ `tb_grid.v` | Multi-cell propagation through the fabric |
-| _(tbd)_ `tb_config_loader.v` | UART config stream → grid configuration |
+| [tb_grid.v](tb_grid.v) | the fabric. per-tick latency, all four ops, two streams converging, activity taps |
+| [tb_morphcpu_top.v](tb_morphcpu_top.v) | end to end over the real UART protocol |
+
+the split matters. `tb_grid` drives the config chain directly, so it tests the
+fabric. `tb_morphcpu_top` goes in through the UART and never reaches into the
+hierarchy, so it also proves the wire protocol and the config bit ordering are
+right. if only the second one breaks, it's the protocol, not the logic.
+
+run one by hand:
+
+```sh
+iverilog -g2005 -Wall -o out/tb_grid.vvp -s tb_grid ../rtl/*.v tb_grid.v
+(cd out && vvp tb_grid.vvp)
+```
+
+waveforms:
+
+```sh
+cd out
+gtkwave tb_grid.vcd
+```
+
+`out/` and any `*.vcd` / `*.fst` are gitignored. commit the testbench, not the
+dump.
