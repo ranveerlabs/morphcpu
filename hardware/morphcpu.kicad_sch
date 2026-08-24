@@ -3511,6 +3511,504 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Power_Protection:USBLC6-2SC6"
+			(pin_names
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0.635 5.715 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "USBLC6-2SC6"
+				(at 0.635 3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23-6"
+				(at 1.27 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(justify left)
+				)
+			)
+			(property "Datasheet" "https://www.st.com/resource/en/datasheet/usblc6-2.pdf"
+				(at 1.27 -8.255 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Description" "Very low capacitance ESD protection diode, 2 data-line, SOT-23-6"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "usb ethernet video"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "SOT?23*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "USBLC6-2SC6_0_0"
+				(circle
+					(center -1.524 0)
+					(radius 0.0001)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center -0.508 2.032)
+					(radius 0.0001)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center -0.508 -4.572)
+					(radius 0.0001)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0.508 2.032)
+					(radius 0.0001)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0.508 -4.572)
+					(radius 0.0001)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 1.524 -2.54)
+					(radius 0.0001)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "USBLC6-2SC6_0_1"
+				(polyline
+					(pts
+						(xy -2.54 0)
+						(xy 2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 -2.54)
+						(xy 2.54 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 0.508)
+						(xy -1.016 0.508)
+						(xy -1.524 1.524)
+						(xy -2.032 0.508)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -3.048)
+						(xy -1.016 -3.048)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.016 1.524)
+						(xy -2.032 1.524)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.016 -4.064)
+						(xy -2.032 -4.064)
+						(xy -1.524 -3.048)
+						(xy -1.016 -4.064)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.508 -1.143)
+						(xy -0.508 -0.762)
+						(xy 0.508 -0.762)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54)
+						(xy -0.508 2.032)
+						(xy 0.508 2.032)
+						(xy 0 1.524)
+						(xy 0 -4.064)
+						(xy -0.508 -4.572)
+						(xy 0.508 -4.572)
+						(xy 0 -5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 -1.778)
+						(xy -0.508 -1.778)
+						(xy 0 -0.762)
+						(xy 0.508 -1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 1.524)
+						(xy 2.032 1.524)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 -3.048)
+						(xy 2.032 -3.048)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.032 0.508)
+						(xy 1.016 0.508)
+						(xy 1.524 1.524)
+						(xy 2.032 0.508)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.032 -4.064)
+						(xy 1.016 -4.064)
+						(xy 1.524 -3.048)
+						(xy 2.032 -4.064)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "USBLC6-2SC6_1_1"
+				(rectangle
+					(start -2.54 2.794)
+					(end 2.54 -5.334)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.508 2.032)
+						(xy -1.524 2.032)
+						(xy -1.524 -4.572)
+						(xy -0.508 -4.572)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 -4.572)
+						(xy 1.524 -4.572)
+						(xy 1.524 2.032)
+						(xy 0.508 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "I/O1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 2.54)
+					(name "I/O2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 -2.54 180)
+					(length 2.54)
+					(name "I/O2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 5.08 270)
+					(length 2.54)
+					(name "VBUS"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "I/O1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Regulator_Linear:ME6211C12M5"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -4425,6 +4923,27 @@
 		)
 	)
 	(symbol
+		(lib_id "Power_Protection:USBLC6-2SC6")
+		(at 111.76 330.2 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3fff98b7-6204-5c4c-9b41-96b805f52326")
+		(property "Reference" "U6" (at 111.76 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "USBLC6-2SC6" (at 111.76 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-6" (at 111.76 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(instances
+			(project "morphcpu"
+				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
+					(reference "U6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 400.05 175.26 0)
 		(unit 1)
@@ -4434,8 +4953,8 @@
 		(dnp no)
 		(uuid "0e88285f-65a3-5821-b52d-af02176dfb37")
 		(property "Reference" "SW1" (at 400.05 163.26 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "RESET" (at 400.05 187.26 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Button_Switch_SMD:SW_SPST_TL3342" (at 400.05 175.26 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Value" "TS-1187A-B-A-B" (at 400.05 187.26 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A" (at 400.05 175.26 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -4447,16 +4966,16 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 111.76 330.2 0)
+		(at 138.43 330.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "dff99073-0b1d-5517-97c2-655e7f5ed116")
-		(property "Reference" "R28" (at 111.76 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "10k" (at 111.76 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 111.76 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Reference" "R28" (at 138.43 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "10k" (at 138.43 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 138.43 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5140,41 +5659,20 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 138.43 330.2 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f3f931e0-b8e3-58cd-8505-fce2a2b5b99a")
-		(property "Reference" "R17" (at 138.43 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "10k" (at 138.43 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 138.43 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(instances
-			(project "morphcpu"
-				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "R17")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
 		(at 163.83 330.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a6321161-5da8-5a4b-b8f9-4feec7bcefc9")
-		(property "Reference" "R18" (at 163.83 318.2 0) (effects (font (size 1.27 1.27))))
+		(uuid "f3f931e0-b8e3-58cd-8505-fce2a2b5b99a")
+		(property "Reference" "R17" (at 163.83 318.2 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "10k" (at 163.83 342.2 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 163.83 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "R18")
+					(reference "R17")
 					(unit 1)
 				)
 			)
@@ -5188,14 +5686,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "106b1bc4-0993-51cf-baea-4f65dccf017f")
-		(property "Reference" "R19" (at 190.5 318.2 0) (effects (font (size 1.27 1.27))))
+		(uuid "a6321161-5da8-5a4b-b8f9-4feec7bcefc9")
+		(property "Reference" "R18" (at 190.5 318.2 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "10k" (at 190.5 342.2 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 190.5 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "R19")
+					(reference "R18")
 					(unit 1)
 				)
 			)
@@ -5209,14 +5707,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "7a0b3d4a-5efc-52c6-8f65-d731fd92fb15")
-		(property "Reference" "R20" (at 215.9 318.2 0) (effects (font (size 1.27 1.27))))
+		(uuid "106b1bc4-0993-51cf-baea-4f65dccf017f")
+		(property "Reference" "R19" (at 215.9 318.2 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "10k" (at 215.9 342.2 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 215.9 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "R20")
+					(reference "R19")
 					(unit 1)
 				)
 			)
@@ -5230,14 +5728,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f4b81e3b-6164-56b9-9e58-72bc73c6cb2b")
-		(property "Reference" "R21" (at 242.57 318.2 0) (effects (font (size 1.27 1.27))))
+		(uuid "7a0b3d4a-5efc-52c6-8f65-d731fd92fb15")
+		(property "Reference" "R20" (at 242.57 318.2 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "10k" (at 242.57 342.2 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 242.57 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "R21")
+					(reference "R20")
 					(unit 1)
 				)
 			)
@@ -5251,10 +5749,31 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3c0f43b9-5f82-5417-b449-7f2b6912961d")
-		(property "Reference" "R22" (at 267.97 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "1k" (at 267.97 342.2 0) (effects (font (size 1.27 1.27))))
+		(uuid "f4b81e3b-6164-56b9-9e58-72bc73c6cb2b")
+		(property "Reference" "R21" (at 267.97 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "10k" (at 267.97 342.2 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 267.97 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(instances
+			(project "morphcpu"
+				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
+					(reference "R21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 293.37 330.2 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3c0f43b9-5f82-5417-b449-7f2b6912961d")
+		(property "Reference" "R22" (at 293.37 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "1k" (at 293.37 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 293.37 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5266,41 +5785,20 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 293.37 330.2 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "98b9cefb-4601-530b-ac1f-de431f2a58de")
-		(property "Reference" "D17" (at 293.37 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "CDONE" (at 293.37 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "LED_SMD:LED_0603_1608Metric" (at 293.37 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(instances
-			(project "morphcpu"
-				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "D17")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
 		(at 320.04 330.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "920cac74-b57f-585c-bf10-d6f08f71a9e2")
-		(property "Reference" "R23" (at 320.04 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "5k1" (at 320.04 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 320.04 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(uuid "98b9cefb-4601-530b-ac1f-de431f2a58de")
+		(property "Reference" "D17" (at 320.04 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "KT-0603R" (at 320.04 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "LED_SMD:LED_0603_1608Metric" (at 320.04 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "R23")
+					(reference "D17")
 					(unit 1)
 				)
 			)
@@ -5314,10 +5812,31 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "445fb2be-d2c7-593c-915c-c85398f32c60")
-		(property "Reference" "R24" (at 345.44 318.2 0) (effects (font (size 1.27 1.27))))
+		(uuid "920cac74-b57f-585c-bf10-d6f08f71a9e2")
+		(property "Reference" "R23" (at 345.44 318.2 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "5k1" (at 345.44 342.2 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 345.44 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(instances
+			(project "morphcpu"
+				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
+					(reference "R23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 372.11 330.2 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "445fb2be-d2c7-593c-915c-c85398f32c60")
+		(property "Reference" "R24" (at 372.11 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "5k1" (at 372.11 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 372.11 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5329,16 +5848,16 @@
 	)
 	(symbol
 		(lib_id "Device:Polyfuse")
-		(at 372.11 330.2 0)
+		(at 397.51 330.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "7fb8562f-7c2f-52ce-aff4-7fced789abf9")
-		(property "Reference" "F1" (at 372.11 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "500mA" (at 372.11 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Fuse:Fuse_1206_3216Metric" (at 372.11 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Reference" "F1" (at 397.51 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "500mA" (at 397.51 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Fuse:Fuse_1206_3216Metric" (at 397.51 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5350,16 +5869,16 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 397.51 330.2 0)
+		(at 424.18 330.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "515ba478-9069-5e9b-bf02-6a097ea217f6")
-		(property "Reference" "R25" (at 397.51 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "100k" (at 397.51 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 397.51 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Reference" "R25" (at 424.18 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "100k" (at 424.18 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 424.18 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5371,41 +5890,20 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 424.18 330.2 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "d49f9b2c-4cf1-587c-9cd5-44f5fcc069d0")
-		(property "Reference" "C19" (at 424.18 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "100n" (at 424.18 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 424.18 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(instances
-			(project "morphcpu"
-				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C19")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
 		(at 449.58 330.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e71e2a41-b93e-5e5a-a92a-a6a9877c95a6")
-		(property "Reference" "R26" (at 449.58 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "10k" (at 449.58 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 449.58 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(uuid "d49f9b2c-4cf1-587c-9cd5-44f5fcc069d0")
+		(property "Reference" "C19" (at 449.58 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "100n" (at 449.58 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 449.58 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "R26")
+					(reference "C19")
 					(unit 1)
 				)
 			)
@@ -5419,10 +5917,31 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "83c0df80-38b2-56bf-8148-102ca5e95011")
-		(property "Reference" "R27" (at 476.25 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "100" (at 476.25 342.2 0) (effects (font (size 1.27 1.27))))
+		(uuid "e71e2a41-b93e-5e5a-a92a-a6a9877c95a6")
+		(property "Reference" "R26" (at 476.25 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "10k" (at 476.25 342.2 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 476.25 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(instances
+			(project "morphcpu"
+				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
+					(reference "R26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 501.65 330.2 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "83c0df80-38b2-56bf-8148-102ca5e95011")
+		(property "Reference" "R27" (at 501.65 318.2 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "100" (at 501.65 342.2 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 501.65 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5434,16 +5953,16 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 501.65 330.2 0)
+		(at 59.69 355.6 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "53f64c80-d8f0-5333-946a-99ec5b7f5345")
-		(property "Reference" "C20" (at 501.65 318.2 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "100n" (at 501.65 342.2 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 501.65 330.2 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Reference" "C20" (at 59.69 343.6 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "100n" (at 59.69 367.6 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 59.69 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5455,16 +5974,16 @@
 	)
 	(symbol
 		(lib_id "Device:FerriteBead")
-		(at 59.69 355.6 0)
+		(at 86.36 355.6 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "14142556-330a-50cc-9fb4-5b8356166190")
-		(property "Reference" "FB1" (at 59.69 343.6 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "600R@100M" (at 59.69 367.6 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 59.69 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Reference" "FB1" (at 86.36 343.6 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "600R@100M" (at 86.36 367.6 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 86.36 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5476,16 +5995,16 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 86.36 355.6 0)
+		(at 111.76 355.6 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "1e5e8f6d-11d5-58c8-992d-c43f27d9ad02")
-		(property "Reference" "C21" (at 86.36 343.6 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "100n" (at 86.36 367.6 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 86.36 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Reference" "C21" (at 111.76 343.6 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "100n" (at 111.76 367.6 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 111.76 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -5497,41 +6016,20 @@
 	)
 	(symbol
 		(lib_id "Device:FerriteBead")
-		(at 111.76 355.6 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "6c29b5a5-934d-598f-a914-a6af8e7f2211")
-		(property "Reference" "FB2" (at 111.76 343.6 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "600R@100M" (at 111.76 367.6 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 111.76 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(instances
-			(project "morphcpu"
-				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "FB2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
 		(at 138.43 355.6 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5def8e6f-986a-566d-94fb-b7e08c23165c")
-		(property "Reference" "C1" (at 138.43 343.6 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "100n" (at 138.43 367.6 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 138.43 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(uuid "6c29b5a5-934d-598f-a914-a6af8e7f2211")
+		(property "Reference" "FB2" (at 138.43 343.6 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "600R@100M" (at 138.43 367.6 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 138.43 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C1")
+					(reference "FB2")
 					(unit 1)
 				)
 			)
@@ -5545,14 +6043,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "bf9849b5-0ec4-5c49-bd72-9d4be03a0470")
-		(property "Reference" "C2" (at 163.83 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "5def8e6f-986a-566d-94fb-b7e08c23165c")
+		(property "Reference" "C1" (at 163.83 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 163.83 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 163.83 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C2")
+					(reference "C1")
 					(unit 1)
 				)
 			)
@@ -5566,14 +6064,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "872506ab-c9b3-5025-b8e7-f2ddecdda96d")
-		(property "Reference" "C3" (at 190.5 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "bf9849b5-0ec4-5c49-bd72-9d4be03a0470")
+		(property "Reference" "C2" (at 190.5 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 190.5 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 190.5 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C3")
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -5587,14 +6085,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4691bf30-9288-5b83-b8b3-64039ce9f1ae")
-		(property "Reference" "C4" (at 215.9 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "872506ab-c9b3-5025-b8e7-f2ddecdda96d")
+		(property "Reference" "C3" (at 215.9 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 215.9 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 215.9 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C4")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -5608,14 +6106,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c7d404c0-47b0-5c4a-bb63-11f699304252")
-		(property "Reference" "C5" (at 242.57 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "4691bf30-9288-5b83-b8b3-64039ce9f1ae")
+		(property "Reference" "C4" (at 242.57 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 242.57 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 242.57 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C5")
+					(reference "C4")
 					(unit 1)
 				)
 			)
@@ -5629,14 +6127,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "61b516b6-c8ee-5128-ba98-894c4e145f7a")
-		(property "Reference" "C6" (at 267.97 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "c7d404c0-47b0-5c4a-bb63-11f699304252")
+		(property "Reference" "C5" (at 267.97 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 267.97 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 267.97 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C6")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -5650,14 +6148,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "517894e8-5e45-521f-a560-0bdb26a608ff")
-		(property "Reference" "C7" (at 293.37 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "61b516b6-c8ee-5128-ba98-894c4e145f7a")
+		(property "Reference" "C6" (at 293.37 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 293.37 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 293.37 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C7")
+					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -5671,14 +6169,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c6f2147c-40bb-5150-8cca-3842db4f3082")
-		(property "Reference" "C8" (at 320.04 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "517894e8-5e45-521f-a560-0bdb26a608ff")
+		(property "Reference" "C7" (at 320.04 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 320.04 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 320.04 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C8")
+					(reference "C7")
 					(unit 1)
 				)
 			)
@@ -5692,14 +6190,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b32f7c45-a1f8-5399-af0d-8e82805a60f5")
-		(property "Reference" "C9" (at 345.44 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "c6f2147c-40bb-5150-8cca-3842db4f3082")
+		(property "Reference" "C8" (at 345.44 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "100n" (at 345.44 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 345.44 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C9")
+					(reference "C8")
 					(unit 1)
 				)
 			)
@@ -5713,14 +6211,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "709af407-21c6-58c3-86f2-a47fa3f43adf")
-		(property "Reference" "C10" (at 372.11 343.6 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "10u" (at 372.11 367.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "b32f7c45-a1f8-5399-af0d-8e82805a60f5")
+		(property "Reference" "C9" (at 372.11 343.6 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "100n" (at 372.11 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 372.11 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C10")
+					(reference "C9")
 					(unit 1)
 				)
 			)
@@ -5734,14 +6232,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "581c9ebd-6281-5481-b161-63de52893487")
-		(property "Reference" "C11" (at 397.51 343.6 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "4u7" (at 397.51 367.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "709af407-21c6-58c3-86f2-a47fa3f43adf")
+		(property "Reference" "C10" (at 397.51 343.6 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "10u" (at 397.51 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 397.51 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C11")
+					(reference "C10")
 					(unit 1)
 				)
 			)
@@ -5755,14 +6253,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c5c531fe-8295-5d87-82b8-d1918fc368e6")
-		(property "Reference" "C12" (at 424.18 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "581c9ebd-6281-5481-b161-63de52893487")
+		(property "Reference" "C11" (at 424.18 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "4u7" (at 424.18 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 424.18 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C12")
+					(reference "C11")
 					(unit 1)
 				)
 			)
@@ -5776,14 +6274,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e273e4ac-8ce1-582b-acba-41283c43d594")
-		(property "Reference" "C13" (at 449.58 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "c5c531fe-8295-5d87-82b8-d1918fc368e6")
+		(property "Reference" "C12" (at 449.58 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "4u7" (at 449.58 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 449.58 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C13")
+					(reference "C12")
 					(unit 1)
 				)
 			)
@@ -5797,14 +6295,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "209eb8a1-427d-5bb9-9d95-fd6349ea096b")
-		(property "Reference" "C14" (at 476.25 343.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "e273e4ac-8ce1-582b-acba-41283c43d594")
+		(property "Reference" "C13" (at 476.25 343.6 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "4u7" (at 476.25 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 476.25 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C14")
+					(reference "C13")
 					(unit 1)
 				)
 			)
@@ -5818,14 +6316,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "262dcdd3-7e19-59c5-b2b5-4d31091fbadc")
-		(property "Reference" "C15" (at 501.65 343.6 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "1u" (at 501.65 367.6 0) (effects (font (size 1.27 1.27))))
+		(uuid "209eb8a1-427d-5bb9-9d95-fd6349ea096b")
+		(property "Reference" "C14" (at 501.65 343.6 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "4u7" (at 501.65 367.6 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 501.65 355.6 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C15")
+					(reference "C14")
 					(unit 1)
 				)
 			)
@@ -5839,14 +6337,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "20b01e56-8ca3-5f00-ad7f-1fde75aaaae0")
-		(property "Reference" "C16" (at 59.69 370.27 0) (effects (font (size 1.27 1.27))))
+		(uuid "262dcdd3-7e19-59c5-b2b5-4d31091fbadc")
+		(property "Reference" "C15" (at 59.69 370.27 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "1u" (at 59.69 394.27 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 59.69 382.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C16")
+					(reference "C15")
 					(unit 1)
 				)
 			)
@@ -5860,14 +6358,14 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "23f77c2e-2afb-5c0b-8e7e-24624ba50f59")
-		(property "Reference" "C17" (at 86.36 370.27 0) (effects (font (size 1.27 1.27))))
+		(uuid "20b01e56-8ca3-5f00-ad7f-1fde75aaaae0")
+		(property "Reference" "C16" (at 86.36 370.27 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "1u" (at 86.36 394.27 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 86.36 382.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C17")
+					(reference "C16")
 					(unit 1)
 				)
 			)
@@ -5881,34 +6379,35 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ae2b678d-c45e-5598-ae59-0d972c63e7b5")
-		(property "Reference" "C18" (at 111.76 370.27 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "10u" (at 111.76 394.27 0) (effects (font (size 1.27 1.27))))
+		(uuid "23f77c2e-2afb-5c0b-8e7e-24624ba50f59")
+		(property "Reference" "C17" (at 111.76 370.27 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "1u" (at 111.76 394.27 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 111.76 382.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "C18")
+					(reference "C17")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "Device:C")
 		(at 138.43 382.27 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
+		(in_bom yes)
+		(on_board yes)
 		(dnp no)
-		(uuid "7ab6351f-8dc3-5460-99a0-d001b9eca9df")
-		(property "Reference" "#FLG1" (at 138.43 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Value" "PWR_FLAG" (at 138.43 394.27 0) (effects (font (size 1.27 1.27))))
+		(uuid "ae2b678d-c45e-5598-ae59-0d972c63e7b5")
+		(property "Reference" "C18" (at 138.43 370.27 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "10u" (at 138.43 394.27 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 138.43 382.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "#FLG1")
+					(reference "C18")
 					(unit 1)
 				)
 			)
@@ -5922,13 +6421,13 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "0a899a1c-2907-51b2-bdef-fb152a0bde6b")
-		(property "Reference" "#FLG2" (at 163.83 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(uuid "7ab6351f-8dc3-5460-99a0-d001b9eca9df")
+		(property "Reference" "#FLG1" (at 163.83 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "Value" "PWR_FLAG" (at 163.83 394.27 0) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "#FLG2")
+					(reference "#FLG1")
 					(unit 1)
 				)
 			)
@@ -5942,13 +6441,13 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "cbea0d0c-788d-576d-93cc-1e0e3a6b37a0")
-		(property "Reference" "#FLG3" (at 190.5 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(uuid "0a899a1c-2907-51b2-bdef-fb152a0bde6b")
+		(property "Reference" "#FLG2" (at 190.5 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "Value" "PWR_FLAG" (at 190.5 394.27 0) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "#FLG3")
+					(reference "#FLG2")
 					(unit 1)
 				)
 			)
@@ -5962,13 +6461,13 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "4b2b52d3-c9e4-5cd0-a1f9-e6b5e4204a34")
-		(property "Reference" "#FLG4" (at 215.9 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(uuid "cbea0d0c-788d-576d-93cc-1e0e3a6b37a0")
+		(property "Reference" "#FLG3" (at 215.9 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "Value" "PWR_FLAG" (at 215.9 394.27 0) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
-					(reference "#FLG4")
+					(reference "#FLG3")
 					(unit 1)
 				)
 			)
@@ -5982,9 +6481,29 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "79d1c26c-cd48-5f3a-8c2d-25f785690d8f")
-		(property "Reference" "#FLG5" (at 242.57 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(uuid "4b2b52d3-c9e4-5cd0-a1f9-e6b5e4204a34")
+		(property "Reference" "#FLG4" (at 242.57 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "Value" "PWR_FLAG" (at 242.57 394.27 0) (effects (font (size 1.27 1.27))))
+		(instances
+			(project "morphcpu"
+				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
+					(reference "#FLG4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 267.97 382.27 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "79d1c26c-cd48-5f3a-8c2d-25f785690d8f")
+		(property "Reference" "#FLG5" (at 267.97 370.27 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Value" "PWR_FLAG" (at 267.97 394.27 0) (effects (font (size 1.27 1.27))))
 		(instances
 			(project "morphcpu"
 				(path "/4f4089b1-5e9f-59da-b391-1535fd361b0d"
@@ -6216,13 +6735,13 @@
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "567c401e-fec8-5ff2-8584-52135910f309")
 	)
-	(global_label "USB_DP"
+	(global_label "USB_DP_F"
 		(shape bidirectional)
 		(at 266.7 54.61 180)
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "e1701ecc-fc91-5f34-9881-dc355b255aae")
 	)
-	(global_label "USB_DM"
+	(global_label "USB_DM_F"
 		(shape bidirectional)
 		(at 266.7 52.07 180)
 		(effects (font (size 1.27 1.27)) (justify right))
@@ -6492,6 +7011,42 @@
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "77377342-3167-552e-920a-8cb593315aab")
 	)
+	(global_label "USB_DM"
+		(shape bidirectional)
+		(at 106.68 330.2 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "7e43b638-5561-5f24-b0e3-38c70b5d9137")
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 111.76 337.82 270)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "e50cae85-b33a-5222-b322-83a326a550c4")
+	)
+	(global_label "USB_DP"
+		(shape bidirectional)
+		(at 106.68 332.74 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "87827ae6-f7c3-5c09-9fd1-670e35fb617c")
+	)
+	(global_label "USB_DP_F"
+		(shape bidirectional)
+		(at 116.84 332.74 0)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "95146315-278f-56ba-a8a7-0330ec3964b8")
+	)
+	(global_label "VBUS"
+		(shape bidirectional)
+		(at 111.76 325.12 90)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "bfbc33fb-4234-5e39-a6b9-ffd71ed5f7b4")
+	)
+	(global_label "USB_DM_F"
+		(shape bidirectional)
+		(at 116.84 330.2 0)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "936be09d-aa72-583e-8d2a-94656be54905")
+	)
 	(global_label "RST_N"
 		(shape bidirectional)
 		(at 394.97 175.26 180)
@@ -6506,13 +7061,13 @@
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 111.76 326.39 90)
+		(at 138.43 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "8e244c31-2a7d-52cb-b484-75bef0e4b0b3")
 	)
 	(global_label "RST_N"
 		(shape bidirectional)
-		(at 111.76 334.01 270)
+		(at 138.43 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "9d25f047-38ec-559b-8bd6-8f93bdae1b8f")
 	)
@@ -6902,463 +7457,463 @@
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 138.43 326.39 90)
+		(at 163.83 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "0dcd9400-dcdd-50b8-a837-0418f5e3f232")
 	)
 	(global_label "CRESET_B"
 		(shape bidirectional)
-		(at 138.43 334.01 270)
+		(at 163.83 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "7f554356-5b1f-52bf-9401-b26b0a51fc66")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 163.83 326.39 90)
+		(at 190.5 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "b774db83-4123-5046-8f13-61cfe1c63069")
 	)
 	(global_label "CDONE"
 		(shape bidirectional)
-		(at 163.83 334.01 270)
+		(at 190.5 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "53de0c51-fa9e-57b9-94d4-308d2e187b5a")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 190.5 326.39 90)
+		(at 215.9 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "2ad46f04-14da-5cf1-81a8-cc9fb2a41df0")
 	)
 	(global_label "FLASH_CS"
 		(shape bidirectional)
-		(at 190.5 334.01 270)
+		(at 215.9 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5ca60374-5537-52b4-9bfa-55433f48d39c")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 215.9 326.39 90)
+		(at 242.57 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "954e69f2-86a8-59a0-8c60-7c134e57c27e")
 	)
 	(global_label "FT_RESET"
 		(shape bidirectional)
-		(at 215.9 334.01 270)
+		(at 242.57 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "446bb185-eaca-5df3-a4fc-2749181dac47")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 242.57 326.39 90)
+		(at 267.97 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "827fc9bf-370b-5914-8669-e94cda77f3d6")
 	)
 	(global_label "XO_EN"
 		(shape bidirectional)
-		(at 242.57 334.01 270)
+		(at 267.97 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "d71e4247-1a4b-5505-b5a8-a502d502efc6")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 267.97 326.39 90)
+		(at 293.37 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "8cb07f87-123a-5209-a3bb-23014a9d4b86")
 	)
 	(global_label "CDONE_A"
 		(shape bidirectional)
-		(at 267.97 334.01 270)
+		(at 293.37 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "032bf8e6-2a70-580e-a343-20aa7fc23ccb")
 	)
 	(global_label "CDONE"
 		(shape bidirectional)
-		(at 289.56 330.2 180)
+		(at 316.23 330.2 180)
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "3323855f-89d4-5fb6-90eb-e5a5dec58445")
 	)
 	(global_label "CDONE_A"
 		(shape bidirectional)
-		(at 297.18 330.2 0)
+		(at 323.85 330.2 0)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "486c1d84-5835-570b-a669-3074304642b5")
 	)
 	(global_label "CC1"
 		(shape bidirectional)
-		(at 320.04 326.39 90)
+		(at 345.44 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "63ef51cf-9c12-533f-82fe-87437372aaee")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 320.04 334.01 270)
+		(at 345.44 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "52c90e4e-4ede-55b4-8fcd-f7cf8ad8a8b2")
 	)
 	(global_label "CC2"
 		(shape bidirectional)
-		(at 345.44 326.39 90)
+		(at 372.11 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "9c9e6dc5-f9e9-579e-8cff-e23902b469a5")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 345.44 334.01 270)
+		(at 372.11 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "aa9cc46f-f539-55b8-9bb3-3952f91d38e9")
 	)
 	(global_label "VBUS_IN"
 		(shape bidirectional)
-		(at 372.11 326.39 90)
+		(at 397.51 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "956168d4-5503-5938-a03d-ffbda2ed41d5")
 	)
 	(global_label "VBUS"
 		(shape bidirectional)
-		(at 372.11 334.01 270)
+		(at 397.51 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "27f3d2c3-bda4-55b4-9de5-e4626b4fd0fa")
 	)
 	(global_label "VBUS"
 		(shape bidirectional)
-		(at 397.51 326.39 90)
+		(at 424.18 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "dc000603-1f9c-575c-b520-e9014a2c8dfa")
 	)
 	(global_label "EN_3V3"
 		(shape bidirectional)
-		(at 397.51 334.01 270)
+		(at 424.18 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "3ed06591-bdae-5c3a-a1fc-e50eb4df6997")
 	)
 	(global_label "EN_3V3"
 		(shape bidirectional)
-		(at 424.18 326.39 90)
+		(at 449.58 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "2d213919-7683-57fc-9a28-94c9cb41ef21")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 424.18 334.01 270)
+		(at 449.58 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "4e150667-f62c-5439-965d-5a4e85358ef2")
 	)
 	(global_label "EN_3V3"
 		(shape bidirectional)
-		(at 449.58 326.39 90)
+		(at 476.25 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "298b7d86-1ba2-599a-809a-8014668d8193")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 449.58 334.01 270)
+		(at 476.25 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "2fa5dbcf-6abd-5bf0-aada-3207f0ffa52e")
 	)
 	(global_label "+1V2"
 		(shape bidirectional)
-		(at 476.25 326.39 90)
+		(at 501.65 326.39 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "289bf6d4-2121-5775-af04-4b625ace050c")
 	)
 	(global_label "VCCPLL_F"
 		(shape bidirectional)
-		(at 476.25 334.01 270)
+		(at 501.65 334.01 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "980f0d30-c5fa-5a10-b03d-8b0372f63d6f")
 	)
 	(global_label "VCCPLL_F"
 		(shape bidirectional)
-		(at 501.65 326.39 90)
+		(at 59.69 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "caff5bf1-08ce-5e31-af68-2fa94e1f6224")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 501.65 334.01 270)
+		(at 59.69 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "7abff340-d3a5-5a13-8269-02f7b97c5497")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 59.69 351.79 90)
+		(at 86.36 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "9b3a1453-df25-523f-91c1-23e50d7e32d6")
 	)
 	(global_label "VPP_2V5"
 		(shape bidirectional)
-		(at 59.69 359.41 270)
+		(at 86.36 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "4c9efd8a-80f1-5a83-9614-a1e8e4d8a778")
 	)
 	(global_label "VPP_2V5"
 		(shape bidirectional)
-		(at 86.36 351.79 90)
+		(at 111.76 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "be3db676-c2f9-5aad-9caa-3ab93e1c6dca")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 86.36 359.41 270)
+		(at 111.76 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "c3a31db7-c10c-5883-9387-bd6dc6e07f06")
 	)
 	(global_label "VBUS"
 		(shape bidirectional)
-		(at 111.76 351.79 90)
+		(at 138.43 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "f9f4f3a5-1508-530a-8527-544e281d344f")
 	)
 	(global_label "FT_VCC"
 		(shape bidirectional)
-		(at 111.76 359.41 270)
+		(at 138.43 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "4415f09b-c606-5dbf-9940-8c95c6a88947")
 	)
 	(global_label "+1V2"
 		(shape bidirectional)
-		(at 138.43 351.79 90)
+		(at 163.83 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "da34b5d1-2ce5-54aa-8b9a-5702866506d2")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 138.43 359.41 270)
+		(at 163.83 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "157a764c-1d55-50e0-b651-0da917f69856")
 	)
 	(global_label "+1V2"
 		(shape bidirectional)
-		(at 163.83 351.79 90)
+		(at 190.5 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "cae67ed0-9f84-5337-bac7-5419e25e2d6b")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 163.83 359.41 270)
+		(at 190.5 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "7ccd34a8-e9d7-5e5e-9b7a-c5cfa011f733")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 190.5 351.79 90)
+		(at 215.9 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "6091ba33-76f5-5d5f-87eb-8c569cdb4c71")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 190.5 359.41 270)
+		(at 215.9 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "c36d139a-e48c-5e73-9100-7a75977afc88")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 215.9 351.79 90)
+		(at 242.57 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "57eefa41-c21d-5514-81fc-ddb1ccc9b532")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 215.9 359.41 270)
+		(at 242.57 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "da041485-f4de-530b-9268-4972495a5e78")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 242.57 351.79 90)
+		(at 267.97 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "03b9281a-6128-5a86-a431-21b39ae8ca92")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 242.57 359.41 270)
+		(at 267.97 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "40a3f56e-a157-505a-bece-e87a8b398fda")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 267.97 351.79 90)
+		(at 293.37 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "f18e7476-67dc-5c77-80f9-a5b99c7e1b7d")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 267.97 359.41 270)
+		(at 293.37 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "3cf2b685-6e74-5014-bac2-880220541bd5")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 293.37 351.79 90)
+		(at 320.04 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "12315cb4-a137-5766-af26-ff1743f4f28b")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 293.37 359.41 270)
+		(at 320.04 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5437633e-42c3-5b75-b19a-50595877d2fb")
 	)
 	(global_label "FT_VCC"
 		(shape bidirectional)
-		(at 320.04 351.79 90)
+		(at 345.44 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "27527e59-e932-53aa-99d3-33eed21766ee")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 320.04 359.41 270)
+		(at 345.44 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "b3378d15-2296-5b5d-ac93-8bd46da68b01")
 	)
 	(global_label "FT_3V3"
 		(shape bidirectional)
-		(at 345.44 351.79 90)
+		(at 372.11 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "8625b957-6398-5b78-97fa-5778cdcc78b5")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 345.44 359.41 270)
+		(at 372.11 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "e2e3b852-a420-5482-ae96-ff135d99c0f2")
 	)
 	(global_label "+1V2"
 		(shape bidirectional)
-		(at 372.11 351.79 90)
+		(at 397.51 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "961e5bab-e218-5b6d-8ae7-06dd3a1275e0")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 372.11 359.41 270)
+		(at 397.51 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "cc076179-bc14-5bb1-a920-639048edc09a")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 397.51 351.79 90)
+		(at 424.18 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "e6b61392-1ef5-5584-aca3-20eee911f741")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 397.51 359.41 270)
+		(at 424.18 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "f60b92d1-0b0c-56e5-8aad-3c3c250e9d6a")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 424.18 351.79 90)
+		(at 449.58 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "248d9fa9-1b83-52f2-aa22-0a8fee18ebe8")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 424.18 359.41 270)
+		(at 449.58 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "67bed850-db1a-52dd-9a83-2a2d4c93b9ce")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 449.58 351.79 90)
+		(at 476.25 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "a07469fc-741c-588b-a558-42b8919889d4")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 449.58 359.41 270)
+		(at 476.25 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "84343cae-547e-5b89-a963-a3710fbaf8eb")
 	)
 	(global_label "FT_3V3"
 		(shape bidirectional)
-		(at 476.25 351.79 90)
+		(at 501.65 351.79 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5aa426c9-2378-5db5-82d1-8a3ac8356db6")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 476.25 359.41 270)
+		(at 501.65 359.41 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "de16702f-e8db-556c-9bba-8b44407d4506")
 	)
 	(global_label "VBUS"
 		(shape bidirectional)
-		(at 501.65 351.79 90)
+		(at 59.69 378.46 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "9a78914a-b280-55a9-b164-9eadd8f713e5")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 501.65 359.41 270)
+		(at 59.69 386.08 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "1dba1b7c-6c22-56a2-a4b0-2a0505aa480f")
 	)
 	(global_label "+3V3"
 		(shape bidirectional)
-		(at 59.69 378.46 90)
+		(at 86.36 378.46 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "49f369da-bab5-5bd5-b6ee-206feaeb0968")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 59.69 386.08 270)
+		(at 86.36 386.08 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "0347829f-be04-5193-99fe-ea02b6d68eb4")
 	)
 	(global_label "VBUS"
 		(shape bidirectional)
-		(at 86.36 378.46 90)
+		(at 111.76 378.46 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5ea312f5-a146-5984-8542-255ffdab46c2")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 86.36 386.08 270)
+		(at 111.76 386.08 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "93a5e7f9-9f8e-50ef-b1a0-c1625d372827")
 	)
 	(global_label "+1V2"
 		(shape bidirectional)
-		(at 111.76 378.46 90)
+		(at 138.43 378.46 90)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "a7f04840-8440-5fea-9cc5-5eb06456620c")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 111.76 386.08 270)
+		(at 138.43 386.08 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "7fe95467-7194-57ee-995f-b2bee628d3e1")
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 138.43 382.27 270)
+		(at 163.83 382.27 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "9398828e-82b0-527c-9bcd-03b172586e4e")
 	)
 	(global_label "VBUS_IN"
 		(shape bidirectional)
-		(at 163.83 382.27 270)
+		(at 190.5 382.27 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "c4c68332-e768-59d5-a0f6-fa59f9687935")
 	)
 	(global_label "VBUS"
 		(shape bidirectional)
-		(at 190.5 382.27 270)
+		(at 215.9 382.27 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "a300f590-9b58-58c7-a1ea-1ed805284e31")
 	)
 	(global_label "VPP_2V5"
 		(shape bidirectional)
-		(at 215.9 382.27 270)
+		(at 242.57 382.27 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "a418be34-8cc4-5743-b7f7-c77e6c323aa8")
 	)
 	(global_label "FT_VCC"
 		(shape bidirectional)
-		(at 242.57 382.27 270)
+		(at 267.97 382.27 270)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5239e24e-f033-5f2c-b1cd-e71acd0b13d6")
 	)

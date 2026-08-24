@@ -36,9 +36,11 @@ PROJECT = "morphcpu"
 # Layers JLC needs. Silkscreen and mask both sides, copper both sides, outline.
 GERBER_LAYERS = "F.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts"
 
-# Value -> LCSC part number, transcribed from docs/BOM.md.
-# Only the eight rows BOM.md has actually priced appear here.
+# Value -> LCSC part number, transcribed from docs/BOM.md. Every row the
+# schematic produces is pinned; if this map ever goes stale the run reports the
+# gap on stderr rather than shipping a blank field.
 LCSC_BY_VALUE = {
+    # Actives
     "ICE40UP5K-SG48I": "C2678152",
     "FT231XS-R": "C132160",
     "W25Q32JVSSIQ": "C179173",
@@ -47,6 +49,21 @@ LCSC_BY_VALUE = {
     "ME6211C33M5G-N": "C82942",
     "ME6211C12M5G-N": "C236672",
     "KT-0603R": "C2286",
+    "USBLC6-2SC6": "C7519",
+    # Passives and electromechanical
+    "TS-1187A-B-A-B": "C318884",
+    "100n": "C1525",
+    "1u": "C52923",
+    "4u7": "C23733",
+    "10u": "C15525",
+    "100": "C25076",
+    "270": "C163474",
+    "1k": "C11702",
+    "5k1": "C25905",
+    "10k": "C25744",
+    "100k": "C25741",
+    "500mA": "C883122",
+    "600R@100M": "C136491",
 }
 
 

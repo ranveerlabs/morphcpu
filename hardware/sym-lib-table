@@ -9,4 +9,5 @@
   (lib (name "Switch")(type "KiCad")(uri "${KICAD10_SYMBOL_DIR}/Switch.kicad_sym")(options "")(descr ""))
   (lib (name "power")(type "KiCad")(uri "${KICAD10_SYMBOL_DIR}/power.kicad_sym")(options "")(descr ""))
   (lib (name "FPGA_Lattice")(type "KiCad")(uri "${KICAD10_SYMBOL_DIR}/FPGA_Lattice.kicad_sym")(options "")(descr ""))
+  (lib (name "Power_Protection")(type "KiCad")(uri "${KICAD10_SYMBOL_DIR}/Power_Protection.kicad_sym")(options "")(descr ""))
 )

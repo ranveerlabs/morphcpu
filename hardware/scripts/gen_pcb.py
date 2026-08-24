@@ -151,6 +151,13 @@ for k, i in enumerate(_by_angle):
 # East - USB-C at the edge, bridge directly behind it.
 PLACEMENT["J1"] = (30.0, 0, 90, BACK)
 PLACEMENT["U2"] = (20.0, 0, 0, BACK)
+# ESD array, as close to J1's D+/D- pads as the first-pass placement allows.
+# The direct line between U2 and J1 is a 1.2 mm gap - too narrow for SOT-23-6 -
+# and the front face is the LED display, so the part tucks in beside the
+# connector instead. Roughly 5 mm of stub; if routing proves that too long,
+# the fix is to shift U2 west and reopen the centre channel, not to move the
+# clamp further away.
+PLACEMENT["U6"] = (29.5, 8.0, 0, BACK)
 PLACEMENT["C8"] = (20.0, -7.0, 0, BACK)
 PLACEMENT["R20"] = (20.0, 7.0, 0, BACK)
 PLACEMENT["FB2"] = (25.5, -7.0, 0, BACK)

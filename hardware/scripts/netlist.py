@@ -86,7 +86,7 @@ add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3],
 # ---------------------------------------------------------------------------
 add("U2", "Interface_USB", "FT231XS", "FT231XS-R",
     "Package_SO:SSOP-20_3.9x8.7mm_P0.635mm",
-    {15: FT_VCC, 13: FT3V3, 3: FT3V3, 11: "USB_DP", 12: "USB_DM",
+    {15: FT_VCC, 13: FT3V3, 3: FT3V3, 11: "USB_DP_F", 12: "USB_DM_F",
      20: "UART_RX_I", 4: "UART_TX_O", 14: "FT_RESET",
      6: GND, 16: GND},
     nc=[1, 2, 5, 7, 8, 9, 10, 17, 18, 19])
@@ -136,10 +136,27 @@ add("J1", "Connector", "USB_C_Receptacle_USB2.0_16P", "TYPE-C-31-M-12",
     nc=["A8", "B8"])
 
 # ---------------------------------------------------------------------------
+# U6 - USBLC6-2SC6 ESD array, in the D+/D- path between J1 and U2
+# ---------------------------------------------------------------------------
+# Pins 1/6 are the two ends of one protected line and 3/4 the other; the pair
+# is shorted inside the package. Giving each end its own net name is what makes
+# the trace route *through* the part instead of stubbing off it, so the clamp
+# sits between the connector and the bridge where it can do its job. Place it
+# hard against J1 - protection downstream of a long trace protects nothing.
+add("U6", "Power_Protection", "USBLC6-2SC6", "USBLC6-2SC6",
+    "Package_TO_SOT_SMD:SOT-23-6",
+    {1: "USB_DM", 2: GND, 3: "USB_DP", 4: "USB_DP_F", 5: VBUS,
+     6: "USB_DM_F"})
+
+# ---------------------------------------------------------------------------
 # Reset button - to a user I/O, not CRESET_B
 # ---------------------------------------------------------------------------
-add("SW1", "Switch", "SW_Push", "RESET",
-    "Button_Switch_SMD:SW_SPST_TL3342", {1: "RST_N", 2: GND})
+# Footprint follows the part: the TL3342 land pattern is 6.3 x 3.8 mm pad
+# pitch, the XKB TS-1187A that JLC stocks as a Basic part is 6.0 x 3.75 mm.
+# Close enough to look fine on screen and not close enough to solder reliably,
+# so use the land pattern KiCad ships for the part actually being fitted.
+add("SW1", "Switch", "SW_Push", "TS-1187A-B-A-B",
+    "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A", {1: "RST_N", 2: GND})
 add("R28", "Device", "R", "10k", FP_R, {1: P3V3, 2: "RST_N"})
 
 # ---------------------------------------------------------------------------
@@ -163,7 +180,9 @@ add("R21", "Device", "R", "10k", FP_R, {1: P3V3, 2: "XO_EN"})
 
 # CDONE indicator - lit means the FPGA configured
 add("R22", "Device", "R", "1k", FP_R, {1: P3V3, 2: "CDONE_A"})
-add("D17", "Device", "LED", "CDONE", FP_LED, {1: "CDONE", 2: "CDONE_A"})
+# Same physical LED as the grid - the value field carries the part, not the
+# function, so this row groups with D1-D16 in the BOM instead of splitting off.
+add("D17", "Device", "LED", "KT-0603R", FP_LED, {1: "CDONE", 2: "CDONE_A"})
 
 # ---------------------------------------------------------------------------
 # USB-C CC pull-downs.  Two separate 5.1k, never shared.

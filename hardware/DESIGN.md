@@ -341,8 +341,8 @@ swap is an improvement on two counts. Cost is about $1.50/unit more.
 | VCC | VBUS (5 V) | Via ferrite from VBUS |
 | 3V3OUT | FT_3V3 | Internal LDO output — 100 nF + 4.7 µF, do not load externally |
 | VCCIO | FT_3V3 | Sets UART levels to 3.3 V |
-| USBDP | USB_DP | |
-| USBDM | USB_DM | |
+| USBDP | USB_DP_F | Downstream side of the ESD array, see below |
+| USBDM | USB_DM_F | Downstream side of the ESD array, see below |
 | TXD | FPGA pin 6 (UART_RX_I) | Bridge transmits, FPGA receives |
 | RXD | FPGA pin 9 (UART_TX_O) | |
 | RESET# | 10 kΩ to VCC | |
@@ -365,6 +365,36 @@ Direction is the classic trap: **TXD on the bridge goes to the FPGA's RX.**
 
 Two independent 5.1 kΩ resistors. Sharing one, or using 10 kΩ, means some hosts
 and chargers will not deliver power at all.
+
+### ESD protection — USBLC6-2SC6 ([C7519](https://www.lcsc.com/product-detail/C7519.html)), SOT-23-6
+
+U6, between the receptacle and the bridge. A USB-C port is the only part of
+this board a person touches while it is live, and the FT231X data pins are the
+only thing behind it.
+
+| U6 pin | Name | Net | Notes |
+|---|---|---|---|
+| 1 | I/O1 | USB_DM | From J1 A7/B7 |
+| 2 | GND | GND | |
+| 3 | I/O2 | USB_DP | From J1 A6/B6 |
+| 4 | I/O2 | USB_DP_F | To FT231X USBDP |
+| 5 | VBUS | VBUS | Clamps the 5 V rail too |
+| 6 | I/O1 | USB_DM_F | To FT231X USBDM |
+
+Pins 1/6 are the two ends of one protected line and 3/4 the other; each pair is
+shorted inside the package. Giving each end its own net name is deliberate — it
+makes the trace route **through** the part rather than stubbing off it, so the
+clamp is genuinely in the path.
+
+3.5 pF max line capacitance, which is irrelevant at full speed and would still
+be fine at high speed. IEC 61000-4-2 level 4.
+
+**Placement is the whole point.** U6 sits beside J1 on the back, about 5 mm from
+the connector's D+/D− pads — protection placed downstream of a long trace
+protects the trace, not the bridge. The direct line between U2 and J1 is a
+1.2 mm gap, too narrow for SOT-23-6, and the front face is the LED display, so
+5 mm is what the current placement allows. If routing shows that is too long,
+shift U2 west and reopen the centre channel; do not move the clamp further out.
 
 ### SPI configuration flash — W25Q32JVSSIQ ([C179173](https://www.lcsc.com/product-detail/C179173.html))
 
@@ -469,7 +499,8 @@ The LED grid owns the centre of the **front** face. Everything else is on the
 The diagonals are kept clear from r=22 to r=26 for the mounting holes.
 
 Outer parts group by function: **east** is USB-C with the FT231X directly
-behind it, **west** is the configuration flash and the oscillator (both close
+behind it and the USBLC6 ESD array tucked beside the connector, **west** is the
+configuration flash and the oscillator (both close
 to the FPGA, which matters for the SPI and clock nets), **north** is the 3.3 V
 regulator with its enable RC, **south** is the 1.2 V regulator.
 
@@ -501,6 +532,25 @@ Pour ground on both layers, stitch it, leave no isolated islands.
 | ME6211C12M5G-N | C236672 | Basic | 28,080 |
 | KT-0603R | C2286 | Basic | 3,752,200 |
 | 1532H4-16000JWPDTSNL | C5383161 | Extended | 147 |
+| USBLC6-2SC6 | C7519 | Extended (inferred) | 35,370 |
+| TS-1187A-B-A-B | C318884 | **Basic** (confirmed) | 792,020 |
+| CL05B104KO5NNNC 100 nF | C1525 | **Basic** (confirmed) | 8,423,900 |
+| CL05A105KA5NQNC 1 µF | C52923 | **Basic** (confirmed) | 5,345,900 |
+| CL05A475MP5NRNC 4.7 µF | C23733 | **Basic** (confirmed) | 1,132,850 |
+| CL05A106MQ5NUNC 10 µF | C15525 | **Basic** (confirmed) | 5,949,500 |
+| 0402WGF1000TCE 100 Ω | C25076 | **Basic** (confirmed) | 329,500 |
+| RC0402FR-07270RL 270 Ω | C163474 | Extended (confirmed) | 281,900 |
+| 0402WGF1001TCE 1 kΩ | C11702 | **Basic** (confirmed) | 4,014,300 |
+| 0402WGF5101TCE 5.1 kΩ | C25905 | **Basic** (confirmed) | 6,365,200 |
+| 0402WGF1002TCE 10 kΩ | C25744 | **Basic** (confirmed) | 7,032,300 |
+| 0402WGF1003TCE 100 kΩ | C25741 | **Basic** (confirmed) | 8,524,800 |
+| BSMD1206-050-6V polyfuse | C883122 | Extended (confirmed) | 36,710 |
+| MMZ1608Y601BTA00 ferrite | C136491 | Extended (inferred) | 11,200 |
+
+Rows below the oscillator were pinned on **23 Aug 2026**; stock figures for them
+are from that date. "Inferred" means the part appears in neither JLC's Basic
+category listings nor a published Basic-parts export — likely Extended, but not
+quoted. Confirm in the PCBA quote.
 
 Both regulators are **Basic** parts, so replacing AMS1117-3.3 with ME6211C33M5G-N
 costs nothing in extended-part fees and actually removes one (AMS1117 was Basic
@@ -508,8 +558,11 @@ too, so this is neutral — but the ME6211 pair share a footprint, which helps
 placement).
 
 1. **Extended parts carry a per-part setup fee**, charged once per distinct
-   extended part per order. Five parts here are Extended. On a 5-unit run this
-   is the dominant cost.
+   extended part per order. Between **7 and 9** parts here are Extended,
+   depending on how C7519 and C136491 resolve. On a 5-unit run this is the
+   dominant cost. Nine of the ten passive values were deliberately pinned to
+   Basic parts to keep them off this list; 270 Ω 0402 has no Basic option at
+   JLC and is the one that could not be.
 2. **Check every footprint against JLCPCB's own land pattern**, not the generic
    KiCad library. The USB-C receptacle and the QFN-48 paddle are where
    mismatches bite.
@@ -567,13 +620,13 @@ and no further.
 
 ### State of the board file
 
-`morphcpu.kicad_pcb`: 79 footprints, 90 nets, **0 tracks**.
+`morphcpu.kicad_pcb`: 80 footprints, 92 nets, **0 tracks**.
 
 DRC, `kicad-cli 10.0.5 --severity-all`:
 
 | Category | Count | Note |
 |---|---|---|
-| `unconnected_items` | 163 | Expected - nothing is routed yet |
+| `unconnected_items` | 167 | Expected - nothing is routed yet |
 | `silk_overlap` | 2 | Cosmetic reference text, moves when you adjust parts |
 | `silk_over_copper` | 1 | Cosmetic |
 | courtyard overlaps | **0** | |
