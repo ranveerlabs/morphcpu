@@ -9,6 +9,8 @@ authority and regenerating is cheap.
 | [netlist.py](netlist.py) | The netlist, transcribed from [../DESIGN.md](../DESIGN.md). Every connection here maps to a row in a DESIGN.md table |
 | [ksym.py](ksym.py) | Small KiCad s-expression reader/writer and symbol-pin extractor |
 | [gen_schematic.py](gen_schematic.py) | Emits `../morphcpu.kicad_sch` |
+| [gen_pcb.py](gen_pcb.py) | Emits `../morphcpu.kicad_pcb` — outline + placement, no routing |
+| [gen_fab.py](gen_fab.py) | Emits `../fab_output/` — Gerbers, drill, JLC BOM and CPL, gerber zip |
 
 ## Running
 
@@ -26,6 +28,28 @@ CLI="/c/Users/ranve/AppData/Local/Programs/KiCad/10.0/bin/kicad-cli.exe"
 "$CLI" sch erc --output erc.rpt --severity-all --exit-code-violations hardware/morphcpu.kicad_sch
 "$CLI" sch export netlist --output morphcpu.net hardware/morphcpu.kicad_sch
 ```
+
+## Fabrication output
+
+```sh
+"$KP" hardware/scripts/gen_fab.py
+```
+
+Writes `../fab_output/`: `morphcpu-gerbers.zip` (the file JLC's uploader wants),
+`morphcpu-bom.csv`, `morphcpu-cpl.csv`, and a `gerbers/` directory holding the
+loose plots. Per [../../.gitignore](../../.gitignore) the loose plots are not
+tracked — the zip and the two CSVs are, and the loose files regenerate.
+
+The LCSC column is filled from a table in `gen_fab.py` transcribed from
+[../../docs/BOM.md](../../docs/BOM.md). Rows BOM.md has not pinned to an LCSC
+number get an **empty** LCSC field, never a guess, and the script lists them on
+stderr when it finishes.
+
+Gerbers, drill and CPL are all plotted in **absolute** coordinates. The board
+sets no aux axis origin, so the drill/place origin and the page origin coincide
+and all three files share one coordinate system. If an aux origin is ever added
+to the board, every one of those three exports has to switch to
+`--use-drill-file-origin` together, or the CPL will be offset from the copper.
 
 ## Why global labels instead of drawn wires
 

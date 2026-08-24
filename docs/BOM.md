@@ -85,7 +85,7 @@ the **Complex ($210)** tier.
 
 | Item | Notes |
 |---|---|
-| PCB fabrication | 5 × round 2-layer 60 mm boards. Cheap; a round outline is a routed profile, not a premium |
+| PCB fabrication | 5 × round 2-layer 70 mm boards. Cheap; a round outline is a routed profile, not a premium |
 | SMT assembly setup | Charged per order |
 | **Extended-part setup fees** | Charged **per distinct extended part**. Five parts here are Extended (FPGA, FT231X, flash, USB-C, oscillator). Fixed cost, so across 5 boards it lands hard per unit |
 | Stencil | Usually included with assembly |
