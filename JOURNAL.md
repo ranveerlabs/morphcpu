@@ -149,6 +149,14 @@ tiny session and mostly bookkeeping but giving it its own entry cause it changes
 what the readme is allowed to contain from here on. thats exactly the kind of
 thing you forget three sessions later and then undo by accident
 
+**screenshots**
+
+![the image the readme leads with](docs/img/pcb-placement-front.png)
+*this session only edited text so theres no artifact of its own. this is the
+image the readme leads with, which is the point tbh, embeds and tables and part
+numbers are exactly the stuff the rules do allow. the prose around it is what
+had to come out*
+
 **next session**
 - [ ] write the readme prose by hand
 - [ ] figure out if the rule covers the other docs too
@@ -433,6 +441,15 @@ initialised the repo, folder structure, readme skeleton, this journal, ignore
 file. nothing interesting tbh. but starting the journal at 001 instead of
 backfilling it later is lowk the only reason the rest of these entries have any
 real detail in them
+
+**screenshots**
+
+![the finished board render, standing in for a session that made empty folders](docs/img/pcb-3d.png)
+*being straight w you, this session produced empty directories and a gitignore.
+theres nothing to photograph. so this is the board six sessions later, ie what
+those folders ended up holding. gateware/ hardware/ case/ docs/ were all decided
+here and none of them moved after, which is the only reason this entry is worth
+keeping at all*
 
 **next session**
 - [ ] define the cell opcode + routing direction encoding
