@@ -1,9 +1,9 @@
 # morphcpu build journal
 
-**Total time: 1h 47m**
+**Total time: 4h 32m**
 
 build log. spatially-reconfigurable processor on a small low power fpga. due
-**31 aug 2026**. seven sessions 1h 47m of actual keyboard time
+**31 aug 2026**. seven sessions 4h 32m of actual keyboard time
 
 most of that went on two things and neither was the fun part. reading the power
 up sequence properly and finding out the hard way that 60mm of board is nowhere
@@ -19,20 +19,20 @@ next and its lowk the only thing between here and ordering*
 
 | # | date | time | focus |
 |---|---|---|---|
-| 001 | 2026-08-18 | 6m | repo + scaffolding |
-| 002 | 2026-08-18 | 21m | fabric rtl + fabric testbench |
-| 003 | 2026-08-18 | 18m | end to end uart testbench, build flow, constraints |
-| 004 | 2026-08-18 | 14m | case, parametric cad |
-| 005 | 2026-08-18 | 24m | electrical design spec + bom |
-| 006 | 2026-08-18 | 5m | readme restructure |
-| 007 | 2026-08-22 | 19m | datasheet items closed, schematic, pcb placement |
+| 001 | 2026-08-18 | 12m | repo + scaffolding |
+| 002 | 2026-08-18 | 48m | fabric rtl + fabric testbench |
+| 003 | 2026-08-18 | 41m | end to end uart testbench, build flow, constraints |
+| 004 | 2026-08-18 | 32m | case, parametric cad |
+| 005 | 2026-08-18 | 45m | electrical design spec + bom |
+| 006 | 2026-08-18 | 8m | readme restructure |
+| 007 | 2026-08-22 | 1h 26m | datasheet items closed, schematic, pcb placement |
 
 ---
 
 ## session 007 - 2026-08-22
 
-**Time spent:** 19m
-**Running total:** 1h 47m
+**Time spent:** 1h 26m
+**Running total:** 4h 32m
 **Focus:** closing the eight blocking datasheet items, schematic, pcb placement
 
 **what i did**
@@ -135,8 +135,8 @@ and the whole demo lies to you*
 
 ## session 006 - 2026-08-18
 
-**Time spent:** 5m
-**Running total:** 1h 28m
+**Time spent:** 8m
+**Running total:** 3h 6m
 **Focus:** readme restructure for the no-ai-prose rule
 
 **what i did**
@@ -165,8 +165,8 @@ had to come out*
 
 ## session 005 - 2026-08-18
 
-**Time spent:** 24m
-**Running total:** 1h 23m
+**Time spent:** 45m
+**Running total:** 2h 58m
 **Focus:** electrical design spec and costed bom
 
 **what i did**
@@ -252,8 +252,8 @@ ended up. easier to check a parts list against a picture than against a netlist*
 
 ## session 004 - 2026-08-18
 
-**Time spent:** 14m
-**Running total:** 59m
+**Time spent:** 32m
+**Running total:** 2h 13m
 **Focus:** case, parametric cad
 
 **what i did**
@@ -310,8 +310,8 @@ lid no light pipe cause the grid is meant to be looked at directly*
 
 ## session 003 - 2026-08-18
 
-**Time spent:** 18m
-**Running total:** 45m
+**Time spent:** 41m
+**Running total:** 1h 41m
 **Focus:** end to end uart testbench, build flow, pin constraints
 
 **what i did**
@@ -368,8 +368,8 @@ out thru 5 6 7*
 
 ## session 002 - 2026-08-18
 
-**Time spent:** 21m
-**Running total:** 27m
+**Time spent:** 48m
+**Running total:** 1h 0m
 **Focus:** fabric rtl and fabric testbench
 
 **what i did**
@@ -431,8 +431,8 @@ to spot a routing bug, a value going the wrong way slopes the wrong direction*
 
 ## session 001 - 2026-08-18
 
-**Time spent:** 6m
-**Running total:** 6m
+**Time spent:** 12m
+**Running total:** 12m
 **Focus:** repo and scaffolding
 
 **what i did**
