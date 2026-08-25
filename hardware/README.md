@@ -2,13 +2,13 @@
 
 KiCad project for the MorphCPU board.
 
-## what's here
+## whats here
 
 | Path | What it is |
 |---|---|
 | [DESIGN.md](DESIGN.md) | the electrical spec. power tree, every net, decoupling, PCB brief, JLC notes. read this first |
 | [ROUTING.md](ROUTING.md) | net classes, JLC DRC rules, what to route in what order, post-routing checklist. read this second |
-| `morphcpu.kicad_dru` | the JLC rules Board Setup can't express. via drill floor, split hole-to-hole, PTH-to-track |
+| `morphcpu.kicad_dru` | the JLC rules Board Setup cant express. via drill floor, split hole-to-hole, PTH-to-track |
 | `morphcpu.kicad_sch` | schematic, generated. ERC clean, 0 errors 0 warnings |
 | `morphcpu.kicad_pcb` | board. 80 footprints, 92 nets, **0 tracks** |
 | [scripts/](scripts/) | the generators. schematic and placement both come from source, not hand-drawing |
@@ -27,8 +27,8 @@ quote only reads size, layer count and placement. it is **not** orderable. route
 it first.
 
 why no routing: KiCad has no autorouter, and emitting trace coordinates without
-looking at the board produces a file that looks finished and isn't. on a $210
-budget that's the worst possible outcome. see
+looking at the board produces a file that looks finished and isnt. on a $210
+budget thats the worst possible outcome. see
 [What is not here](DESIGN.md#what-is-not-here).
 
 ## board summary
@@ -50,7 +50,7 @@ radius) at 45/135/225/315 deg. those numbers are shared with
 [../case/morphcpu_case.scad](../case/morphcpu_case.scad) and have to stay in
 step with it.
 
-it was 60 mm and didn't fit. 79 footprints with a QFN-48, an SSOP-20, a SOIC-8
+it was 60 mm and didnt fit. 79 footprints with a QFN-48, an SSOP-20, a SOIC-8
 and an edge-mounted USB-C left nothing between the LED resistor ring and the
 outer parts, and DRC only cleared if you stacked parts over the mounting holes.
 70 mm clears with margin. the case is parametric so following the change was two
@@ -65,7 +65,7 @@ worth knowing before you touch anything here:
 2. **1.2 V has to come up before 3.3 V.** the obvious cascade 5V -> 3V3 -> 1V2
    is exactly backwards per the datasheet power-up sequence. both regulators run
    off 5 V in parallel and the 3.3 V one is held off by an RC on its enable.
-   that's why the 3.3 V part must have an enable pin, and why AMS1117 is out.
+   thats why the 3.3 V part must have an enable pin, and why AMS1117 is out.
 3. **the clock is an active oscillator module, not a bare crystal.** the iCE40
    has no crystal amplifier and the SG48 pinout has no XIN/XOUT pair.
 
@@ -74,11 +74,11 @@ all three are written up properly with citations in [DESIGN.md](DESIGN.md).
 ## regenerating
 
 everything here is generated. see [scripts/](scripts/) for how to run them.
-don't hand-edit the .kicad_sch or the placement, you'll lose it on the next
-regen. hand routing is the exception, that lives in the .kicad_pcb and there's
+dont hand-edit the .kicad_sch or the placement, youll lose it on the next
+regen. hand routing is the exception, that lives in the .kicad_pcb and theres
 no generator that will overwrite it.
 
-## what's tracked
+## whats tracked
 
 tracked: `*.kicad_pro`, `*.kicad_sch`, `*.kicad_pcb`, `*.kicad_sym`,
 `*.kicad_mod`, `*.kicad_dru`, the fab zip and the two CSVs. ignored: backups,

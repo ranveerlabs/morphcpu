@@ -12,7 +12,7 @@ the machine-readable BOM and placement files live in
 `gen_fab.py` generates them alongside the gerbers and they have to stay in step
 with the board.
 
-datasheet PDFs can go here if they're small. otherwise just link them with the
+datasheet PDFs can go here if theyre small. otherwise just link them with the
 revision and the date you read it, same as BOM.md does.
 
 ## the references worth having open

@@ -1,13 +1,13 @@
 # BOM
 
-5 units of everything on the board, 1 unit for the case (it's off-PCB). every row
+5 units of everything on the board, 1 unit for the case (its off-PCB). every row
 is pinned to an LCSC part number and priced. rows 1-8 checked 20 aug 2026, rows
 9-22 checked 23 aug 2026 when the schematic got reconciled against this file.
 
 - prices and stock move. re-check the day you order, especially the FPGA.
 - price basis is LCSC unit price at the lowest qty break, which is what a 5-board
   build actually pays. for most passives that break is 50 or 100 pcs, way above
-  the 5-85 we need. JLCPCB's own component prices differ and aren't used here.
+  the 5-85 we need. JLCPCB's own component prices differ and arent used here.
 - quantities come from the schematic, not from this file. regen
   [../hardware/fab_output/morphcpu-bom.csv](../hardware/fab_output/morphcpu-bom.csv)
   with `gen_fab.py` and the counts below have to match it.
@@ -41,11 +41,11 @@ is pinned to an LCSC part number and priced. rows 1-8 checked 20 aug 2026, rows
 | | | | | | **80** | **400** | **parts subtotal** | **$88.06** |
 
 $17.61 of parts per board. rounding each line to the cent and summing gives the
-same $88.06 as summing unrounded, so it's not a rounding artefact.
+same $88.06 as summing unrounded, so its not a rounding artefact.
 
 ## what it actually costs
 
-careful here. the $88.06 above is **not** a separate line item. it's already
+careful here. the $88.06 above is **not** a separate line item. its already
 inside the JLC PCBA quote, which bundles fab + parts + assembly into one number.
 adding both would double-count the parts.
 
@@ -56,16 +56,16 @@ adding both would double-count the parts.
 | case filament | 1 unit, off-PCB | $0.26 |
 | | | **$198.41** |
 
-so **$198.41** all-in, $39.63/unit across 5 boards. that's under the Complex
-($210) tier with $11.59 of headroom, which is not much, so don't add parts
+so **$198.41** all-in, $39.63/unit across 5 boards. thats under the Complex
+($210) tier with $11.59 of headroom, which is not much, so dont add parts
 casually.
 
 the $110.09 gap between the parts subtotal and the JLC quote is fab + assembly
-setup + extended-part feeder fees. JLC quotes it bundled and doesn't split it out
+setup + extended-part feeder fees. JLC quotes it bundled and doesnt split it out
 line by line, so treat that gap as one number.
 
 still not in the $198.41: shipping and duty. those only get quoted at checkout
-with a real address, so they aren't here yet, and they eat into the $11.59.
+with a real address, so they arent here yet, and they eat into the $11.59.
 
 ### R and C counts
 
@@ -118,9 +118,9 @@ price. Basic parts are already loaded on the machines.
 | **Extended**, assumed, not confirmed | C2678152, C132160, C179173, C165948, C5383161 (the five actives, costed as Extended from the start); C7519 (ESD); C136491 (ferrite) |
 
 two notes on the unconfirmed rows. JLC's part-detail pages render the tier badge
-in JS so it can't be read directly, the tiers above come from JLC's category
+in JS so it cant be read directly, the tiers above come from JLC's category
 listings, which do print it. C7519 and C136491 show up in neither the Basic
-listings nor a published Basic-parts export, hence Extended, but that's an
+listings nor a published Basic-parts export, hence Extended, but thats an
 inference, not a quote. **confirm both in the PCBA quote before ordering**, each
 distinct Extended part carries its own feeder fee.
 
@@ -186,7 +186,7 @@ perimeters, three perimeters are 1.2 mm per side, so anything thinner than
 - floor, 2.0 mm: 4 top + 4 bottom solid layers are 1.6 mm of the 2.0, leaving 0.4 mm at 20%, so the floor is 84% dense. the 1,100.81 mm³ annulus right under the wall is solid too.
 
 printed 100% solid the frame is 14.42 g and $0.29, three cents more. any infill
-between 0% and 100% lands in that band, so the case cost doesn't care about the
+between 0% and 100% lands in that band, so the case cost doesnt care about the
 assumption. the old "~15 g, negligible" estimate was close and its conclusion
 held.
 
@@ -198,7 +198,7 @@ not counted: skirt, purge line, failed prints. usual rule of thumb adds about
 parts are $17.61/board but the fixed per-order fees are $110.09 across the whole
 run, so they cost more than the entire BOM. moving both regulators to Basic
 helped, and pinning the passives to Basic kept nine values off the feeder-fee
-list. what's left Extended is the fixed cost. building 10 instead of 5 barely
+list. whats left Extended is the fixed cost. building 10 instead of 5 barely
 moves those fees and roughly halves their per-unit share, worth considering if
 the budget allows.
 
@@ -210,7 +210,7 @@ was generated from. re-quote if any of them change.
 
 - [ICE40UP5K-SG48I, LCSC C2678152](https://www.lcsc.com/product-detail/C2678152.html)
 - [FT231XS-R, LCSC C132160](https://www.lcsc.com/product-detail/C132160.html)
-- [FT231XS-U, LCSC C89607](https://www.lcsc.com/product-detail/C89607.html) (out of stock, don't use)
+- [FT231XS-U, LCSC C89607](https://www.lcsc.com/product-detail/C89607.html) (out of stock, dont use)
 - [W25Q32JVSSIQ, LCSC C179173](https://www.lcsc.com/product-detail/C179173.html)
 - [TYPE-C-31-M-12, LCSC C165948](https://www.lcsc.com/product-detail/C165948.html)
 - [1532H4-16000JWPDTSNL, LCSC C5383161](https://www.lcsc.com/product-detail/C5383161.html)

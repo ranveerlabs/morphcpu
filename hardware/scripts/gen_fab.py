@@ -1,16 +1,16 @@
-"""Generate hardware/fab_output/: Gerbers, drill, JLCPCB BOM and CPL.
+"""writes hardware/fab_output/: gerbers, drill, JLCPCB BOM and CPL.
 
-Everything a JLCPCB quote needs, produced from the KiCad sources so it can be
-regenerated after any board change. Nothing here is hand-edited.
+everything a JLC quote needs, all of it out of the KiCad sources so it can be
+regenerated after any board change. nothing here is hand-edited.
 
-Coordinate origin: absolute (KiCad page origin). The board has no aux axis
-origin set, so the drill-file origin and the absolute origin are the same
-point - Gerbers, drill and CPL therefore all share one coordinate system,
-which is the thing JLC's uploader actually cares about.
+coordinate origin is absolute, the KiCad page origin. the board has no aux axis
+origin set so the drill-file origin and the absolute origin are the same point,
+which means gerbers, drill and CPL all share one coordinate system. thats the
+thing JLC's uploader actually cares about.
 
-The LCSC column is filled from LCSC_BY_VALUE below, which is transcribed from
-../../docs/BOM.md. Parts BOM.md has not pinned to an LCSC number are emitted
-with an empty LCSC field rather than a guess, and listed on stderr at the end.
+the LCSC column comes from LCSC_BY_VALUE below, transcribed from
+../../docs/BOM.md. parts BOM.md hasnt pinned to an LCSC number get an empty
+LCSC field rather than a guess, and get listed on stderr at the end.
 
 Run:
   <kicad>/bin/python.exe hardware/scripts/gen_fab.py
@@ -75,9 +75,7 @@ def run(*args):
     return r.stdout
 
 
-# ---------------------------------------------------------------------------
 # Gerbers + drill
-# ---------------------------------------------------------------------------
 def export_gerbers():
     os.makedirs(GERBERDIR, exist_ok=True)
     run(CLI, "pcb", "export", "gerbers",
@@ -107,9 +105,7 @@ def zip_gerbers():
     return zpath, names
 
 
-# ---------------------------------------------------------------------------
 # BOM
-# ---------------------------------------------------------------------------
 def export_bom():
     raw = os.path.join(OUTDIR, "_raw_bom.csv")
     run(CLI, "sch", "export", "bom",
@@ -138,9 +134,7 @@ def export_bom():
     return out, len(rows), missing
 
 
-# ---------------------------------------------------------------------------
 # CPL
-# ---------------------------------------------------------------------------
 def export_cpl():
     raw = os.path.join(OUTDIR, "_raw_pos.csv")
     run(CLI, "pcb", "export", "pos",

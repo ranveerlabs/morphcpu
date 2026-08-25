@@ -16,7 +16,7 @@ verilog for the MorphCPU fabric. targets the Lattice iCE40UP5K-SG48.
 | [build.sh](build.sh) | yosys -> nextpnr -> icepack |
 | [sim/](sim/) | testbenches |
 
-it's `morph_cell` and not `cell` because `cell` is a reserved word in
+its `morph_cell` and not `cell` because `cell` is a reserved word in
 Verilog-2001, it belongs to the `config`/`design` construct. found that one the
 hard way.
 
@@ -42,12 +42,12 @@ inputs get scanned in a fixed priority order, N then E then S then W. first
 valid one is `a`, second valid one is `b`. only one input showed up? `b` falls
 back to whatever the cell is already holding.
 
-that fallback is the whole trick. it's what gives ADD and XOR meaning:
+that fallback is the whole trick. its what gives ADD and XOR meaning:
 **two streams converging on a cell get combined**, and a lone stream walking
 through an ADD cell accumulates against itself instead.
 
 one `tick` moves data exactly one cell. so a value takes as many ticks as there
-are cells on its path. the path length *is* the latency, there's nothing else to
+are cells on its path. the path length *is* the latency, theres nothing else to
 it.
 
 ## grid and edges
@@ -190,9 +190,9 @@ iceprog build/morphcpu_top.bin
 it also greps the nextpnr log for utilisation and Fmax so the numbers can go
 straight into `JOURNAL.md`.
 
-> **never actually run.** the OSS CAD Suite isn't installed on this machine, so
+> **never actually run.** the OSS CAD Suite isnt installed on this machine, so
 > the synth and PnR flow above is written but unexercised. simulation is the part
-> that's genuinely been run. put real LUT counts and Fmax in the journal the
+> thats genuinely been run. put real LUT counts and Fmax in the journal the
 > first time `build.sh` completes.
 
 `morphcpu.pcf` also still needs updating from the
@@ -206,5 +206,5 @@ the entire point of the board is watching data cross the LED grid. LEDs are also
 pulse-stretched to about 150 ms so a single-tick visit stays legible.
 
 at full tick rate the fabric outruns 115200 baud and east-edge results get
-dropped. that's expected. use `STEP` or a slow `TICKDIV` when you want every
+dropped. thats expected. use `STEP` or a slow `TICKDIV` when you want every
 result back.

@@ -1,18 +1,16 @@
-"""MorphCPU netlist - transcribed from hardware/DESIGN.md.
+"""MorphCPU netlist, transcribed from hardware/DESIGN.md.
 
-Every net here corresponds to a row in a DESIGN.md connection table. Nothing is
-improvised: if a connection is not documented there, it is not here.
+every net here matches a row in a DESIGN.md connection table. nothing is
+improvised. if a connection isnt documented there its not here.
 
-Component entry fields:
+component entry fields:
   ref, lib, sym, value, fp   identification
   unit                       which sub-symbol (multi-unit parts only)
   nets                       {pin number: net name}
   nc                         pins deliberately left unconnected
 """
 
-# ---------------------------------------------------------------------------
-# Net name constants
-# ---------------------------------------------------------------------------
+# net names
 GND = "GND"
 VBUS = "VBUS"          # 5 V straight off USB-C, after the polyfuse
 P3V3 = "+3V3"
@@ -46,18 +44,14 @@ def add(ref, lib, sym, value, fp, nets, unit=1, nc=None, at=None):
     })
 
 
-# ---------------------------------------------------------------------------
 # U1 - iCE40UP5K-SG48I, four units
-# ---------------------------------------------------------------------------
 FPGA = ("FPGA_Lattice", "ICE40UP5K-SG48ITR", "ICE40UP5K-SG48I",
         "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm")
 
 # Unit 1 - bank 0 top I/O plus VCCIO_0
-#
 # UART lives on 34/36, not on 6/9 in the config bank. U2 is due east and pins
 # 6/9 face west, so the old assignment dragged both nets across the whole board
 # and through two rings on the way. 34 and 36 face U2 directly.
-#
 # 34 is TX and 36 is RX, not the other way round: U2 pad 4 (its RXD) sits at
 # y=+0.95 and pad 20 (its TXD) at y=+2.86, so feeding the more southerly FPGA
 # pin from the more southerly U2 pad keeps the two traces from crossing.
@@ -90,9 +84,7 @@ add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u3_nets, unit=3,
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3],
     {5: P1V2, 24: VPP, 29: VCCPLL, 30: P1V2, 49: GND}, unit=4)
 
-# ---------------------------------------------------------------------------
 # U2 - FT231XS-R.  TXD on the bridge goes to the FPGA's RX.
-# ---------------------------------------------------------------------------
 add("U2", "Interface_USB", "FT231XS", "FT231XS-R",
     "Package_SO:SSOP-20_3.9x8.7mm_P0.635mm",
     {15: FT_VCC, 13: FT3V3, 3: FT3V3, 11: "USB_DP_F", 12: "USB_DM_F",
@@ -100,9 +92,7 @@ add("U2", "Interface_USB", "FT231XS", "FT231XS-R",
      6: GND, 16: GND},
     nc=[1, 2, 5, 7, 8, 9, 10, 17, 18, 19])
 
-# ---------------------------------------------------------------------------
 # U3 - W25Q32JVSSIQ configuration flash
-# ---------------------------------------------------------------------------
 add("U3", "Memory_Flash", "W25Q32JVSS", "W25Q32JVSSIQ",
     "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm",
     {1: "FLASH_CS", 2: "FLASH_DO", 3: "FLASH_WP", 4: GND,
@@ -114,10 +104,8 @@ add("U3", "Memory_Flash", "W25Q32JVSS", "W25Q32JVSSIQ",
 add("R29", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_WP"})
 add("R30", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_HOLD"})
 
-# ---------------------------------------------------------------------------
 # Regulators.  Both SOT-23-5, same family, same footprint.
 # 1V2 is always on; 3V3 is held off by an RC on CE until 1V2 is up.
-# ---------------------------------------------------------------------------
 add("U4", "Regulator_Linear", "ME6211C33M5", "ME6211C33M5G-N",
     "Package_TO_SOT_SMD:SOT-23-5",
     {1: VBUS, 2: GND, 3: EN3V3, 5: P3V3}, nc=[4])
@@ -126,16 +114,12 @@ add("U5", "Regulator_Linear", "ME6211C12M5", "ME6211C12M5G-N",
     "Package_TO_SOT_SMD:SOT-23-5",
     {1: VBUS, 2: GND, 3: VBUS, 5: P1V2}, nc=[4])
 
-# ---------------------------------------------------------------------------
 # X1 - 16 MHz active oscillator, output into the GBIN pin
-# ---------------------------------------------------------------------------
 add("X1", "Oscillator", "ASE-xxxMHz", "1532H4-16000JWPDTSNL",
     "Oscillator:Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm",
     {1: "XO_EN", 2: GND, 3: "CLK", 4: P3V3})
 
-# ---------------------------------------------------------------------------
 # J1 - USB-C receptacle, sink only
-# ---------------------------------------------------------------------------
 add("J1", "Connector", "USB_C_Receptacle_USB2.0_16P", "TYPE-C-31-M-12",
     "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
     {"A1": GND, "A12": GND, "B1": GND, "B12": GND,
@@ -144,9 +128,7 @@ add("J1", "Connector", "USB_C_Receptacle_USB2.0_16P", "TYPE-C-31-M-12",
      "A5": "CC1", "B5": "CC2", "SH": GND},
     nc=["A8", "B8"])
 
-# ---------------------------------------------------------------------------
 # U6 - USBLC6-2SC6 ESD array, in the D+/D- path between J1 and U2
-# ---------------------------------------------------------------------------
 # Pins 1/6 are the two ends of one protected line and 3/4 the other; the pair
 # is shorted inside the package. Giving each end its own net name is what makes
 # the trace route *through* the part instead of stubbing off it, so the clamp
@@ -157,9 +139,7 @@ add("U6", "Power_Protection", "USBLC6-2SC6", "USBLC6-2SC6",
     {1: "USB_DM", 2: GND, 3: "USB_DP", 4: "USB_DP_F", 5: VBUS,
      6: "USB_DM_F"})
 
-# ---------------------------------------------------------------------------
 # Reset button - to a user I/O, not CRESET_B
-# ---------------------------------------------------------------------------
 # Footprint follows the part: the TL3342 land pattern is 6.3 x 3.8 mm pad
 # pitch, the XKB TS-1187A that JLC stocks as a Basic part is 6.0 x 3.75 mm.
 # Close enough to look fine on screen and not close enough to solder reliably,
@@ -168,19 +148,15 @@ add("SW1", "Switch", "SW_Push", "TS-1187A-B-A-B",
     "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A", {1: "RST_N", 2: GND})
 add("R28", "Device", "R", "10k", FP_R, {1: P3V3, 2: "RST_N"})
 
-# ---------------------------------------------------------------------------
 # LED grid - 16 of them, pin sources 5 mA through 270R into the LED
 # R = (3.3 - 2.0) / 5mA = 260 -> 270R (E24).  LED_ACTIVE_LOW = 0.
-# ---------------------------------------------------------------------------
 for i in range(16):
     add("R%d" % (i + 1), "Device", "R", "270", FP_R,
         {1: LED_NETS[i], 2: "LED%d_A" % i})
     add("D%d" % (i + 1), "Device", "LED", "KT-0603R", FP_LED,
         {1: GND, 2: "LED%d_A" % i})
 
-# ---------------------------------------------------------------------------
 # Configuration control
-# ---------------------------------------------------------------------------
 add("R17", "Device", "R", "10k", FP_R, {1: P3V3, 2: "CRESET_B"})
 add("R18", "Device", "R", "10k", FP_R, {1: P3V3, 2: "CDONE"})
 add("R19", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_CS"})
@@ -193,15 +169,11 @@ add("R22", "Device", "R", "1k", FP_R, {1: P3V3, 2: "CDONE_A"})
 # function, so this row groups with D1-D16 in the BOM instead of splitting off.
 add("D17", "Device", "LED", "KT-0603R", FP_LED, {1: "CDONE", 2: "CDONE_A"})
 
-# ---------------------------------------------------------------------------
 # USB-C CC pull-downs.  Two separate 5.1k, never shared.
-# ---------------------------------------------------------------------------
 add("R23", "Device", "R", "5k1", FP_R, {1: "CC1", 2: GND})
 add("R24", "Device", "R", "5k1", FP_R, {1: "CC2", 2: GND})
 
-# ---------------------------------------------------------------------------
 # Power entry: polyfuse, then the 3V3 enable delay
-# ---------------------------------------------------------------------------
 add("F1", "Device", "Polyfuse", "500mA", "Fuse:Fuse_1206_3216Metric",
     {1: "VBUS_IN", 2: VBUS})
 
@@ -220,9 +192,7 @@ add("FB1", "Device", "FerriteBead", "600R@100M", FP_FB, {1: P3V3, 2: VPP})
 add("C21", "Device", "C", "100n", FP_C, {1: VPP, 2: GND})
 add("FB2", "Device", "FerriteBead", "600R@100M", FP_FB, {1: VBUS, 2: FT_VCC})
 
-# ---------------------------------------------------------------------------
 # Decoupling - one 100 nF per supply pin, 11 in total (DESIGN.md)
-# ---------------------------------------------------------------------------
 DECOUPLE = [
     ("C1", P1V2, "FPGA pin 5 VCC"),
     ("C2", P1V2, "FPGA pin 30 VCC"),
@@ -249,10 +219,8 @@ add("C16", "Device", "C", "1u", FP_C, {1: P3V3, 2: GND})
 add("C17", "Device", "C", "1u", FP_C, {1: VBUS, 2: GND})
 add("C18", "Device", "C", "10u", FP_C, {1: P1V2, 2: GND})
 
-# ---------------------------------------------------------------------------
 # Power flags.  GND and VBUS_IN have no power-output pin anywhere on them
 # (USB-C VBUS/GND pins are passive), so ERC needs telling they are driven.
-# ---------------------------------------------------------------------------
 add("#FLG1", "power", "PWR_FLAG", "PWR_FLAG", "", {1: GND})
 add("#FLG2", "power", "PWR_FLAG", "PWR_FLAG", "", {1: "VBUS_IN"})
 # VBUS sits behind the polyfuse, VPP_2V5 and FT_VCC behind ferrites, so each

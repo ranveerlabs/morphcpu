@@ -4,23 +4,23 @@ _a 70 mm round FPGA board where the program is the wiring, and you can watch it 
 
 ## what it is
 
-it's a small round circuit board with a 4x4 grid of red LEDs in the middle and an
+its a small round circuit board with a 4x4 grid of red LEDs in the middle and an
 iCE40UP5K underneath. plug it into USB and you get a serial port. send it 9 bytes
-and you've rewired what the chip computes.
+and youve rewired what the chip computes.
 
-the thing that makes it not-a-processor: there's no instruction pointer, no
+the thing that makes it not-a-processor: theres no instruction pointer, no
 fetch, no decode. there are 16 cells sitting in a grid, each one holding a single
 operation and a single direction to shove its result. data enters at the west
 edge and physically walks across the grid, getting operated on by whatever cell
 it lands in. the "program" is the topology, the map of which cell does what and
-points where. latency isn't cycles, it's distance. a value four cells from the
-exit takes four ticks to get out, always, because that's how far it has to walk.
+points where. latency isnt cycles, its distance. a value four cells from the
+exit takes four ticks to get out, always, because thats how far it has to walk.
 
 i built it because i wanted to actually see that. dataflow and systolic arrays
 are the kind of thing you read about in a paper full of arrows and then never
 touch. putting one LED per cell and running the whole fabric at 4 Hz instead of
 16 MHz turns it into something you can point at. the grid lights up in the shape
-of the computation. that's the entire pitch.
+of the computation. thats the entire pitch.
 
 ## how it works
 
@@ -28,7 +28,7 @@ each cell holds 4 bits of config. 2 bits pick one of four operations, 2 bits pic
 which of its four neighbours gets the answer.
 
 the ops are PASS, INV, ADD and XOR. the directions are north, east, south, west.
-that's it, that's the whole instruction set.
+thats it, thats the whole instruction set.
 
 where it gets interesting is how a cell decides what to operate *on*. it scans
 its four inputs in a fixed order, north then east then south then west. first
@@ -40,14 +40,14 @@ ADD cell get summed. a single stream walking through an ADD cell accumulates
 against itself instead. you get accumulators and adders out of the same four
 config bits depending purely on what you route into them.
 
-one tick moves every value exactly one cell. so you don't schedule anything, you
+one tick moves every value exactly one cell. so you dont schedule anything, you
 just lay out a path and the geometry does the timing for you. data that leaves
 the east edge of column 3 comes back to you over UART. anything routed off the
 north, south or west edges is dropped on the floor.
 
 the whole topology loads over USB in one 9-byte command. rewriting the program is
-sending 9 different bytes. there's no bitstream rebuild, no recompile, nothing to
-reflash. the fabric is already in the FPGA, you're just telling it what shape to
+sending 9 different bytes. theres no bitstream rebuild, no recompile, nothing to
+reflash. the fabric is already in the FPGA, youre just telling it what shape to
 be.
 
 ## status
@@ -61,7 +61,7 @@ be.
 | electrical design | 🟢 done | all 8 datasheet items resolved and cited |
 | schematic | 🟢 done | ERC clean, 0 errors 0 warnings |
 | PCB placement | 🟢 done | 80 footprints, 92 nets, DRC clean of collisions |
-| PCB routing | 🔴 blocked | 0 tracks. manual job, no autorouter in KiCad |
+| PCB routing | 🔴 blocked | 0 tracks. freerouting tried and reverted, see [hardware/ROUTING.md](hardware/ROUTING.md) |
 | gerbers / fab package | 🟢 done | gerbers, drill, BOM and CPL in `hardware/fab_output/` |
 | case | 🟢 done | parametric OpenSCAD, STL + 3MF exported |
 | BOM | 🟢 done | all 22 rows pinned to LCSC parts and priced |
@@ -72,7 +72,8 @@ be.
 
 ### next up
 
-- [ ] route the board by hand, it's the one thing standing between here and ordering
+- [ ] route the board by hand, its the one thing standing between here and ordering.
+      net classes and DRC rules are set up, see [hardware/ROUTING.md](hardware/ROUTING.md)
 - [ ] install the OSS CAD Suite, run `gateware/build.sh` for real LUT and Fmax numbers
 - [ ] work the post-routing checklist at the bottom of [hardware/DESIGN.md](hardware/DESIGN.md)
 - [ ] order from JLC, confirm the two inferred Extended parts in the quote first
@@ -192,22 +193,22 @@ or you will get 5 very pretty coasters.
 
 if you do build one:
 
-- **order the FPGA early.** 546 units in stock at LCSC when i checked, and that's
+- **order the FPGA early.** 546 units in stock at LCSC when i checked, and thats
   the thinnest row in the whole BOM by a mile. the oscillator at 147 is the next
   worry.
 - **confirm C7519 and C136491 in the quote.** i have them down as Extended tier by
   inference, not from a real quote. JLC renders the tier badge in JavaScript so
-  the part pages won't tell you. each Extended part costs its own feeder fee, so
+  the part pages wont tell you. each Extended part costs its own feeder fee, so
   guessing wrong moves the total.
 - **the QFN paddle is the only ground connection to the die.** there is no
-  dedicated GND pin on the SG48 package. a badly soldered paddle isn't a thermal
-  problem, it's a dead board. window the paste stencil into four or five squares
+  dedicated GND pin on the SG48 package. a badly soldered paddle isnt a thermal
+  problem, its a dead board. window the paste stencil into four or five squares
   instead of one big aperture.
 - **the $210 tier has $11.59 of headroom** at the current $198.41, and shipping
-  and duty aren't in that number yet. don't add parts casually.
+  and duty arent in that number yet. dont add parts casually.
 
 case prints with no supports, flat on its back, 0.2 mm layers and 3 perimeters.
-PLA is fine unless it's going to live somewhere warm.
+PLA is fine unless its going to live somewhere warm.
 
 ## licence
 

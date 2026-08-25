@@ -132,6 +132,59 @@ pads. the one violation is a cosmetic silk overlap between the C20 and R27 refer
 fields. zero courtyard overlaps, zero shorting pads, zero clearance errors. it was 3
 violations before the resistors moved, so that pass cleared two of them by accident lol.
 
+## freerouting was tried, it didnt work
+
+reverted, board is back to 0 tracks. keeping the numbers here so nobody spends
+another evening finding out the same thing.
+
+freerouting 2.3.0 needs **Java 25**, not 21. the jar is class file version 69 and
+Temurin 21 refuses to load it. winget install of the Temurin MSI wants elevation
+and dies with 1602 if nothing is there to click the prompt, so unpack the Adoptium
+zip instead, no admin needed.
+
+`pcbnew.ExportSpecctraDSN` and `pcbnew.ImportSpecctraSES` both exist in the python
+API, so the round trip is scriptable. `kicad-cli pcb export` has no dsn subcommand
+in KiCad 10, dont go looking for one. the DSN carries all ten net classes with
+their widths and both via padstacks, so the router does respect them.
+
+```sh
+java -jar freerouting-2.3.0.jar -de hardware/route/morphcpu.dsn \
+     -do hardware/route/morphcpu.ses -inc GND -mp 100 --gui.enabled=false
+```
+
+32 passes, 8m10s, then it stalled. best score 877.18 hadnt moved since pass 22 and
+the optimizer quit after one pass at 0.0000% improvement. what came back:
+
+| | |
+|---|---|
+| DRC violations | 13 |
+| unconnected | 8 |
+| tracks | 753 segments + 112 vias |
+| F.Cu | 211 segments, 791.9 mm, 45.9% |
+| B.Cu | 542 segments, 932.9 mm, 54.1% |
+
+the 13 were 8 `track_width` at 0.150 mm against the 0.1524 minimum, 2
+`annular_width` on VBUS vias at a 0.10 mm ring, 2 `via_dangling`, and the usual
+cosmetic silk overlap. widths came back off-class in six different values it
+invented on the fly, 0.1874 and 0.2502 and 0.3998 and so on.
+
+three things made it not worth keeping. **`-inc GND` doesnt exclude GND**, it
+routed it anyway, 339.1 mm across 168 segments, which is the opposite of the pour
+plan. the **QFN paddle came out with zero vias in it** and U1-49 was one of the
+unconnected, and thats the only ground path to the die. and the 8 unconnected were
+real breaks on +3V3, VBUS, +1V2 and VBUS_IN, not pour artifacts.
+
+the front face was the actual dealbreaker though. 211 segments and long diagonals
+running corner to corner straight thru the LED grid. the grid is the entire point
+of the board and it looked like a subway map. renders are in
+[docs/img/routed-3d-top.png](../docs/img/routed-3d-top.png) and
+[routed-3d-bottom.png](../docs/img/routed-3d-bottom.png) if you want to see it, the
+back was honestly fine, roughly radial fan-out from the QFN.
+
+the DSN in `hardware/route/` is still there and still valid, so if you want another
+go at it the export step is done. would want GND actually excluded and a keepout
+over the LED grid on F.Cu first.
+
 ## route these in this order
 
 hardest first. the LED anodes used to own this list. they dont any more, see
@@ -336,17 +389,17 @@ stays there unchanged.
       put real LUT/BRAM utilisation and Fmax in `JOURNAL.md`.
 - [ ] **re-run `gen_fab.py`.** the fab package already exists but was generated
       from the unrouted board, so it has no copper in it. regenerate after
-      routing or you'll ship blank layers.
+      routing or youll ship blank layers.
 - [ ] **3D view screenshot** for the README:
       `kicad-cli pcb render` (or KiCad's 3D viewer) -> `docs/img/pcb-3d.png`.
 - [ ] **composite render** of case + PCB together for the README hero image.
-- [ ] **re-check the BOM** in `docs/BOM.md` against the final board. it's costed
+- [ ] **re-check the BOM** in `docs/BOM.md` against the final board. its costed
       and all 22 rows are pinned, but quantities come from the schematic and the
       two inferred Extended tiers still need confirming in the quote.
 - [ ] **confirm the USB-C overhang** against the board edge and the case cutout
       once the outline is final.
 - [ ] **tidy silkscreen.** one cosmetic text overlap left, C20 against R27. was
-      three before the resistor ring moved. it'll move as you adjust parts anyway.
+      three before the resistor ring moved. itll move as you adjust parts anyway.
 
 new since this pass:
 

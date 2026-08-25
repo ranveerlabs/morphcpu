@@ -1,11 +1,8 @@
-// ---------------------------------------------------------------------------
 // uart_tx.v - 8N1 UART transmitter
-//
-// Results leaving the fabric's east edge go out through here to the host.
-// busy is held for the whole frame; a send asserted while busy is ignored,
-// so the caller must check busy (morphcpu_top queues east-edge results in a
-// small FIFO for exactly this reason).
-// ---------------------------------------------------------------------------
+// results leaving the fabric's east edge go out thru here to the host.
+// busy is held for the whole frame and a send asserted while busy is ignored,
+// so the caller has to check busy. morphcpu_top queues east-edge results in a
+// small FIFO for exactly this reason.
 
 `timescale 1ns / 1ps
 `default_nettype none

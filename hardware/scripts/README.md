@@ -41,11 +41,11 @@ file somewhere safe first.
 
 writes `../fab_output/`: `morphcpu-gerbers.zip` (the file JLC's uploader wants),
 `morphcpu-bom.csv`, `morphcpu-cpl.csv`, and a `gerbers/` dir with the loose
-plots. the loose plots aren't tracked, the zip and the two CSVs are, and the
+plots. the loose plots arent tracked, the zip and the two CSVs are, and the
 loose files regenerate.
 
 the LCSC column comes from a table inside `gen_fab.py` transcribed out of
-[../../docs/BOM.md](../../docs/BOM.md). any row BOM.md hasn't pinned gets an
+[../../docs/BOM.md](../../docs/BOM.md). any row BOM.md hasnt pinned gets an
 **empty** LCSC field, never a guess, and the script lists them on stderr when it
 finishes. right now all 22 are pinned so it should print nothing.
 
@@ -64,9 +64,9 @@ matter where its symbol sits.
 
 drawing wires programmatically means computing polylines between pin endpoints
 and trusting they land exactly on them. a wire that stops 0.01 mm short looks
-connected and isn't. labels delete that failure mode entirely, and ERC plus the
-exported netlist confirm the result. it's a legitimate schematic style for a
-dense board and it's what makes a generated schematic trustworthy.
+connected and isnt. labels delete that failure mode entirely, and ERC plus the
+exported netlist confirm the result. its a legitimate schematic style for a
+dense board and its what makes a generated schematic trustworthy.
 
 ## gotchas found the hard way
 
@@ -74,14 +74,14 @@ dense board and it's what makes a generated schematic trustworthy.
   `ME6211C33M5`. emitting the parent body under the child's name loads fine but
   trips ERC `lib_symbol_mismatch`, because the properties still read as the
   parent. the nested per-unit sub-symbols also have to be renamed to the child
-  or the file won't load at all. `kicad-cli` says "Failed to load schematic" and
+  or the file wont load at all. `kicad-cli` says "Failed to load schematic" and
   nothing else, which is not much to go on.
 - **references need a trailing digit.** `C_EN` reads as unannotated, `C19`
-  doesn't.
+  doesnt.
 - **symbol origins belong on the 1.27 mm grid.** pin offsets are multiples of
   1.27, so an off-grid origin puts every single pin off-grid.
 - **unit 0 pins apply to all units.** look pins up in the requested unit first,
   then fall back to unit 0.
 - **`board.Add(fp)` before `fp.Flip()`.** pcbnew segfaults with no traceback if
-  you flip a footprint that isn't on the board yet. the bindings don't check
+  you flip a footprint that isnt on the board yet. the bindings dont check
   ownership.

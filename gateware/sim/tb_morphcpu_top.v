@@ -1,15 +1,11 @@
-// ---------------------------------------------------------------------------
 // tb_morphcpu_top.v - end-to-end test through the real host interface
-//
 // Everything here goes over the UART exactly as the host will drive it: the
 // topology is loaded with a CONFIG command, values are pushed in with INJECT,
 // the fabric is walked with STEP, and the result is decoded off the TX pin.
 // Nothing reaches into the design hierarchy, so this also validates the wire
 // protocol and the config bit ordering, not just the fabric.
-//
 // STEP is used instead of the free-running tick because the default tick rate
 // is 4 Hz - simulating even one automatic tick would mean 3 million clocks.
-// ---------------------------------------------------------------------------
 
 `timescale 1ns / 1ps
 `default_nettype none
@@ -49,9 +45,7 @@ module tb_morphcpu_top;
         .led       (led)
     );
 
-    // -----------------------------------------------------------------------
     // Host side of the UART
-    // -----------------------------------------------------------------------
     task uart_send(input [7:0] b);
         integer i;
         begin
@@ -139,7 +133,6 @@ module tb_morphcpu_top;
         // thing that moves the fabric.
         send_tickdiv(24'hFFFFFF);
 
-        // -------------------------------------------------------------------
         $display("TEST 1: PASS chain across row 0, driven entirely over UART");
         // cells 0-3 = PASS/EAST (nibble 0x1), everything else idle.
         //   byte0 = cell0,cell1 = 0x11
@@ -160,7 +153,6 @@ module tb_morphcpu_top;
             end
         join
 
-        // -------------------------------------------------------------------
         $display("TEST 2: INV in the chain");
         // cell0 PASS/E (0x1), cell1 INV/E (0x5), cell2 PASS/E, cell3 PASS/E
         send_config(64'h1511_0000_0000_0000);
@@ -178,7 +170,6 @@ module tb_morphcpu_top;
             end
         join
 
-        // -------------------------------------------------------------------
         $display("TEST 3: ADD convergence across two rows");
         // cell0 PASS/SOUTH (0x2), cell4 ADD/EAST (0x9), cells 5-7 PASS/E (0x1)
         //   byte0 = cell0,cell1 = 0x20
@@ -204,7 +195,6 @@ module tb_morphcpu_top;
             end
         join
 
-        // -------------------------------------------------------------------
         $display("TEST 4: LEDs track fabric activity");
         send_config(64'h1111_0000_0000_0000);
         uart_send(CMD_CLEAR);

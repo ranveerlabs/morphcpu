@@ -27,7 +27,7 @@ wall. change any of those and the OD moves with them.
 
 ## the dimensions are assumptions
 
-the PCB doesn't exist yet, so every board-derived param is a stated assumption:
+the PCB doesnt exist yet, so every board-derived param is a stated assumption:
 
 | Parameter | Assumed | Set from |
 |---|---|---|
@@ -40,7 +40,7 @@ the PCB doesn't exist yet, so every board-derived param is a stated assumption:
 | `usb_z_centre` | 1.2 mm above board top | connector datasheet + placement |
 
 when the layout is done, update those seven numbers and re-run `export.sh`.
-nothing else should need touching, that's the whole point of the params.
+nothing else should need touching, thats the whole point of the params.
 
 ## how to rebuild
 
@@ -65,9 +65,9 @@ non-manifold result there usually means two features started intersecting.
 
 ## no STEP file
 
-OpenSCAD can't export STEP. its CLI does `stl, off, wrl, amf, 3mf, csg, dxf, svg,
-pdf, png` and that's it, because OpenSCAD is a mesh/CSG modeller and STEP is
-B-rep. there's no boundary representation to write out.
+OpenSCAD cant export STEP. its CLI does `stl, off, wrl, amf, 3mf, csg, dxf, svg,
+pdf, png` and thats it, because OpenSCAD is a mesh/CSG modeller and STEP is
+B-rep. theres no boundary representation to write out.
 
 if you genuinely need STEP:
 
@@ -84,7 +84,7 @@ cheap path if some submission requirement asks for STEP.
 ## printing
 
 no supports, flat bottom, single extrusion direction. 0.2 mm layers,
-3 perimeters. PLA is fine, PETG or ABS if it'll live somewhere warm.
+3 perimeters. PLA is fine, PETG or ABS if itll live somewhere warm.
 
 `fit_clearance` is 0.3 mm, which suits a well-calibrated FDM printer. print a
 test ring first if the board comes out tight or sloppy.

@@ -1,8 +1,5 @@
-// ---------------------------------------------------------------------------
 // grid.v - the 4x4 MorphCPU fabric
-//
 // Topology
-// --------
 //        c0    c1    c2    c3
 //      +-----+-----+-----+-----+
 //  r0  |  0  |  1  |  2  |  3  |  -> east_out[0]
@@ -15,33 +12,23 @@
 //      +-----+-----+-----+-----+
 //         ^
 //     west_in[r] feeds the c0 cell of each row
-//
-// A cell only receives from a neighbour that is actively routing at it, so the
-// interconnect is a set of muxes driven by the neighbours' dir fields. Data
-// routed off the north or south edge, or west out of column 0, leaves the
-// fabric and is dropped. Data routed east out of column 3 leaves via
-// east_out[r] - that is the fabric's result port.
-//
-// Configuration chain ordering
-// ----------------------------
-// The chain is deliberately wired highest-index-first:
-//
+// a cell only receives from a neighbour thats actively routing at it, so the
+// interconnect is just muxes driven by the neighbours' dir fields. data routed
+// off the north or south edge, or west out of column 0, leaves the fabric and
+// gets dropped. data routed east out of column 3 leaves via east_out[r], thats
+// the fabric's result port.
+// the chain is deliberately wired highest-index-first:
 //     cfg_in -> cell15 -> cell14 -> ... -> cell1 -> cell0 -> cfg_out
-//
-// Each cell takes 4 shifts to cross, so after 64 shifts the FIRST bit sent has
-// travelled all the way to cell0's MSB. That makes the wire format natural:
-//
+// each cell takes 4 shifts to cross, so after 64 shifts the FIRST bit sent has
+// travelled all the way to cell0's MSB. makes the wire format natural:
 //     bit order (first sent -> last sent):
 //         cell0.op[1], cell0.op[0], cell0.dir[1], cell0.dir[0],
 //         cell1.op[1], ... , cell15.dir[0]
-//
 //     packed into 8 bytes, MSB first:
 //         byte i, upper nibble = cell (2i)     <- lower cell index first
 //         byte i, lower nibble = cell (2i + 1)
-//
 // So the host sends cells in plain ascending order and never has to reverse
 // anything. The cost is one crossed-over wire here, which is free in fabric.
-// ---------------------------------------------------------------------------
 
 `timescale 1ns / 1ps
 `default_nettype none
@@ -55,23 +42,23 @@ module grid #(
     input  wire                        rst,
     input  wire                        clr,          // clear fabric data, keep config
 
-    // --- configuration chain ------------------------------------------------
+    // configuration chain
     input  wire                        cfg_shift,
     input  wire                        cfg_in,
     output wire                        cfg_out,
 
-    // --- fabric advance -----------------------------------------------------
+    // fabric advance
     input  wire                        tick,
 
-    // --- west edge injection (one port per row) -----------------------------
+    // west edge injection (one port per row)
     input  wire [ROWS*DATA_W-1:0]      west_in_data,
     input  wire [ROWS-1:0]             west_in_val,
 
-    // --- east edge results (one port per row) -------------------------------
+    // east edge results (one port per row)
     output wire [ROWS*DATA_W-1:0]      east_out_data,
     output wire [ROWS-1:0]             east_out_val,
 
-    // --- per-cell activity, cell 0 = bit 0 (LED taps) -----------------------
+    // per-cell activity, cell 0 = bit 0 (LED taps)
     output wire [ROWS*COLS-1:0]        active
 );
 

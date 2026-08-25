@@ -1,11 +1,8 @@
-// ---------------------------------------------------------------------------
 // tb_grid.v - fabric-level tests
-//
 // Configures real topologies through the shift chain, injects values at the
 // west edge, and checks what falls out of the east edge and when. Timing is
 // part of the contract here: a value must take exactly one tick per cell it
 // crosses, so the tests assert arrival on an exact tick, not "eventually".
-// ---------------------------------------------------------------------------
 
 `timescale 1ns / 1ps
 `default_nettype none
@@ -56,10 +53,8 @@ module tb_grid;
         .active       (active)
     );
 
-    // -----------------------------------------------------------------------
     // Config helpers. The chain sends MSB first and the first bit lands in
     // cell0, so cell i occupies cfgw[63-4i -: 4] as {op, dir}.
-    // -----------------------------------------------------------------------
     reg [63:0] cfgw;
 
     task cfg_clear;

@@ -1,31 +1,20 @@
-// ---------------------------------------------------------------------------
 // morph_cell.v - one reconfigurable MorphCPU cell
-//
-// A cell is the atomic unit of the fabric. It holds 4 bits of configuration:
-//
+// the atomic unit of the fabric. holds 4 bits of config:
 //     cfg[3:2] = op   (what this cell does to data passing through it)
 //     cfg[1:0] = dir  (which neighbour this cell hands its result to)
-//
-// Configuration arrives over a serial shift chain shared by every cell in the
-// grid (see grid.v for the chain ordering). Data arrives from any neighbour
-// that is routing *at* this cell, is transformed by op, and is presented on
-// out_data/out_val for the neighbour named by dir to pick up next tick.
-//
-// One tick = one hop. A value therefore takes exactly one tick per cell it
-// travels through, which is what makes the ripple visible on the LED grid.
-//
-// Operand selection
-// -----------------
-// Inputs are scanned in fixed priority order N, E, S, W:
-//   * the first valid input is the primary operand (a)
-//   * the second valid input, if any, is the secondary operand (b)
-//   * if only one input is valid, b falls back to this cell's own held value,
-//     which turns ADD into an accumulator when a stream loops or repeats
-//
-// That gives ADD/XOR a real meaning: two streams converging on one cell are
-// combined by it. Convergence is how you build anything more interesting than
-// a delay line out of this fabric.
-// ---------------------------------------------------------------------------
+// config arrives over a serial shift chain shared by every cell in the grid,
+// see grid.v for the chain ordering. data arrives from any neighbour routing
+// *at* this cell, gets transformed by op, and lands on out_data/out_val for
+// the neighbour named by dir to pick up next tick.
+// one tick = one hop, so a value takes exactly one tick per cell it travels
+// thru. thats what makes the ripple visible on the LED grid.
+// inputs are scanned in fixed priority order N, E, S, W. first valid input is
+// the primary operand (a), second valid one if there is one is the secondary
+// (b), and if only one input is valid then b falls back to this cells own held
+// value, which turns ADD into an accumulator when a stream loops or repeats.
+// thats what gives ADD/XOR a real meaning, two streams converging on one cell
+// get combined by it. convergence is how you build anything more interesting
+// than a delay line out of this fabric.
 
 `timescale 1ns / 1ps
 `default_nettype none
@@ -37,15 +26,15 @@ module morph_cell #(
     input  wire                 rst,
     input  wire                 clr,         // clear held data, keep config
 
-    // --- configuration shift chain -----------------------------------------
+    // configuration shift chain
     input  wire                 cfg_shift,   // 1 = advance the chain this clk
     input  wire                 cfg_in,      // serial in  (from previous cell)
     output wire                 cfg_out,     // serial out (to next cell)
 
-    // --- grid advance -------------------------------------------------------
+    // grid advance
     input  wire                 tick,        // 1 = advance the fabric one hop
 
-    // --- neighbour inputs ---------------------------------------------------
+    // neighbour inputs
     input  wire [DATA_W-1:0]    in_n_data,
     input  wire                 in_n_val,
     input  wire [DATA_W-1:0]    in_e_data,
@@ -55,14 +44,14 @@ module morph_cell #(
     input  wire [DATA_W-1:0]    in_w_data,
     input  wire                 in_w_val,
 
-    // --- outputs ------------------------------------------------------------
+    // outputs
     output wire [DATA_W-1:0]    out_data,
     output wire                 out_val,
     output wire [1:0]           out_dir,     // where out_data is headed
     output wire                 active       // 1 = holding live data (LED tap)
 );
 
-    // --- opcode / direction encoding ---------------------------------------
+    // opcode / direction encoding
     localparam [1:0] OP_PASS = 2'd0;  // out = a          (pure routing)
     localparam [1:0] OP_INV  = 2'd1;  // out = ~a
     localparam [1:0] OP_ADD  = 2'd2;  // out = a + b      (wraps, no carry out)
@@ -73,12 +62,9 @@ module morph_cell #(
     localparam [1:0] DIR_S   = 2'd2;
     localparam [1:0] DIR_W   = 2'd3;
 
-    // -----------------------------------------------------------------------
     // Configuration register / shift chain
-    //
     // Shifts MSB-out, LSB-in: a bit entering cfg_in needs 4 shifts to cross
     // one cell. grid.v relies on that to work out the whole-chain bit order.
-    // -----------------------------------------------------------------------
     reg [3:0] cfg;
 
     always @(posedge clk) begin
@@ -93,9 +79,7 @@ module morph_cell #(
     wire [1:0] op  = cfg[3:2];
     wire [1:0] dir = cfg[1:0];
 
-    // -----------------------------------------------------------------------
     // Operand selection - first and second valid input, priority N,E,S,W
-    // -----------------------------------------------------------------------
     wire [3:0]          vmask = {in_w_val, in_s_val, in_e_val, in_n_val};
     wire [4*DATA_W-1:0] idata = {in_w_data, in_s_data, in_e_data, in_n_data};
 
@@ -121,9 +105,7 @@ module morph_cell #(
         end
     end
 
-    // -----------------------------------------------------------------------
     // Held value + ALU
-    // -----------------------------------------------------------------------
     reg [DATA_W-1:0] d_reg;
     reg              v_reg;
 

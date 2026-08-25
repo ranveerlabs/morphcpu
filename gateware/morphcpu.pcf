@@ -1,54 +1,46 @@
-# ---------------------------------------------------------------------------
 # morphcpu.pcf - pin constraints for iCE40UP5K-SG48I
-#
-# LOCKED. Pin numbers verified against the ICE40UP5K-SG48ITR symbol in KiCad 10
+# LOCKED. pin numbers verified against the ICE40UP5K-SG48ITR symbol in KiCad 10
 # (FPGA_Lattice.kicad_sym), whose pin counts cross-check exactly against the
 # Pin Information Summary in FPGA-DS-02008-2.0 p.45 (2 x VCC, 3 x VCCIO,
 # 1 x VCCPLL, 1 x VPP_2V5, 2 dedicated config, 39 GPIO, 0 dedicated GND = 48).
-#
-# This file and hardware/DESIGN.md must agree. DESIGN.md is the source of truth.
-#
-# Reserved, do not assign:
+# this file and hardware/DESIGN.md must agree. DESIGN.md is the source of truth.
+# reserved, do not assign:
 #   1  VCCIO_2      22 SPI_VCCIO1   33 VCCIO_0     24 VPP_2V5
 #   5  VCC          30 VCC          29 VCCPLL      49 GND (exposed paddle)
 #   7  CDONE         8 CRESET_B
 #   14 SPI_SO       15 SPI_SCK      16 SPI_SS      17 SPI_SI
 #   39 RGB0         40 RGB1         41 RGB2        (constant-current drivers)
 #   20 IOB_25b_G3   left free so a second global clock stays available
-# ---------------------------------------------------------------------------
 
-# --- clock ------------------------------------------------------------------
+# clock
 # 16 MHz active oscillator (XO module, LCSC C5383161) into IOT_46b_G0, which
-# drives global buffer GBUF0. The iCE40 has no crystal amplifier, so this must
+# drives global buffer GBUF0. the iCE40 has no crystal amplifier so this has to
 # be a driven clock, never a bare resonator.
 set_io -nowarn clk        35
 
-# --- reset ------------------------------------------------------------------
-# Momentary button to GND, external pull-up. Active low. Deliberately a user
-# I/O and not CRESET_B: this is a logic reset that keeps the loaded topology.
+# reset
+# momentary button to GND, external pull-up, active low. deliberately a user
+# I/O and not CRESET_B, this is a logic reset that keeps the loaded topology.
 set_io -nowarn rst_n      10
 
-# --- UART to FT231XS-R ------------------------------------------------------
-# Named from the FPGA's point of view:
+# UART to FT231XS-R
+# named from the FPGA's point of view:
 #   uart_rx_i  <- FT231X TXD   (host to board)
 #   uart_tx_o  -> FT231X RXD   (board to host)
-#
-# Bank 0, not 6/9 in the config bank. U2 is due east and 6/9 face west, so the
+# bank 0, not 6/9 in the config bank. U2 is due east and 6/9 face west so the
 # old pair dragged both nets across the whole board. 34 and 36 look straight at
-# it. Same +3V3 VCCIO, no GBIN pin spent, no LED pin touched.
+# it. same +3V3 VCCIO, no GBIN pin spent, no LED pin touched.
 set_io -nowarn uart_tx_o  34
 set_io -nowarn uart_rx_i  36
 
-# --- 16 LED grid ------------------------------------------------------------
-# Cell index maps to the physical 4x4 grid, cell 0 top-left, row-major:
-#
+# 16 LED grid
+# cell index maps to the physical 4x4 grid, cell 0 top-left, row-major:
 #     led[0]  led[1]  led[2]  led[3]      <- row 0
 #     led[4]  led[5]  led[6]  led[7]      <- row 1
 #     led[8]  led[9]  led[10] led[11]     <- row 2
 #     led[12] led[13] led[14] led[15]     <- row 3
-#
-# The PCB silkscreen and LED placement must follow this order or the ripple
-# looks scrambled. Split across banks so 80 mA is not drawn through one VCCIO.
+# the PCB silkscreen and LED placement have to follow this order or the ripple
+# looks scrambled. split across banks so 80 mA isnt drawn thru one VCCIO.
 # 5 mA each, inside the 8 mA LVCMOS33 IOL/IOH ceiling (DS Table 4.13).
 set_io -nowarn led[0]      2
 set_io -nowarn led[1]      3

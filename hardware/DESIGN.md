@@ -1,7 +1,7 @@
 # MorphCPU board, electrical design spec
 
 **all eight blocking items resolved.** schematic is captured and ERC clean,
-placement is done, routing isn't. every value below comes from a datasheet, a
+placement is done, routing isnt. every value below comes from a datasheet, a
 symbol library or a distributor page, and every one is cited. nothing here is a
 guess.
 
@@ -15,7 +15,7 @@ passive rows added **23 Aug 2026**.
 
 | # | Item | Resolved value | Source |
 |---|---|---|---|
-| 1 | VCC / VCCIO / GND pin numbers and cap count | VCC = 5, 30 · VCCIO_0 = 33 · SPI_VCCIO1 = 22 · VCCIO_2 = 1 · VCCPLL = 29 · VPP_2V5 = 24 · **no dedicated GND pin, paddle only**. 7 supply pins → 7 × 100 nF minimum | FPGA-DS-02008 §5.2 Pin Information Summary (p.45); pin numbers from KiCad 10 `FPGA_Lattice.kicad_sym`, symbol `ICE40UP5K-SG48ITR` |
+| 1 | VCC / VCCIO / GND pin numbers and cap count | VCC = 5, 30 · VCCIO_0 = 33 · SPI_VCCIO1 = 22 · VCCIO_2 = 1 · VCCPLL = 29 · VPP_2V5 = 24 · **no dedicated GND pin, paddle only**. 7 supply pins -> 7 × 100 nF minimum | FPGA-DS-02008 §5.2 Pin Information Summary (p.45); pin numbers from KiCad 10 `FPGA_Lattice.kicad_sym`, symbol `ICE40UP5K-SG48ITR` |
 | 2 | VPP_2V5 tied to 3V3 | **Confirmed.** Master SPI configuration requires 2.30-3.46 V. 3.3 V is inside that window | FPGA-DS-02008 Table 4.2 Recommended Operating Conditions (p.29) |
 | 3 | GBIN (global clock) pins | **Pins 20 (G3), 35 (G0), 37 (G1), 44 (G6)**. Clock goes on **pin 35** | KiCad symbol pin names `IOT_46b_G0`, `IOT_45a_G1`, `IOB_25b_G3`, `IOB_3b_G6` |
 | 4 | Dedicated SPI config pins | **14 = SPI_SO · 15 = SPI_SCK · 16 = SPI_SS · 17 = SPI_SI**, plus **8 = CRESET_B** and **7 = CDONE** | FPGA-DS-02008 §5.1 Signal Descriptions (IOB_32a/34a/35b/33b); pin numbers from the KiCad symbol |
@@ -28,7 +28,7 @@ passive rows added **23 Aug 2026**.
 
 resolving item 6 turned up a **power sequencing requirement the original power
 tree violated**. written up as problem 3 below. it changes the 3.3 V regulator
-part, so it's not cosmetic.
+part, so its not cosmetic.
 
 ---
 
@@ -41,12 +41,12 @@ USB-C gives you 5 V. the iCE40UP5K needs **1.2 V core (VCC, pins 5 and 30) and
 
 ### 2. a bare crystal will not work on an iCE40
 
-a passive crystal needs an amplifier to start it and the iCE40 doesn't have one.
+a passive crystal needs an amplifier to start it and the iCE40 doesnt have one.
 the family gives you `SB_HFOSC` (48 MHz, ÷1/2/4/8) and `SB_LFOSC` (10 kHz) and
-that's all. the SG48 pinout has no XIN/XOUT pair either. all 48 pins are
-accounted for as I/O, supply or configuration, so there's nowhere to put one.
+thats all. the SG48 pinout has no XIN/XOUT pair either. all 48 pins are
+accounted for as I/O, supply or configuration, so theres nowhere to put one.
 
-the internal oscillator won't do: it's roughly ±10% untrimmed and 115200 baud
+the internal oscillator wont do: its roughly ±10% untrimmed and 115200 baud
 tolerates about ±2-3% total.
 
 **so the part has to be an active oscillator module.** the pin table in the
@@ -66,7 +66,7 @@ FPGA-DS-02008 §4.5 Power-up Supply Sequence (p.31) requires:
 §4.4 adds that only **VCC, SPI_VCCIO1 and VPP_2V5** are monitored by the on-chip
 power-on-reset.
 
-the original tree was `5 V → 3.3 V → 1.2 V`, a cascade. that brings **3.3 V up
+the original tree was `5 V -> 3.3 V -> 1.2 V`, a cascade. that brings **3.3 V up
 first and 1.2 V last**, which is exactly backwards. SPI_VCCIO1 and VPP_2V5 would
 both be applied before VCC ever reached 0.5 V.
 
@@ -102,7 +102,7 @@ supply voltage (A: 2.5-3.3 V, B: 1.8-3.3 V), a supply current, an **HCMOS
 output** and a **tri-state enable on pad 1**. a passive crystal has none of
 those. plenty of 4-pad 3225 parts at 12 MHz *are* crystals and got rejected.
 `X322512MSB4SI` (C9002) quotes a 20 pF load capacitance, which only a passive
-resonator has, so that's the tell to look for.
+resonator has, so thats the tell to look for.
 
 ### the 16 MHz change, applied
 
@@ -114,12 +114,12 @@ exactly these, all done:
 | `gateware/rtl/morphcpu_top.v` | `CLK_HZ = 16_000_000` |
 | `gateware/morphcpu.pcf` | comment only |
 | `gateware/build.sh` | `--freq 16` |
-| UART divisor | 16e6 / 115200 = 138.89 → **139, error 0.08%** (12 MHz gives 104 → 0.16%, so 16 MHz is actually *better*) |
-| Fabric tick divider | `DEFAULT_TICKDIV` 3,000,000 → 4,000,000 to keep 4 Hz |
+| UART divisor | 16e6 / 115200 = 138.89 -> **139, error 0.08%** (12 MHz gives 104 -> 0.16%, so 16 MHz is actually *better*) |
+| Fabric tick divider | `DEFAULT_TICKDIV` 3,000,000 -> 4,000,000 to keep 4 Hz |
 
 **went with option B, C5383161 at 16 MHz.** stock of 9 on a hard-deadline build
 is how you end up redesigning the week before submission. the frequency change
-is a parameter edit that also happens to improve UART divisor error, and it's
+is a parameter edit that also happens to improve UART divisor error, and its
 already applied: CLK_HZ is 16_000_000, DEFAULT_TICKDIV is 4,000,000, build.sh
 targets --freq 16, both testbenches still pass 18/18.
 
@@ -173,7 +173,7 @@ the 3.3 V regulator's CE is pulled to VBUS through **100 kΩ** with **100 nF** t
 GND, so τ = 10 ms. the 1.2 V regulator starts the moment VBUS rises (hundreds of
 microseconds), so VCC is well past 0.5 V long before 3.3 V is enabled.
 
-the **10 kΩ** bleed to GND is not optional. without it CE doesn't discharge on
+the **10 kΩ** bleed to GND is not optional. without it CE doesnt discharge on
 power-down and a fast power cycle skips the sequence. §4.5 says the sequence has
 to be re-followed every time supplies are re-powered.
 
@@ -192,12 +192,12 @@ if configuration starts misbehaving.
 ### VCCPLL, corrected (it was wrong before)
 
 an earlier revision of this doc implied VCCPLL sat on the 3.3 V rail. **that was
-wrong.** Table 4.2 gives VCCPLL as **1.14-1.26 V**. it's a core-voltage rail.
+wrong.** Table 4.2 gives VCCPLL as **1.14-1.26 V**. its a core-voltage rail.
 note 1 says VCC and VCCPLL should be tied to the same supply through an RC noise
 filter.
 
 so: **100 Ω series from +1V2 into pin 29, 100 nF to GND at the pin** (τ = 10 µs).
-there's no PLL instantiated in the design, but the pin still has to be powered,
+theres no PLL instantiated in the design, but the pin still has to be powered,
 §4.2 says every supply pin must be connected for normal operation including
 configuration.
 
@@ -206,7 +206,7 @@ configuration.
 ## FPGA pinout (iCE40UP5K-SG48I)
 
 complete SG48 pin assignment. Pin numbers are from the KiCad 10 symbol
-`ICE40UP5K-SG48ITR` in `FPGA_Lattice.kicad_sym`; the counts cross-check exactly
+`ICE40UP5K-SG48ITR` in `FPGA_Lattice.kicad_sym`. the counts cross-check exactly
 against FPGA-DS-02008 §5.2 Pin Information Summary (2 × VCC, 3 × VCCIO,
 1 × VCCPLL, 1 × VPP_2V5, 2 dedicated config, 39 GPIO, 0 dedicated GND = 48).
 
@@ -338,7 +338,7 @@ used in this doc. **no pin assignment changes.**
 `FT231XS` is the SSOP-20 die and package. the trailing `-U` / `-R` is FTDI's
 **packaging** suffix, `-U` is tube and `-R` is tape-and-reel. both LCSC entries
 independently report the same SSOP-20-150mil footprint. the QFN variant is a
-different base part number (`FT231XQ`) and isn't in play.
+different base part number (`FT231XQ`) and isnt in play.
 
 tape-and-reel is also what an SMT line wants, so the swap wins twice. costs
 about $1.50/unit more.
@@ -371,12 +371,12 @@ direction is the classic trap: **TXD on the bridge goes to the FPGA's RX.**
 | SBU1 / SBU2 | no connect | |
 
 two independent 5.1 kΩ resistors. share one, or use 10 kΩ, and some hosts and
-chargers just won't give you power at all.
+chargers just wont give you power at all.
 
 ### ESD protection, USBLC6-2SC6 ([C7519](https://www.lcsc.com/product-detail/C7519.html)), SOT-23-6
 
 U6, between the receptacle and the bridge. the USB-C port is the only bit of this
-board anyone touches while it's live, and the FT231X data pins are the only thing
+board anyone touches while its live, and the FT231X data pins are the only thing
 sitting behind it.
 
 | U6 pin | Name | Net | Notes |
@@ -400,8 +400,8 @@ speed. IEC 61000-4-2 level 4.
 the connector's D+/D− pads. protection downstream of a long trace protects the
 trace, not the bridge. the direct line between U2 and J1 is a 1.2 mm gap, too
 narrow for SOT-23-6, and the front face is the LED display, so 5 mm is the best
-the current placement allows. if routing says that's too long, shift U2 west and
-reopen the centre channel. don't move the clamp further out.
+the current placement allows. if routing says thats too long, shift U2 west and
+reopen the centre channel. dont move the clamp further out.
 
 ### SPI configuration flash, W25Q32JVSSIQ ([C179173](https://www.lcsc.com/product-detail/C179173.html))
 
@@ -461,8 +461,8 @@ on `morphcpu_top`, so it costs nothing to flip:
 
 | Wiring | Parameter |
 |---|---|
-| Pin → resistor → anode, cathode to GND (pin sources) | `LED_ACTIVE_LOW = 0` (default) |
-| +3V3 → resistor → anode, cathode → pin (pin sinks) | `LED_ACTIVE_LOW = 1` |
+| Pin -> resistor -> anode, cathode to GND (pin sources) | `LED_ACTIVE_LOW = 0` (default) |
+| +3V3 -> resistor -> anode, cathode -> pin (pin sinks) | `LED_ACTIVE_LOW = 1` |
 
 ---
 
@@ -473,7 +473,7 @@ hand, see [what is not here](#what-is-not-here).
 
 net classes, JLC DRC rules and the order to route in are in
 [ROUTING.md](ROUTING.md). read that first, it flags a resistor-ring placement
-problem this section doesn't know about.
+problem this section doesnt know about.
 
 | Item | Value |
 |---|---|
@@ -485,11 +485,11 @@ problem this section doesn't know about.
 
 ### why 70 mm and not 60 mm
 
-first placement pass went at 60 mm and didn't fit. 79 footprints including a
+first placement pass went at 60 mm and didnt fit. 79 footprints including a
 QFN-48, an SSOP-20, a SOIC-8 and an edge-mounted USB-C left nothing between the
 LED resistor ring and the outer parts. DRC came back with courtyard overlaps and
 shorting pads that only cleared if you stacked parts over the mounting holes,
-which isn't clearing them.
+which isnt clearing them.
 
 70 mm clears with margin: zero courtyard overlaps, zero shorting pads, zero
 clearance violations. the case being parametric meant following the change was
@@ -521,14 +521,14 @@ the 4x4 grid sits on a **9 mm pitch, 27 mm across** (four columns is three gaps)
 matching `led_pitch` in the case source. cell 0 top-left, row-major, so the
 physical grid reads the same way as the fabric map in
 [gateware/README.md](../gateware/README.md). getting this backwards would make
-the demo lie, so it's worth checking twice.
+the demo lie, so its worth checking twice.
 
 silkscreen artwork space is the outer annulus past r=20, minus the four mounting
 holes on the diagonals and the two front-face parts (SW1 top, CDONE LED bottom).
 
-**paddle grounding is critical**, it's the only ground path to the die. give it a
+**paddle grounding is critical**, its the only ground path to the die. give it a
 3x3 or 4x4 field of 0.3 mm vias into the ground pour, and window the paste
-stencil into four or five squares instead of one big aperture so the part doesn't
+stencil into four or five squares instead of one big aperture so the part doesnt
 float during reflow.
 
 pour ground on both layers, stitch it, no isolated islands.
@@ -560,7 +560,7 @@ pour ground on both layers, stitch it, no isolated islands.
 | BSMD1206-050-6V polyfuse | C883122 | Extended (confirmed) | 36,710 |
 | MMZ1608Y601BTA00 ferrite | C136491 | Extended (inferred) | 11,200 |
 
-rows below the oscillator were pinned on **23 Aug 2026**; stock figures for them
+rows below the oscillator were pinned on **23 Aug 2026**, stock figures for them
 are from that date. "Inferred" means the part appears in neither JLC's Basic
 category listings nor a published Basic-parts export, likely Extended, but not
 quoted. Confirm in the PCBA quote.
@@ -574,7 +574,7 @@ pair share a footprint, which helped placement.
    depending on how C7519 and C136491 resolve. on a 5-unit run this is the
    dominant cost, bigger than the whole BOM. nine of the ten passive values were
    deliberately pinned to Basic parts to keep them off this list. 270 Ω 0402 has
-   no Basic option at JLC at any tolerance, so it's the one that couldn't be.
+   no Basic option at JLC at any tolerance, so its the one that couldnt be.
 2. **check every footprint against JLCPCB's own land pattern**, not the generic
    KiCad library. the USB-C receptacle and the QFN-48 paddle are where
    mismatches actually bite.
@@ -606,17 +606,17 @@ the live working copy, plus the items the netclass pass added, is in
       put real LUT/BRAM utilisation and Fmax in `JOURNAL.md`.
 - [ ] **re-run `gen_fab.py`.** the fab package already exists but was generated
       from the unrouted board, so it has no copper in it. regenerate after
-      routing or you'll ship blank layers.
+      routing or youll ship blank layers.
 - [ ] **3D view screenshot** for the README:
-      `kicad-cli pcb render` (or KiCad's 3D viewer) → `docs/img/pcb-3d.png`.
+      `kicad-cli pcb render` (or KiCad's 3D viewer) -> `docs/img/pcb-3d.png`.
 - [ ] **composite render** of case + PCB together for the README hero image.
-- [ ] **re-check the BOM** in `docs/BOM.md` against the final board. it's costed
+- [ ] **re-check the BOM** in `docs/BOM.md` against the final board. its costed
       and all 22 rows are pinned, but quantities come from the schematic and the
       two inferred Extended tiers still need confirming in the quote.
 - [ ] **confirm the USB-C overhang** against the board edge and the case cutout
       once the outline is final.
 - [ ] **tidy silkscreen.** three cosmetic text overlaps left from the placement
-      pass. they'll move as you adjust parts anyway.
+      pass. theyll move as you adjust parts anyway.
 
 ---
 
@@ -625,7 +625,7 @@ the live working copy, plus the items the netclass pass added, is in
 **there is no routing in this repository.** placement is done and the board opens
 clean, but the copper between the pads is deliberately absent.
 
-there *are* gerbers, in `fab_output/`, and they're real enough for JLC to quote
+there *are* gerbers, in `fab_output/`, and theyre real enough for JLC to quote
 from, because a quote reads size, layer count and placement and nothing else.
 they are not orderable. they were plotted from the unrouted board so the copper
 layers are basically empty. regenerate them after routing.
@@ -634,7 +634,7 @@ why stop here: placement is a solvable layout problem. parts go in logical group
 at known coordinates and DRC confirms nothing collides. routing is a spatial
 judgment call you make by looking at the board, and KiCad has no autorouter.
 emitting trace coordinates without that feedback loop gets you a file that looks
-finished and isn't, and on a $210 tier with a hard deadline that's the worst
+finished and isnt, and on a $210 tier with a hard deadline thats the worst
 available outcome.
 
 so the board goes as far as "opens clean, route it by hand" and no further.
@@ -658,7 +658,7 @@ check these when you open it, before routing:
 
 - **J1 overhang.** the USB-C receptacle sits at the +X edge so a plug can seat.
   confirm the shell position against the board outline and against `usb_angle`
-  and the cutout in the case source. this is the one dimension the render can't
+  and the cutout in the case source. this is the one dimension the render cant
   settle for you.
 - **front/back assignment.** the 16 LEDs, SW1 and the CDONE LED are front,
   everything else is back.

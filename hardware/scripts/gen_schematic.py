@@ -1,13 +1,12 @@
-"""Generate hardware/morphcpu.kicad_sch from netlist.py.
+"""writes hardware/morphcpu.kicad_sch from netlist.py.
 
-Connectivity is expressed with global labels rather than drawn wires. A global
-label joins nets by NAME, not by position, so every pin carrying the same net
-name is connected no matter where its symbol sits on the sheet. That removes
-the whole class of "wire looks connected but is 0.01 mm short" faults that make
-hand-generated schematics untrustworthy, and it is a legitimate schematic style
-for a dense board.
+connectivity is global labels, not drawn wires. a global label joins nets by
+NAME and not by position, so every pin carrying the same net name is connected
+no matter where its symbol sits on the sheet. kills the whole class of "wire
+looks connected but is 0.01 mm short" faults that make generated schematics
+untrustworthy, and its a legit schematic style for a dense board anyway.
 
-Run:  <kicad>/bin/python.exe hardware/scripts/gen_schematic.py
+run:  <kicad>/bin/python.exe hardware/scripts/gen_schematic.py
 """
 import os
 import sys
@@ -34,9 +33,7 @@ def q(s):
     return Q + str(s) + Q
 
 
-# ---------------------------------------------------------------------------
 # Sheet layout. Positions are readability only - connectivity is by net name.
-# ---------------------------------------------------------------------------
 PLACE = {
     ("U1", 1): (70, 55),
     ("U1", 2): (70, 150),
@@ -94,9 +91,7 @@ def resolve_positions():
     return {k: (snap(x), snap(y)) for k, (x, y) in pos.items()}
 
 
-# ---------------------------------------------------------------------------
 # Library symbols
-# ---------------------------------------------------------------------------
 def lib_path(lib):
     return KICAD + lib + ".kicad_sym"
 

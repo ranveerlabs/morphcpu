@@ -1,16 +1,15 @@
-"""Generate hardware/morphcpu.kicad_pcb: board outline + first-pass placement.
+"""writes hardware/morphcpu.kicad_pcb: board outline + placement.
 
-PLACEMENT ONLY. No tracks are routed and none should be added here - routing is
-a spatial judgment call made by looking at the board, and guessing trace paths
-produces a file that looks finished and is not.
+PLACEMENT ONLY. no tracks get routed here and none should be added, routing is
+a spatial judgment call you make looking at the board, and guessing trace paths
+gets you a file that looks finished and isnt.
 
-Everything is done through the pcbnew API rather than by writing board
-s-expressions, so footprint geometry, flipping to the back side, and net
-assignment all use KiCad's own code. The netlist is read from the schematic's
-exported netlist, which makes this the same operation as "Update PCB from
-Schematic".
+all of it goes thru the pcbnew API instead of writing board s-expressions, so
+footprint geometry, flipping to the back, and net assignment use KiCad's own
+code. the netlist gets read from the schematic's exported netlist, which makes
+this the same operation as "Update PCB from Schematic".
 
-Run:
+run:
   <kicad>/bin/kicad-cli.exe sch export netlist --output hardware/morphcpu.net \
       hardware/morphcpu.kicad_sch
   <kicad>/bin/python.exe hardware/scripts/gen_pcb.py
@@ -57,9 +56,7 @@ def board_pt(dx, dy):
     return pt(CX + dx, CY + dy)
 
 
-# ---------------------------------------------------------------------------
 # Netlist
-# ---------------------------------------------------------------------------
 def read_netlist(path):
     tree = ksym.parse(open(path, encoding="utf-8").read())
     root = tree[0]
@@ -86,11 +83,9 @@ def read_netlist(path):
     return comps, pinnet, netnames
 
 
-# ---------------------------------------------------------------------------
 # Placement table.  (dx, dy) are mm from board centre; rot in degrees.
 # The LED grid is the product, so it owns the centre of the front face and
 # everything else works around it on the back.
-# ---------------------------------------------------------------------------
 def led_xy(i):
     row, col = divmod(i, 4)
     return (col - 1.5) * LED_PITCH, (row - 1.5) * LED_PITCH
@@ -112,7 +107,6 @@ PLACEMENT["D17"] = (0, 21.0, 0, FRONT)
 # so each ring clears the next: the QFN courtyard reaches r=4.2, an 0402
 # courtyard is about 0.75 either side, and the mounting holes occupy r=22..26
 # on the diagonals, so nothing structural goes there.
-#
 #   r = 0      FPGA
 #   r = 6.5    one decoupling cap per supply pin
 #   r = 9.0    bulk caps, pull-ups, the VCCPLL and VPP filters
@@ -143,14 +137,12 @@ PLACEMENT["FB1"] = (9.0 * math.cos(math.radians(318.6)),
 
 # LED series resistors. Each one sits on the ray from board centre through its
 # own LED, so the anode hop is radial and short.
-#
 # This used to be a uniform 16-slot ring: sort the LEDs by angle, hand out slots
-# at k*22.5 starting from 0. The sort was fine, the handout wasn't. The sorted
+# at k*22.5 starting from 0. The sort was fine, the handout wasnt. The sorted
 # list starts at -161.6 deg and slot 0 is at 0 deg, so every resistor landed
 # 157-180 deg around the ring from its own LED and all 16 anodes became chords
 # straight under the QFN paddle. 405 mm of ratsnest.
-#
-# A single ring can't be fixed by rotating it either. The 4x4 grid puts the four
+# A single ring cant be fixed by rotating it either. The 4x4 grid puts the four
 # inner LEDs and the four corner LEDs on the *same* four diagonals, so eight
 # parts want four rays. The corners go one ring further out to break the tie.
 RES_R = 11.5          # inner and middle LEDs
@@ -221,15 +213,11 @@ PLACEMENT["C10"] = (6.0, 18.5, 0, BACK)
 PLACEMENT["C18"] = (6.0, 21.5, 0, BACK)
 
 
-# ---------------------------------------------------------------------------
 # Build
-# ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
 # SaveBoard writes a fresh morphcpu.kicad_pro from the board object's defaults,
 # which silently wipes Board Setup: every net class, every DRC minimum, the
 # track and via presets. Found it the hard way, one regen ate the whole netclass
 # pass. Lift those two blocks out before the save and put them back after.
-# ---------------------------------------------------------------------------
 KEEP_KEYS = ("design_settings",)
 
 

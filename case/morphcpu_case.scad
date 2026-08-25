@@ -1,22 +1,16 @@
-// ---------------------------------------------------------------------------
 // morphcpu_case.scad - slim open-face frame for the MorphCPU board
-//
-// The face is fully open on purpose. The 16-LED grid is the whole point of the
-// board, so nothing sits between it and the viewer - the frame only wraps the
+// the face is fully open on purpose. the 16-LED grid is the whole point of the
+// board so nothing sits between it and the viewer. the frame just wraps the
 // edge, lifts the board off the desk, and takes the USB-C strain.
-//
 // !! DIMENSIONS ARE ASSUMPTIONS, NOT MEASUREMENTS !!
-//
-// The PCB does not exist yet, so every board-derived number below is a stated
-// assumption. When the layout is finished, set pcb_dia, pcb_thickness,
+// the PCB doesnt exist yet so every board-derived number below is a stated
+// assumption. once the layout is finished set pcb_dia, pcb_thickness,
 // mount_hole_r, mount_hole_count, mount_hole_angle_offset, usb_angle and
-// usb_z_centre from the actual board and re-export. Nothing else should need
-// touching - that is what the parameters are for.
-//
-// Print notes: no supports needed, the whole thing is a single extrusion with
-// a flat bottom. 0.2 mm layers, 3 perimeters. PETG or ABS if it will sit in a
-// warm room, PLA is fine otherwise.
-// ---------------------------------------------------------------------------
+// usb_z_centre from the actual board and re-export. nothing else should need
+// touching, thats what the parameters are for.
+// printing: no supports, the whole thing is a single extrusion with a flat
+// bottom. 0.2 mm layers, 3 perimeters. PETG or ABS if it'll sit somewhere
+// warm, PLA is fine otherwise.
 
 /* [Board - set these from the finished PCB] */
 
@@ -88,18 +82,14 @@ part = "frame";
 
 $fn = 128;
 
-// ---------------------------------------------------------------------------
 // Derived
-// ---------------------------------------------------------------------------
 pocket_dia   = pcb_dia + 2 * fit_clearance;
 outer_dia    = pocket_dia + 2 * wall;
 pcb_z        = floor_thickness + standoff_height;      // underside of the PCB
 total_h      = pcb_z + pcb_thickness + rim_height;
 eps          = 0.01;
 
-// ---------------------------------------------------------------------------
 // Modules
-// ---------------------------------------------------------------------------
 
 // Positions of the mounting posts, shared by the frame and the mock PCB so the
 // two can never drift apart.
@@ -216,7 +206,6 @@ module mock_pcb() {
                 cube([1.6, 0.8, 0.6], center = true);
 }
 
-// ---------------------------------------------------------------------------
 if (part == "frame")         frame();
 else if (part == "assembly") { frame(); mock_pcb(); }
 else if (part == "pcb")      mock_pcb();

@@ -1,30 +1,22 @@
-// ---------------------------------------------------------------------------
 // morphcpu_top.v - top level for the iCE40UP5K-SG48
-//
-// Ties the fabric to the outside world:
-//
+// ties the fabric to the outside world:
 //   16 MHz oscillator ---> clk
 //   FT231X TXD     ---> uart_rx_i   (host -> board: config, inject, control)
 //   FT231X RXD     <--- uart_tx_o   (board -> host: east-edge results)
 //   reset button   ---> rst_n       (active low, external pull-up)
 //   16 LEDs        <--- led[15:0]   (one per cell, cell 0 = led[0])
-//
-// Two deliberate choices worth knowing about:
-//
-// 1. The fabric tick defaults to 4 Hz, not 16 MHz. The whole point of the
-//    board is watching data ripple across the LED grid, and a hop every 83 ns
-//    is invisible. Send TICKDIV to speed it up, or drive it by hand with STEP.
-//
-// 2. LEDs are pulse-stretched to ~150 ms. Even at a slow tick a cell is only
-//    active for one tick, and without stretching a fast tick would just look
-//    like a uniform dim glow. Stretching keeps the ripple legible at any rate.
-//
-// Result reporting: east-edge results are latched at tick and drained to the
-// UART one byte at a time. At the default tick rate there are ~3M clocks
-// between ticks and a byte costs ~1042, so the link keeps up easily. If you
-// set TICKDIV to full speed the fabric will outrun 115200 baud and results
-// will be dropped - that is expected, and is why STEP exists.
-// ---------------------------------------------------------------------------
+// two deliberate choices worth knowing abt.
+// the fabric tick defaults to 4 Hz, not 16 MHz. whole point of the board is
+// watching data ripple across the LED grid and a hop every 83 ns is invisible.
+// send TICKDIV to speed it up, or drive it by hand with STEP.
+// LEDs are pulse-stretched to ~150 ms. even at a slow tick a cell is only
+// active for one tick, and without stretching a fast tick just looks like a
+// uniform dim glow. stretching keeps the ripple legible at any rate.
+// east-edge results get latched at tick and drained to the UART one byte at a
+// time. at the default tick rate theres ~3M clocks between ticks and a byte
+// costs ~1042, so the link keeps up easily. set TICKDIV to full speed and the
+// fabric outruns 115200 baud and results get dropped. thats expected, and its
+// why STEP exists.
 
 `timescale 1ns / 1ps
 `default_nettype none
@@ -48,10 +40,8 @@ module morphcpu_top #(
     output wire [15:0] led           // 4x4 status grid
 );
 
-    // -----------------------------------------------------------------------
     // Power-on reset + button. iCE40 flip-flops come out of configuration
     // zeroed, so the counter starts at 0 and holds reset until it saturates.
-    // -----------------------------------------------------------------------
     reg [7:0] por_cnt = 8'd0;
     wire      por_done = &por_cnt;
 
@@ -68,9 +58,7 @@ module morphcpu_top #(
 
     wire rst = !por_done || !btn_s;
 
-    // -----------------------------------------------------------------------
     // UART
-    // -----------------------------------------------------------------------
     wire [7:0] rx_data;
     wire       rx_valid;
     wire       rx_frame_err;
@@ -103,9 +91,7 @@ module morphcpu_top #(
         .busy   (tx_busy)
     );
 
-    // -----------------------------------------------------------------------
     // Command decode / configuration
-    // -----------------------------------------------------------------------
     wire                   cfg_shift;
     wire                   cfg_bit;
     wire                   tick;
@@ -131,9 +117,7 @@ module morphcpu_top #(
         .loading     (loading)
     );
 
-    // -----------------------------------------------------------------------
     // The fabric
-    // -----------------------------------------------------------------------
     wire [ROWS*DATA_W-1:0] east_out_data;
     wire [ROWS-1:0]        east_out_val;
     wire [ROWS*COLS-1:0]   cell_active;
@@ -157,9 +141,7 @@ module morphcpu_top #(
         .active       (cell_active)
     );
 
-    // -----------------------------------------------------------------------
     // East-edge results -> UART, one row at a time, lowest row first
-    // -----------------------------------------------------------------------
     reg [ROWS-1:0]        pend;
     reg [ROWS*DATA_W-1:0] pend_data;
 
@@ -195,11 +177,9 @@ module morphcpu_top #(
         end
     end
 
-    // -----------------------------------------------------------------------
     // LED pulse stretch. A shared ~5 ms strobe decrements a 4-bit counter per
     // cell; a cell going active reloads its counter to full. 16 x 4 bits of
     // state instead of 16 wide counters.
-    // -----------------------------------------------------------------------
     localparam integer STRETCH_DIV = CLK_HZ / 200;   // ~5 ms
 
     reg [16:0] str_cnt = 17'd0;

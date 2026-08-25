@@ -58,7 +58,7 @@ backwards. every 3v3 consumer sits after core in the ordering so the whole thing
 collapses to one rule, 1v2 has to hit 0.5v before 3v3 shows up. thats in the
 power up supply sequence section plus the bit listing which rails the on chip
 reset actually watches. downside is the 3v3 reg now needs an enable pin which
-killed the part i'd already picked, rip. running 1v2 straight off 5v burns
+killed the part id already picked, rip. running 1v2 straight off 5v burns
 ~114mw in a sot-23-5, abt a 28c rise, fine
 
 went 16mhz on the oscillator instead of 12. the two 12mhz parts i looked at had
@@ -107,7 +107,7 @@ wasnt added to the board yet. bindings dont check ownership they just die. fix
 is adding to board then flipping it
 
 first placement pass came back 87 violations incl pads shorting straight across
-the fpga. i'd put the 16 led series resistors 3.2mm from each led which parked
+the fpga. id put the 16 led series resistors 3.2mm from each led which parked
 the entire ring on top of the qfn in the middle of the board, and 60mm wasnt
 enough area anyway. fix is moving the resistors out to a ring at r=11.5mm and
 growing the board
@@ -182,7 +182,7 @@ top level so the schematic can pick led orientation without touching gateware
 
 the two below are the ones that mattered. this chip has no crystal amp, and the
 obvious power cascade is backwards. both changed the parts list and tbh both are
-things i'd have got wrong if i'd trusted the reference designs floating around
+things id have got wrong if id trusted the reference designs floating around
 instead of just reading the datasheet
 
 **decisions**

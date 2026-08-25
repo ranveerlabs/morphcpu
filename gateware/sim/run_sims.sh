@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Run every MorphCPU testbench under Icarus Verilog.
-# Exits non-zero if any testbench fails, so it works as a pre-commit check.
+# run every MorphCPU testbench under Icarus Verilog.
+# exits non-zero if any testbench fails, so it works as a pre-commit check.
 set -u
 
 cd "$(dirname "$0")"
@@ -22,7 +22,7 @@ for tb in $TBS; do
         continue
     fi
 
-    # Waveforms land next to the .vvp; both are gitignored.
+    # waveforms land next to the .vvp, both gitignored
     if ( cd "$OUT" && vvp "$tb.vvp" ); then
         echo "  $tb OK"
     else

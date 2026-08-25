@@ -1,12 +1,9 @@
-// ---------------------------------------------------------------------------
 // uart_rx.v - 8N1 UART receiver
-//
-// Plain oversampling receiver: find the start-bit falling edge, wait half a
+// plain oversampling receiver. find the start-bit falling edge, wait half a
 // bit time to land in the middle of the start bit, then sample every CLKS_PER
-// clocks. A frame whose stop bit is not high is dropped and flagged, which
-// catches a baud mismatch during bring-up instead of silently corrupting the
-// configuration stream.
-// ---------------------------------------------------------------------------
+// clocks. a frame whose stop bit isnt high gets dropped and flagged, which
+// catches a baud mismatch during bring-up instead of quietly corrupting the
+// config stream.
 
 `timescale 1ns / 1ps
 `default_nettype none

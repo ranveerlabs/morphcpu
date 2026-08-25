@@ -16,7 +16,7 @@ testbenches. Icarus Verilog only, no vendor tools.
 the split matters. `tb_grid` drives the config chain directly, so it tests the
 fabric. `tb_morphcpu_top` goes in through the UART and never reaches into the
 hierarchy, so it also proves the wire protocol and the config bit ordering are
-right. if only the second one breaks, it's the protocol, not the logic.
+right. if only the second one breaks, its the protocol, not the logic.
 
 run one by hand:
 

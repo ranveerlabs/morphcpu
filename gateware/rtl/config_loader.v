@@ -1,31 +1,22 @@
-// ---------------------------------------------------------------------------
 // config_loader.v - host command decoder + fabric configuration shifter
-//
-// Wire protocol (8N1 UART, one command byte then a fixed argument count):
-//
-//   0x01 CONFIG  + 8 bytes  Load the whole 4x4 topology. Bytes are shifted
+// wire protocol, 8N1 UART, one command byte then a fixed argument count:
+//   0x01 CONFIG  + 8 bytes  load the whole 4x4 topology. bytes are shifted
 //                           into the grid 64-bit chain MSB first, so:
 //                             byte i upper nibble -> cell (2i)
 //                             byte i lower nibble -> cell (2i + 1)
 //                           and each nibble is {op[1:0], dir[1:0]}.
 //                             op : 0=PASS 1=INV 2=ADD 3=XOR
 //                             dir: 0=N    1=E   2=S   3=W
-//
 //   0x02 INJECT  + 2 bytes  [row, value] - present the value at the west edge
-//                           of row (0-3) until the next tick consumes it.
-//
+//                           of row (0-3) til the next tick consumes it.
 //   0x03 TICKDIV + 3 bytes  24-bit big-endian clock divider for the fabric
-//                           tick. A value <= 1 means run at full clock rate.
-//                           The default is slow on purpose, see morphcpu_top.
-//
-//   0x04 CLEAR   + 0 bytes  Drop all in-flight data. Configuration survives.
-//
-//   0x05 STEP    + 0 bytes  Advance the fabric exactly one tick, so a value
-//                           can be hand-walked across the LED grid for a demo.
-//
-// Unknown command bytes are ignored, which keeps a resync from a half-sent
-// command cheap: send 0x04 and carry on.
-// ---------------------------------------------------------------------------
+//                           tick. a value <= 1 means run at full clock rate.
+//                           default is slow on purpose, see morphcpu_top.
+//   0x04 CLEAR   + 0 bytes  drop all in-flight data. config survives.
+//   0x05 STEP    + 0 bytes  advance the fabric exactly one tick, so a value
+//                           can be hand-walked across the grid for a demo.
+// unknown command bytes are ignored, which makes resyncing from a half-sent
+// command cheap. send 0x04 and carry on.
 
 `timescale 1ns / 1ps
 `default_nettype none
@@ -38,23 +29,23 @@ module config_loader #(
     input  wire                   clk,
     input  wire                   rst,
 
-    // --- from uart_rx -------------------------------------------------------
+    // from uart_rx
     input  wire [7:0]             rx_data,
     input  wire                   rx_valid,
 
-    // --- to the grid configuration chain ------------------------------------
+    // to the grid configuration chain
     output wire                   cfg_shift,
     output wire                   cfg_bit,
 
-    // --- fabric control -----------------------------------------------------
+    // fabric control
     output wire                   tick,
     output reg                    clr,
 
-    // --- west edge injection ------------------------------------------------
+    // west edge injection
     output reg  [ROWS*DATA_W-1:0] west_in_data,
     output reg  [ROWS-1:0]        west_in_val,
 
-    // --- status -------------------------------------------------------------
+    // status
     output wire                   loading
 );
 
@@ -87,9 +78,7 @@ module config_loader #(
     assign loading = (state == S_SHIFT);
     assign tick    = tick_auto | tick_step;
 
-    // -----------------------------------------------------------------------
     // Command FSM
-    // -----------------------------------------------------------------------
     always @(posedge clk) begin
         if (rst) begin
             state        <= S_IDLE;
@@ -166,10 +155,8 @@ module config_loader #(
         end
     end
 
-    // -----------------------------------------------------------------------
     // Fabric tick generator. Paused while configuration is shifting in, so a
     // half-loaded topology never gets to move data around.
-    // -----------------------------------------------------------------------
     always @(posedge clk) begin
         if (rst) begin
             tickcnt   <= 24'd0;

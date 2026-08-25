@@ -1,11 +1,11 @@
-"""Minimal KiCad s-expression reader + symbol/pin extractor.
+"""minimal KiCad s-expression reader + symbol/pin extractor.
 
-Used by gen_schematic.py. Small on purpose: it only needs to parse symbol
-libraries well enough to find pin positions, and to lift a symbol definition
+used by gen_schematic.py. small on purpose, it only has to parse symbol
+libraries well enough to find pin positions and to lift a symbol definition
 verbatim into a schematic's lib_symbols block.
 
-Deliberately regex-free and backslash-free so the source survives being piped
-through shells and heredocs unharmed.
+regex-free and backslash-free on purpose so the source survives being piped
+thru shells and heredocs unharmed.
 """
 
 BS = chr(92)

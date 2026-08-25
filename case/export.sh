@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Re-export the case from the OpenSCAD source.
-#
-# Set OPENSCAD if the binary is not on PATH, e.g.
+# re-export the case from the OpenSCAD source.
+# set OPENSCAD if the binary isnt on PATH, e.g.
 #   OPENSCAD="/c/Program Files/OpenSCAD (Nightly)/openscad.com" ./export.sh
 set -euo pipefail
 
