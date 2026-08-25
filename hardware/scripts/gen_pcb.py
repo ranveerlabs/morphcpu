@@ -15,6 +15,9 @@ Run:
       hardware/morphcpu.kicad_sch
   <kicad>/bin/python.exe hardware/scripts/gen_pcb.py
 """
+import collections
+import io
+import json
 import math
 import os
 import sys
@@ -28,6 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 HW = os.path.normpath(os.path.join(HERE, ".."))
 NET_FILE = os.path.join(HW, "morphcpu.net")
 OUT = os.path.join(HW, "morphcpu.kicad_pcb")
+PRO = os.path.join(HW, "morphcpu.kicad_pro")
 FPDIR = r"C:/Users/ranve/AppData/Local/Programs/KiCad/10.0/share/kicad/footprints"
 
 # Board geometry, shared with case/morphcpu_case.scad
@@ -112,7 +116,8 @@ PLACEMENT["D17"] = (0, 21.0, 0, FRONT)
 #   r = 0      FPGA
 #   r = 6.5    one decoupling cap per supply pin
 #   r = 9.0    bulk caps, pull-ups, the VCCPLL and VPP filters
-#   r = 11.5   the 16 LED series resistors
+#   r = 11.5   12 of the LED series resistors, each on its own LED's ray
+#   r = 14.5   the other 4, the corner LEDs' resistors
 #   r >= 17    everything with a real body, on the four cardinal directions
 PLACEMENT["U1"] = (0, 0, 0, BACK)
 
@@ -136,13 +141,30 @@ PLACEMENT["R27"] = (9.0 * math.cos(math.radians(267.1)),
 PLACEMENT["FB1"] = (9.0 * math.cos(math.radians(318.6)),
                     9.0 * math.sin(math.radians(318.6)), 318.6, BACK)
 
-# LED series resistors, ordered so each sits roughly outboard of its own LED.
-_by_angle = sorted(range(16), key=lambda i: math.atan2(*reversed(led_xy(i))))
-for k, i in enumerate(_by_angle):
-    ang = k * (360.0 / 16)
+# LED series resistors. Each one sits on the ray from board centre through its
+# own LED, so the anode hop is radial and short.
+#
+# This used to be a uniform 16-slot ring: sort the LEDs by angle, hand out slots
+# at k*22.5 starting from 0. The sort was fine, the handout wasn't. The sorted
+# list starts at -161.6 deg and slot 0 is at 0 deg, so every resistor landed
+# 157-180 deg around the ring from its own LED and all 16 anodes became chords
+# straight under the QFN paddle. 405 mm of ratsnest.
+#
+# A single ring can't be fixed by rotating it either. The 4x4 grid puts the four
+# inner LEDs and the four corner LEDs on the *same* four diagonals, so eight
+# parts want four rays. The corners go one ring further out to break the tie.
+RES_R = 11.5          # inner and middle LEDs
+RES_R_CORNER = 14.5   # the four corners, r=19.09, sharing a ray with the inners
+for i in range(16):
+    x, y = led_xy(i)
+    ang = math.degrees(math.atan2(y, x))
+    radius = RES_R_CORNER if math.hypot(x, y) > 17.0 else RES_R
     r = math.radians(ang)
-    PLACEMENT["R%d" % (i + 1)] = (11.5 * math.cos(r), 11.5 * math.sin(r),
-                                  ang, BACK)
+    # pad 1 is the FPGA side, pad 2 the LED side. Point pad 2 at the LED, which
+    # for the four inner LEDs means facing back inward.
+    rot = ang + 180.0 if math.hypot(x, y) < radius else ang
+    PLACEMENT["R%d" % (i + 1)] = (radius * math.cos(r), radius * math.sin(r),
+                                  rot, BACK)
 
 # Outer region. Cardinal directions only, so the diagonals stay clear for the
 # mounting holes at r=29. Bulk caps and pull-ups live beside their loads rather
@@ -202,6 +224,43 @@ PLACEMENT["C18"] = (6.0, 21.5, 0, BACK)
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# SaveBoard writes a fresh morphcpu.kicad_pro from the board object's defaults,
+# which silently wipes Board Setup: every net class, every DRC minimum, the
+# track and via presets. Found it the hard way, one regen ate the whole netclass
+# pass. Lift those two blocks out before the save and put them back after.
+# ---------------------------------------------------------------------------
+KEEP_KEYS = ("design_settings",)
+
+
+def read_project_settings():
+    if not os.path.exists(PRO):
+        return None
+    with io.open(PRO, encoding="utf-8") as f:
+        d = json.load(f, object_pairs_hook=collections.OrderedDict)
+    return {
+        "board": {k: d.get("board", {}).get(k) for k in KEEP_KEYS
+                  if k in d.get("board", {})},
+        "net_settings": d.get("net_settings"),
+    }
+
+
+def restore_project_settings(keep):
+    if not keep:
+        return
+    with io.open(PRO, encoding="utf-8") as f:
+        d = json.load(f, object_pairs_hook=collections.OrderedDict)
+    for k, v in keep["board"].items():
+        d["board"][k] = v
+    if keep["net_settings"] is not None:
+        d["net_settings"] = keep["net_settings"]
+    with io.open(PRO, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(d, f, indent=2)
+        f.write("\n")
+    n = len(keep["net_settings"]["classes"]) if keep["net_settings"] else 0
+    print("restored Board Setup: %d net classes + DRC rules" % n)
+
+
 def add_edge_circle(board):
     shape = pcbnew.PCB_SHAPE(board)
     shape.SetShape(pcbnew.SHAPE_T_CIRCLE)
@@ -287,7 +346,9 @@ def main():
     add_mounting_holes(board)
 
     board.BuildListOfNets()
+    keep = read_project_settings()
     pcbnew.SaveBoard(OUT, board)
+    restore_project_settings(keep)
 
     print("wrote %s" % OUT)
     print("footprints placed: %d   nets: %d" % (placed, len(nets)))

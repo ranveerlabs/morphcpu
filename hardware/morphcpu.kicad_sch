@@ -6525,6 +6525,18 @@
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "dfd59c62-27c7-512d-87e7-9306562d2a8a")
 	)
+	(global_label "UART_TX_O"
+		(shape bidirectional)
+		(at 59.69 57.15 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "52a71c57-b71e-5fd9-98f4-39b588c6ba58")
+	)
+	(global_label "UART_RX_I"
+		(shape bidirectional)
+		(at 59.69 64.77 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "86b4e3bc-92df-5e3e-946e-8c5bfb758082")
+	)
 	(global_label "LED9"
 		(shape bidirectional)
 		(at 59.69 41.91 180)
@@ -6567,12 +6579,6 @@
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "fafe6327-198b-5ac6-943f-028446f31c7e")
 	)
-	(global_label "UART_RX_I"
-		(shape bidirectional)
-		(at 57.15 139.7 180)
-		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "ef6958ad-aa5a-5e58-b891-c919d8c45db7")
-	)
 	(global_label "CDONE"
 		(shape bidirectional)
 		(at 82.55 132.08 0)
@@ -6584,12 +6590,6 @@
 		(at 57.15 132.08 180)
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "10e92f43-e46c-51ef-a63a-c511fa43db93")
-	)
-	(global_label "UART_TX_O"
-		(shape bidirectional)
-		(at 57.15 142.24 180)
-		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "d4c39cd3-0aaa-5bda-8cf1-e34737d60f4f")
 	)
 	(global_label "RST_N"
 		(shape bidirectional)
@@ -7917,8 +7917,6 @@
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5239e24e-f033-5f2c-b1cd-e71acd0b13d6")
 	)
-	(no_connect (at 59.69 57.15) (uuid "152103d5-c473-5151-bb82-2889817d9da9"))
-	(no_connect (at 59.69 64.77) (uuid "864de856-b64b-51f5-8465-5d6de8624eed"))
 	(no_connect (at 59.69 59.69) (uuid "3360e204-c47e-500a-8bed-c88e55d086c0"))
 	(no_connect (at 59.69 69.85) (uuid "a8330111-5358-5594-bac1-1aac19bfb71b"))
 	(no_connect (at 59.69 74.93) (uuid "37779e87-bfb4-58d2-99e9-4688ca197bf5"))
@@ -7926,6 +7924,8 @@
 	(no_connect (at 59.69 80.01) (uuid "d341e091-29f5-57ce-a651-644b9ad22132"))
 	(no_connect (at 59.69 72.39) (uuid "157cac3c-5ce3-54a2-9f8b-51a3d2ef595a"))
 	(no_connect (at 59.69 67.31) (uuid "e6d83a95-e8f7-5fe0-a70e-c136b50ea8ee"))
+	(no_connect (at 57.15 139.7) (uuid "3491c4fc-1b27-501b-b223-83df69f2437a"))
+	(no_connect (at 57.15 142.24) (uuid "5fb8f5fd-39b1-5cca-a761-ecf46059f9f0"))
 	(no_connect (at 57.15 157.48) (uuid "5c0d0154-88cd-552c-adf8-d756b559ad95"))
 	(no_connect (at 59.69 245.11) (uuid "391d6bad-5721-5d63-9cc9-58db2761dca8"))
 	(no_connect (at 59.69 250.19) (uuid "03c16340-ea3a-5121-970b-88a06c88f385"))

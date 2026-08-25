@@ -32,8 +32,12 @@ set_io -nowarn rst_n      10
 # Named from the FPGA's point of view:
 #   uart_rx_i  <- FT231X TXD   (host to board)
 #   uart_tx_o  -> FT231X RXD   (board to host)
-set_io -nowarn uart_rx_i   6
-set_io -nowarn uart_tx_o   9
+#
+# Bank 0, not 6/9 in the config bank. U2 is due east and 6/9 face west, so the
+# old pair dragged both nets across the whole board. 34 and 36 look straight at
+# it. Same +3V3 VCCIO, no GBIN pin spent, no LED pin touched.
+set_io -nowarn uart_tx_o  34
+set_io -nowarn uart_rx_i  36
 
 # --- 16 LED grid ------------------------------------------------------------
 # Cell index maps to the physical 4x4 grid, cell 0 top-left, row-major:

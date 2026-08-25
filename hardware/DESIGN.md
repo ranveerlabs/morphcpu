@@ -260,8 +260,8 @@ general fabric instead of a global buffer makes timing closure needlessly hard.
 |---|---|---|
 | 35 | IOT_46b_G0 | CLK (from XO) |
 | 10 | IOB_18a | RST_N (button) |
-| 6 | IOB_13b | UART_RX_I (from FT231X TXD) |
-| 9 | IOB_16a | UART_TX_O (to FT231X RXD) |
+| 34 | IOT_44b | UART_TX_O (to FT231X RXD) |
+| 36 | IOT_48b | UART_RX_I (from FT231X TXD) |
 | 2 | IOB_6a | LED0 |
 | 3 | IOB_9b | LED1 |
 | 4 | IOB_8a | LED2 |
@@ -289,6 +289,10 @@ checks this assignment passes:
 - LEDs are split across banks, 2, 3, 4, 11, 12, 13, 18, 19, 21 in bank 1/2 and
   23, 25, 26, 27, 28, 31, 32 in bank 0, so 80 mA is not drawn through one
   VCCIO pin.
+- The UART sits on 34/36 in bank 0, not 6/9 in the config bank. Same +3V3
+  VCCIO either way, and it costs no LED pin and no GBIN pin, but it puts both
+  nets on the face that looks at the FT231X instead of the face opposite it.
+  See [ROUTING.md](ROUTING.md#10-uart_tx_o-and-uart_rx_i-fixed) for the measurement.
 
 this table supersedes the candidate assignment in `gateware/morphcpu.pcf`, which
 must be updated to match before a bitstream is built.
@@ -346,8 +350,8 @@ about $1.50/unit more.
 | VCCIO | FT_3V3 | Sets UART levels to 3.3 V |
 | USBDP | USB_DP_F | Downstream side of the ESD array, see below |
 | USBDM | USB_DM_F | Downstream side of the ESD array, see below |
-| TXD | FPGA pin 6 (UART_RX_I) | Bridge transmits, FPGA receives |
-| RXD | FPGA pin 9 (UART_TX_O) | |
+| TXD | FPGA pin 36 (UART_RX_I) | Bridge transmits, FPGA receives |
+| RXD | FPGA pin 34 (UART_TX_O) | |
 | RESET# | 10 kΩ to VCC | |
 | GND / AGND | GND | |
 | CBUS0 / CBUS1 | optional LEDs | Default TXLED# / RXLED#, useful during bring-up |
@@ -501,7 +505,8 @@ the LED grid owns the centre of the **front**. everything else lives on the
 | 0 | FPGA, QFN-48 |
 | 6.5 mm | One 100 nF per supply pin - seven of them |
 | 9.0 mm | VCCPLL 100R filter and the VPP_2V5 ferrite, just outboard of their caps |
-| 11.5 mm | The 16 LED series resistors, each roughly outboard of its own LED |
+| 11.5 mm | 12 of the LED series resistors, each on its own LED's ray |
+| 14.5 mm | The other 4, for the corner LEDs, which share a diagonal with the inner four |
 | >= 17 mm | Everything with a real body, on the four cardinal directions |
 
 diagonals stay clear from r=22 to r=26 for the mounting holes.
@@ -643,8 +648,8 @@ DRC, `kicad-cli 10.0.5 --severity-all`:
 | Category | Count | Note |
 |---|---|---|
 | `unconnected_items` | 167 | Expected - nothing is routed yet |
-| `silk_overlap` | 2 | Cosmetic reference text, moves when you adjust parts |
-| `silk_over_copper` | 1 | Cosmetic |
+| `silk_overlap` | 1 | Cosmetic reference text, moves when you adjust parts |
+| `silk_over_copper` | 0 | Was 1, cleared when the resistor ring moved |
 | courtyard overlaps | **0** | |
 | shorting pads | **0** | |
 | clearance | **0** | |

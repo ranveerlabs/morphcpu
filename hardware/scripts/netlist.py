@@ -53,22 +53,31 @@ FPGA = ("FPGA_Lattice", "ICE40UP5K-SG48ITR", "ICE40UP5K-SG48I",
         "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm")
 
 # Unit 1 - bank 0 top I/O plus VCCIO_0
-u1_nets = {33: P3V3, 35: "CLK"}
-u1_nc = [34, 36, 37, 38, 39, 40, 41, 42, 43]
+#
+# UART lives on 34/36, not on 6/9 in the config bank. U2 is due east and pins
+# 6/9 face west, so the old assignment dragged both nets across the whole board
+# and through two rings on the way. 34 and 36 face U2 directly.
+#
+# 34 is TX and 36 is RX, not the other way round: U2 pad 4 (its RXD) sits at
+# y=+0.95 and pad 20 (its TXD) at y=+2.86, so feeding the more southerly FPGA
+# pin from the more southerly U2 pad keeps the two traces from crossing.
+u1_nets = {33: P3V3, 35: "CLK", 34: "UART_TX_O", 36: "UART_RX_I"}
+u1_nc = [37, 38, 39, 40, 41, 42, 43]
 for pin in (23, 25, 26, 27, 28, 31, 32):
     u1_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u1_nets, unit=1, nc=u1_nc)
 
 # Unit 2 - bank 1, the configuration bank
 u2_nets = {
-    6: "UART_RX_I", 7: "CDONE", 8: "CRESET_B", 9: "UART_TX_O", 10: "RST_N",
+    7: "CDONE", 8: "CRESET_B", 10: "RST_N",
     14: "FLASH_DO", 15: "FLASH_CLK", 16: "FLASH_CS", 17: "FLASH_DI",
     22: P3V3,
 }
 for pin in (11, 12, 13, 18, 19, 21):
     u2_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 # pin 20 (IOB_25b_G3) deliberately free - keeps a second global clock available
-add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[20])
+# 6 and 9 freed up when the UART moved to bank 0
+add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[6, 9, 20])
 
 # Unit 3 - bank 2
 u3_nets = {1: P3V3}

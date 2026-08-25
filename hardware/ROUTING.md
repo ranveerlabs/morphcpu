@@ -1,9 +1,13 @@
 # routing prep
 
-**still zero tracks and zero zones.** nothing in this pass placed copper or moved a
-part. what changed is Board Setup: ten net classes, JLC-shaped DRC minimums, a
-`morphcpu.kicad_dru` for the rules the setup dialog cant express, and the list below
-of what to route first.
+**still zero tracks and zero zones.** no copper has been placed. what exists is Board
+Setup, ten net classes, JLC-shaped DRC minimums, a `morphcpu.kicad_dru` for the rules
+the setup dialog cant express, and the list below of what to route first.
+
+placement did change once, after the first pass: the 16 LED series resistors moved
+onto their own LEDs' rays, which took the anode ratsnest from 405 mm to 53.4 mm, and
+the UART moved from FPGA pins 6/9 to 34/36. both are generator changes, not hand
+edits. details at the bottom of the route order.
 
 open `morphcpu.kicad_pcb`, work down [route these in this order](#route-these-in-this-order),
 then run the [post-routing checklist](#post-routing-checklist).
@@ -123,182 +127,192 @@ for 2-layer 1 oz FR-4:
 - copper to routed board edge only needs 0.2 mm. were at 0.5 mm, so the round outline
   has room even where J1 overhangs.
 
-btw the DRC state is unchanged from before this pass, still the same 3 cosmetic silk
-violations and 167 unconnected pads. so the new rules didnt break anything that was
-already passing.
+current DRC, `kicad-cli 10.0.5 --severity-all`: **1 violation** and 167 unconnected
+pads. the one violation is a cosmetic silk overlap between the C20 and R27 reference
+fields. zero courtyard overlaps, zero shorting pads, zero clearance errors. it was 3
+violations before the resistors moved, so that pass cleared two of them by accident lol.
 
 ## route these in this order
 
-hardest first. the first two items will eat most of the session.
+hardest first. the LED anodes used to own this list. they dont any more, see
+[the resistor ring](#12-the-led-anodes-fixed-now-trivial) at the bottom.
 
-### 1. the 16 LED anodes, and read this before you draw anything
+### 1. VBUS and VBUS_IN
 
-`LED0_A` thru `LED15_A`, 405 mm of ratsnest across 16 nets, and **all 16 chords pass
-within 3.11 mm of the board centre**, ie straight under the QFN-48 and its paddle.
+0.5 mm wide, 137 mm of ratsnest combined, and it spans the entire back layer
+which is also the only crowded layer. do it first while the rim is still empty,
+cause a 0.5 mm trace cannot squeeze thru gaps that a 0.2 mm signal left behind.
 
-| Net | Length | Closest approach to centre |
-|---|---|---|
-| LED14_A | 26.5 mm | 0.13 mm |
-| LED15_A | 31.7 mm | 0.21 mm |
-| LED12_A | 30.6 mm | 0.22 mm |
-| LED8_A | 25.5 mm | 0.33 mm |
-| LED6_A | 18.9 mm | 0.35 mm |
-| LED5_A | 17.8 mm | 0.38 mm |
-| LED7_A | 27.0 mm | 0.58 mm |
-| LED1_A | 26.0 mm | 0.80 mm |
-| LED9_A | 17.7 mm | 1.16 mm |
-| LED10_A | 18.7 mm | 1.37 mm |
-| LED13_A | 25.8 mm | 1.73 mm |
-| LED11_A | 26.7 mm | 2.03 mm |
-| LED4_A | 25.1 mm | 2.15 mm |
-| LED2_A | 26.1 mm | 2.44 mm |
-| LED0_A | 29.9 mm | 3.06 mm |
-| LED3_A | 31.0 mm | 3.11 mm |
+the awkward bit is that F1, the polyfuse, is at th = 90 deg (north, r = 25-27)
+while J1 is at th = 0 deg (east). so VBUS_IN runs ~26 mm around the rim from the
+connector up to the fuse before VBUS comes back out and fans to U4 (north,
+th = 93 deg), U5 (south, th = 267 deg), FB2 (east, th = 16 deg) and U6 (east,
+th = 345 deg). nine pads spread over ~300 deg of arc.
 
-cause is the resistor ring. [DESIGN.md's placement scheme](DESIGN.md#placement-scheme)
-says the 270 Ohm resistors sit at r = 11.5 mm, "each roughly outboard of its own LED".
-**the board file doesnt do that.** every R sits roughly 180-200 deg around the ring
-from its own D:
+### 2. +3V3
 
-| | D angle | R angle | apart |
-|---|---|---|---|
-| LED0 | D1 133 deg | R1 337 deg | 204 deg |
-| LED1 | D2 105 deg | R2 293 deg | 188 deg |
-| LED2 | D3 69 deg | R3 270 deg | 201 deg |
-| LED3 | D4 43 deg | R4 247 deg | 204 deg |
-| LED5 | D6 130 deg | R6 315 deg | 185 deg |
-| LED12 | D13 227 deg | R13 45 deg | 178 deg |
+25 pads, 147 mm, back layer only, touches basically every part on the board. and
+note the LED current path: the grid sources from FPGA I/O, so the whole **80 mA
+of LED drive arrives thru VCCIO pins 1, 22 and 33**. dont neck +3V3 down anywhere
+between U4 and those three pins.
 
-the ring itself is a clean uniform 22.5 deg ring, its the index-to-angle mapping thats
-a permutation that lands each part opposite its partner. matched properly the anodes
-would be roughly radial hops of 5-8 mm, call it ~112 mm total. as placed theyre 405 mm.
-thats ~290 mm of copper that exists for no reason.
+### 3. GND
 
-the LEDs are front and the resistors are back so each anode needs a via regardless. the
-front layer is nearly empty, only the 17 LEDs and SW1, so on paper you can just run all
-16 across the front centre. **dont, or at least know what it costs.** the paddle via
-field drops the die's only ground into the front pour at exactly that spot. sixteen
-traces thru there shreds the front ground island under the paddle, which is the one
-connection [DESIGN.md](DESIGN.md#supply-and-configuration-pins) calls a hard electrical
-requirement rather than a thermal nicety.
+there is **no zone in the file yet**, zero of them, so all 58 GND pads are
+currently floating and thats most of the 167 unconnected. pour both layers early
+and refill often, every later net changes the pour.
 
-three ways out, pick one before you start:
+the paddle needs its 3x3 or 4x4 field of 0.3 mm vias per DESIGN.md. those already
+match the class geometry.
 
-- **re-index the resistor ring.** all sixteen are identical 270 Ohm 0402, so its a pure
-  positional shuffle, no schematic change, no BOM change. rotate each R to its own D's
-  angle and the problem evaporates. this is a placement edit, which is why its not done
-  here, but its the right answer and DESIGN.md already claims its true.
-- **route the anodes as arcs, not chords.** keep them on the front at r = 11.5-19 mm as
-  an annulus and let them go the long way round the paddle. costs length, keeps the
-  centre solid.
-- **accept it**, keep the paddle island whole on the back pour instead, and stitch hard
-  around the edges of the traces. least work, worst ground.
+### 4. LED0 thru LED15, the pin side
 
-### 2. VBUS and VBUS_IN
+193 mm across 16 nets, each a hop from a QFN pad out to its resistor at
+r = 11.5 mm, or r = 14.5 mm for the four corners. this is now the biggest signal
+group on the board and its a congestion problem, cause 16 escapes plus 7
+decoupling vias plus 6 supply escapes all leave the same 8.7 x 9.8 mm package
+footprint.
 
-0.5 mm wide, 137 mm of ratsnest combined, and it spans the entire back layer which is
-also the only crowded layer. do it early while the rim is still empty, cause a 0.5 mm
-trace cannot squeeze thru gaps that a 0.2 mm signal left behind.
-
-the awkward bit is that F1, the polyfuse, is at th = 90 deg (north, r = 25-27) while J1
-is at th = 0 deg (east). so VBUS_IN runs ~26 mm around the rim from the connector up to
-the fuse before VBUS comes back out and fans to U4 (north, th = 93 deg), U5 (south,
-th = 267 deg), FB2 (east, th = 16 deg) and U6 (east, th = 345 deg). nine pads spread
-over ~300 deg of arc.
-
-### 3. +3V3
-
-25 pads, 147 mm, back layer only, touches basically every part on the board. and note
-the LED current path: the grid sources from FPGA I/O, so the whole **80 mA of LED drive
-arrives thru VCCIO pins 1, 22 and 33**. dont neck +3V3 down anywhere between U4 and
-those three pins.
-
-### 4. GND
-
-there is **no zone in the file yet**, zero of them, so all 58 GND pads are currently
-floating and thats most of the 167 unconnected. pour both layers early and refill
-often, every later net changes the pour.
-
-the paddle needs its 3x3 or 4x4 field of 0.3 mm vias per DESIGN.md. those already match
-the class geometry.
+this total did **not** improve when the resistors moved. 193.4 mm before, 193.4 mm
+after. makes sense, the hop length is set by the ring radius and the ring radius
+didnt change. the whole win was on the anode side.
 
 ### 5. the USB pair
 
-`USB_DP` / `USB_DM` from J1 -> U6, then `USB_DP_F` / `USB_DM_F` from U6 -> U2. short,
-10-14 mm each, but U6 sits at r = 29-32 mm which is *outboard* of J1 at r = 26 mm, so
-the pair goes out to the clamp and back in to the bridge. thats deliberate, DESIGN.md
-wants the trace routed thru the part not stubbed off it.
+`USB_DP` / `USB_DM` from J1 -> U6, then `USB_DP_F` / `USB_DM_F` from U6 -> U2.
+short, 10-14 mm each, but U6 sits at r = 29-32 mm which is *outboard* of J1 at
+r = 26 mm, so the pair goes out to the clamp and back in to the bridge. thats
+deliberate, DESIGN.md wants the trace routed thru the part not stubbed off it.
 
-impedance, plainly: **you cannot hit 90 Ohm differential on 2-layer 1.6 mm FR-4.** a
-50 Ohm single-ended microstrip over 1.6 mm of dielectric wants a trace ~2.9 mm wide.
-not happening on a 70 mm board. the FT231X is full speed, 12 Mbps, over ~15 mm of
-trace, so it works untuned and everyone does it. route them short, symmetric, tightly
-coupled at the 0.25 mm class gap, over unbroken ground. dont pretend to tune it.
+impedance, plainly: **you cannot hit 90 Ohm differential on 2-layer 1.6 mm
+FR-4.** a 50 Ohm single-ended microstrip over 1.6 mm of dielectric wants a trace
+~2.9 mm wide. not happening on a 70 mm board. the FT231X is full speed, 12 Mbps,
+over ~15 mm of trace, so it works untuned and everyone does it. route them short,
+symmetric, tightly coupled at the 0.25 mm class gap, over unbroken ground. dont
+pretend to tune it.
 
 ### 6. CLK
 
 29.5 mm, from X1 pad 3 at r = 25.6 mm / th = 167 deg to U1 pin 35 at r = 4.1 mm /
-th = 327 deg. thats near enough diametric, and it crosses the resistor ring and the
-decap ring on the way in.
+th = 327 deg. thats near enough diametric, and it crosses the resistor ring and
+the decap ring on the way in.
 
-[DESIGN.md](DESIGN.md#placement-scheme) says west holds the flash and the oscillator
-"both kept close to the FPGA because the SPI and clock nets care". X1 is at r = 26.8 mm,
-which makes it the **furthest-out part on the west side**, outboard of U3 at r = 20 mm.
-so the clock net is 29.5 mm and no pin choice fixes that.
+[DESIGN.md](DESIGN.md#placement-scheme) says west holds the flash and the
+oscillator "both kept close to the FPGA because the SPI and clock nets care". X1
+is at r = 26.8 mm, which makes it the **furthest-out part on the west side**,
+outboard of U3 at r = 20 mm. so the clock net is 29.5 mm and no pin choice fixes
+that. moving X1 inward would, if you decide its worth reopening placement.
 
-the other GBIN pins dont help much either. pin 37 is at th = 309 deg, pin 20 at
-th = 78 deg, pin 44 at th = 258 deg. none of them face west. moving CLK to pin 44 gets
-you from 29.5 mm to ~26.0 mm, which isnt worth a schematic change. **moving X1 inward
-is**, if you decide its worth reopening placement.
+**this got slightly harder, and its the one real cost of the UART move.** pin 35
+used to have empty pads either side of it, 34 and 36, so CLK could escape straight
+out between them with nothing to cross. both are UART now. CLK still escapes
+cleanly outward but it has to cross one UART trace to turn west, so plan on a via
+down to the front within a couple of mm of the package and run it west on the
+front, which is nearly empty anyway. one via on a 16 MHz clock over a ground pour
+is a non-event, but its no longer optional the way it was.
 
-keep it on one layer if you can, give it more clearance by hand than the 0.2 mm class
-rule asks for, and dont let it run parallel to the UART for any distance.
+dont let it run parallel to the UART for any distance, and give it more clearance
+by hand than the 0.2 mm class rule asks for.
 
-### 7. LED0 thru LED15, the pin side
-
-193 mm across 16 nets, each a short radial hop from a QFN pad out to its resistor at
-r = 11.5 mm. individually easy, collectively a congestion problem, cause 16 escapes
-plus 7 decoupling vias plus 6 supply escapes all leave the same 8.7 x 9.8 mm package
-footprint. do these after the anodes so you already know which side of the ring each
-resistor ended up on.
-
-### 8. the flash, FLASH_CLK / CS / DI / DO
+### 7. the flash, FLASH_CLK / CS / DI / DO
 
 15-27 mm each. U1 pins 14-17 sit at th = 102-123 deg (north face) but U3 is at
 th = 173-185 deg (west), so they sweep round the northwest quadrant. FLASH_CS and
 FLASH_DO come off U3's far pads at r = 23.6 mm so theyre the long two at 27 mm and
-22 mm. keep CLK and DO about the same length. its only a config-time bus but its the
-bus that decides whether the board boots.
+22 mm. keep CLK and DO about the same length. its only a config-time bus but its
+the bus that decides whether the board boots.
 
-### 9. UART_TX_O and UART_RX_I
+### 8. +1V2
 
-21 mm and 26 mm, and genuinely annoying: **the bridge is east and the FPGA's UART pins
-face west.** U1 pin 9 is at th = 160 deg and pin 6 at th = 184 deg, while U2 pin 4 is at
-th = 357 deg and pin 20 at th = 353 deg. both nets have to get from the west face of the
-QFN, thru the decap ring, thru the resistor ring, and all the way across to the east rim.
+8 pads, 45 mm, U5 (south, th = 267 deg) up to U1 pins 5 and 30 plus the two 100 nF
+at r = 6 mm. straightforward, just wide.
 
-the pin assignment is still soft. [DESIGN.md's post-routing checklist](DESIGN.md#post-routing-checklist)
-still lists "update the PCF" as open and the table there supersedes
-`gateware/morphcpu.pcf`, so nothing is locked. pins 34 (th = 333 deg) and 36
-(th = 321 deg) are free ordinary I/O on the east face and would cut UART_TX_O from 21 mm
-to ~14 mm while removing the crossing entirely. thats a schematic edit so its your call,
-but its the cheapest win available and its free right now in a way it wont be later.
-
-### 10. +1V2
-
-8 pads, 45 mm, U5 (south, th = 267 deg) up to U1 pins 5 and 30 plus the two 100 nF at
-r = 6 mm. straightforward, just wide.
-
-### 11. RST_N, CDONE, CDONE_A
+### 9. RST_N, CDONE, CDONE_A
 
 front-to-back, 19-51 mm. SW1 is front north at r = 23 mm, D17 is front south at
-r = 21 mm, and both their partners are on the back. RST_N is 51 mm of ratsnest over 4
-pads cause SW1's two pole pairs and R28 at th = 328 deg pull it three directions at once.
+r = 21 mm, and both their partners are on the back. RST_N is 51 mm of ratsnest
+over 4 pads cause SW1's two pole pairs and R28 at th = 328 deg pull it three
+directions at once.
 
-### 12. the rest
+### 10. UART_TX_O and UART_RX_I, fixed
+
+**was** 21.0 mm and 26.2 mm crossing the whole board, cause the bridge is east and
+pins 6/9 face west. **now 14.0 mm and 19.2 mm**, both straight shots at U2.
+
+UART moved off pins 6/9 in the config bank onto **34 and 36 in bank 0**, which look
+directly at U2. checked for tradeoffs and there is exactly one, the CLK escape
+above. everything else came back clean:
+
+| Check | Result |
+|---|---|
+| VCCIO level | bank 0 is +3V3 via pin 33, same as bank 1 was. no level change |
+| LED bank balance | untouched, the 80 mA split across banks is unchanged |
+| GBIN pins | 34 and 36 are plain IOT, pin 20 (G3) and pin 37 (G1) stay free |
+| config pins | 34/36 are not SPI (14-17), CRESET_B (8) or CDONE (7) |
+| RGB driver pins | 39-41 still unused |
+| ERC | 0 errors, 0 warnings after the change |
+
+**34 is TX and 36 is RX, not the other way round.** U2 pad 4, its RXD, sits at
+y = +0.95 and pad 20, its TXD, at y = +2.86, both on U2's south edge, and pin 36 is
+the more southerly FPGA pin. feeding the southern target from the southern pin runs
+the two traces parallel. the literal 6->34, 9->36 swap puts them the other way and
+they cross about 14 mm out. one line of difference, and not crossing was the whole
+point of the change.
+
+pins 6 and 9 are free ordinary I/O now.
+
+### 11. the rest
 
 CC1, CC2, EN_3V3, XO_EN, CRESET_B, FLASH_WP, FLASH_HOLD, FT_RESET, FT_VCC, FT_3V3,
 VCCPLL_F, VPP_2V5. all short, all local to one cluster, none over 15 mm. mop-up.
+
+### 12. the LED anodes, fixed, now trivial
+
+**was 405 mm with all 16 chords passing within 3.11 mm of board centre**, ie
+straight under the QFN paddle. **now 53.4 mm, and the closest any of them gets to
+centre is 5.83 mm**, which is the LED pad itself on the four inner cells, not a
+crossing. zero chords under the package.
+
+| | before | after |
+|---|---|---|
+| total anode ratsnest | 405.0 mm | **53.4 mm** |
+| longest single anode | 31.7 mm (LED15_A) | 5.21 mm (LED5_A, LED9_A) |
+| shortest | 17.7 mm | 1.49 mm |
+| chords within 5 mm of centre | 16 | **0** |
+| closest approach to centre | 0.13 mm | 5.83 mm |
+
+each anode is now a radial hop of 1.5 to 5.2 mm from an LED pad to the resistor
+directly inboard or outboard of it. route them last, theyre 16 near-identical
+short stubs and they will fall out of whatever the pour leaves.
+
+the cause was one line in `scripts/gen_pcb.py`. it sorted the LEDs by angle,
+correctly, then handed out ring slots at `k * 22.5` starting from zero. the sorted
+list starts at -161.6 deg. so slot 0 went to the LED at -161.6 deg and every
+resistor landed 157-180 deg from its partner. the sort was never the problem, the
+handout was.
+
+the fix isnt a rotation either, cause a uniform 16-slot ring cant work here at all.
+a 4x4 grid on 9 mm pitch puts the four inner LEDs and the four corner LEDs on the
+**same four diagonals**, 45/135/225/315, so eight parts want four rays. the corner
+resistors go out to r = 14.5 mm and the other twelve stay on r = 11.5 mm, which
+breaks the tie with 3.00 mm between the closest pair.
+
+the LED grid itself did not move. all 16 are still at their exact 9 mm pitch
+positions, cell 0 top-left row-major, front layer, each `D(n+1)` still carrying
+`LED(n)_A`. verified pad by pad after regeneration, cause that mapping is what
+makes the demo mean anything.
+
+### a trap in gen_pcb.py, now fixed
+
+`pcbnew.SaveBoard` rewrites `morphcpu.kicad_pro` from the board object's defaults,
+which silently wipes all of Board Setup: every net class, every DRC minimum, the
+track and via presets. found it by regenerating and watching the previous session's
+netclass work disappear. `gen_pcb.py` now lifts `board.design_settings` and
+`net_settings` out before the save and puts them back after, and prints
+`restored Board Setup: 10 net classes + DRC rules` so you can see it happen.
+
+if that line ever stops appearing, check Board Setup before you route anything.
+
 
 ## post-routing checklist
 
@@ -331,8 +345,8 @@ stays there unchanged.
       two inferred Extended tiers still need confirming in the quote.
 - [ ] **confirm the USB-C overhang** against the board edge and the case cutout
       once the outline is final.
-- [ ] **tidy silkscreen.** three cosmetic text overlaps left from the placement
-      pass. they'll move as you adjust parts anyway.
+- [ ] **tidy silkscreen.** one cosmetic text overlap left, C20 against R27. was
+      three before the resistor ring moved. it'll move as you adjust parts anyway.
 
 new since this pass:
 
@@ -346,5 +360,9 @@ new since this pass:
 - [ ] **BOM/CPL regeneration picks up any net added while routing.** if you added a
       test point, a stitching pad or a zero-ohm link it needs a designator, a footprint
       and an LCSC part or itll fail the PCBA parse.
-- [ ] **decide the LED anode question** and write down which of the three options you
-      took, cause the next person will ask.
+- [ ] **update the PCF for the UART move.** `gateware/morphcpu.pcf` has to put
+      UART_TX_O on pin 34 and UART_RX_I on pin 36, not 9 and 6. this is part of the
+      existing "update the PCF" item but its the bit thats easy to miss, cause the
+      LED pins didnt change and it looks like nothing did.
+- [ ] **confirm Board Setup survived** any `gen_pcb.py` re-run. the script prints
+      `restored Board Setup: 10 net classes + DRC rules` when it worked.
