@@ -467,6 +467,10 @@ on `morphcpu_top`, so it costs nothing to flip:
 **placement is done, routing is not.** open `morphcpu.kicad_pcb` and route it by
 hand, see [what is not here](#what-is-not-here).
 
+net classes, JLC DRC rules and the order to route in are in
+[ROUTING.md](ROUTING.md). read that first, it flags a resistor-ring placement
+problem this section doesn't know about.
+
 | Item | Value |
 |---|---|
 | Shape | Round, **70 mm** diameter (matches `pcb_dia` in [case/morphcpu_case.scad](../case/morphcpu_case.scad)) |
@@ -576,6 +580,9 @@ pair share a footprint, which helped placement.
 ## post-routing checklist
 
 **do this once manual routing is done.** next session's problem, not this one's.
+
+the live working copy, plus the items the netclass pass added, is in
+[ROUTING.md](ROUTING.md#post-routing-checklist). tick boxes there, not here.
 
 - [ ] **DRC.** run it with the JLCPCB constraints (6 mil track/clearance, 0.3 mm
       via hole). zero errors, and review and justify every warning.

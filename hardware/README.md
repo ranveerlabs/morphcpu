@@ -7,6 +7,8 @@ KiCad project for the MorphCPU board.
 | Path | What it is |
 |---|---|
 | [DESIGN.md](DESIGN.md) | the electrical spec. power tree, every net, decoupling, PCB brief, JLC notes. read this first |
+| [ROUTING.md](ROUTING.md) | net classes, JLC DRC rules, what to route in what order, post-routing checklist. read this second |
+| `morphcpu.kicad_dru` | the JLC rules Board Setup can't express. via drill floor, split hole-to-hole, PTH-to-track |
 | `morphcpu.kicad_sch` | schematic, generated. ERC clean, 0 errors 0 warnings |
 | `morphcpu.kicad_pcb` | board. 80 footprints, 92 nets, **0 tracks** |
 | [scripts/](scripts/) | the generators. schematic and placement both come from source, not hand-drawing |
