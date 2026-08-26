@@ -1,20 +1,14 @@
-// morph_cell.v - one reconfigurable MorphCPU cell
-// the atomic unit of the fabric. holds 4 bits of config:
-//     cfg[3:2] = op   (what this cell does to data passing through it)
-//     cfg[1:0] = dir  (which neighbour this cell hands its result to)
-// config arrives over a serial shift chain shared by every cell in the grid,
-// see grid.v for the chain ordering. data arrives from any neighbour routing
-// *at* this cell, gets transformed by op, and lands on out_data/out_val for
-// the neighbour named by dir to pick up next tick.
-// one tick = one hop, so a value takes exactly one tick per cell it travels
-// thru. thats what makes the ripple visible on the LED grid.
-// inputs are scanned in fixed priority order N, E, S, W. first valid input is
-// the primary operand (a), second valid one if there is one is the secondary
-// (b), and if only one input is valid then b falls back to this cells own held
-// value, which turns ADD into an accumulator when a stream loops or repeats.
-// thats what gives ADD/XOR a real meaning, two streams converging on one cell
-// get combined by it. convergence is how you build anything more interesting
-// than a delay line out of this fabric.
+// morph_cell.v - one cell. 4 bits of config:
+//     cfg[3:2] = op   what it does to data passing through
+//     cfg[1:0] = dir  which neighbour gets the result
+//
+// config comes in over the shift chain, see grid.v for the ordering. data
+// arrives from any neighbour routing at this cell, gets op'd, lands on
+// out_data/out_val for whoever dir names to pick up next tick.
+//
+// inputs scanned N E S W. first valid is a, second is b, and with only one
+// input b falls back to the held value. thats what turns ADD into an
+// accumulator on a single stream and a real adder on two.
 
 `timescale 1ns / 1ps
 `default_nettype none

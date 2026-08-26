@@ -2,7 +2,7 @@
 
 generators for the KiCad project. the schematic and the placement are both
 produced from source instead of drawn by hand, so the netlist has exactly one
-authority and regenerating costs nothing.
+authority and regenerating costs nothing
 
 | File | What it does |
 |---|---|
@@ -47,7 +47,7 @@ loose files regenerate.
 the LCSC column comes from a table inside `gen_fab.py` transcribed out of
 [../../docs/BOM.md](../../docs/BOM.md). any row BOM.md hasnt pinned gets an
 **empty** LCSC field, never a guess, and the script lists them on stderr when it
-finishes. right now all 22 are pinned so it should print nothing.
+finishes. right now all 22 are pinned so it should print nothing
 
 gerbers, drill and CPL are all plotted in **absolute** coordinates. the board
 sets no aux axis origin, so the drill/place origin and the page origin are the
@@ -60,13 +60,12 @@ assembly.
 
 connectivity is expressed with global labels, not wire segments. a global label
 joins nets **by name**, so every pin carrying the same net name is connected no
-matter where its symbol sits.
+matter where its symbol sits
 
 drawing wires programmatically means computing polylines between pin endpoints
 and trusting they land exactly on them. a wire that stops 0.01 mm short looks
-connected and isnt. labels delete that failure mode entirely, and ERC plus the
-exported netlist confirm the result. its a legitimate schematic style for a
-dense board and its what makes a generated schematic trustworthy.
+connected and isnt. labels delete that failure mode, and ERC plus the exported
+netlist confirm the result
 
 ## gotchas found the hard way
 

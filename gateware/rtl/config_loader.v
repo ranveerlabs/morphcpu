@@ -1,22 +1,14 @@
-// config_loader.v - host command decoder + fabric configuration shifter
-// wire protocol, 8N1 UART, one command byte then a fixed argument count:
-//   0x01 CONFIG  + 8 bytes  load the whole 4x4 topology. bytes are shifted
-//                           into the grid 64-bit chain MSB first, so:
-//                             byte i upper nibble -> cell (2i)
-//                             byte i lower nibble -> cell (2i + 1)
-//                           and each nibble is {op[1:0], dir[1:0]}.
-//                             op : 0=PASS 1=INV 2=ADD 3=XOR
-//                             dir: 0=N    1=E   2=S   3=W
-//   0x02 INJECT  + 2 bytes  [row, value] - present the value at the west edge
-//                           of row (0-3) til the next tick consumes it.
-//   0x03 TICKDIV + 3 bytes  24-bit big-endian clock divider for the fabric
-//                           tick. a value <= 1 means run at full clock rate.
-//                           default is slow on purpose, see morphcpu_top.
-//   0x04 CLEAR   + 0 bytes  drop all in-flight data. config survives.
-//   0x05 STEP    + 0 bytes  advance the fabric exactly one tick, so a value
-//                           can be hand-walked across the grid for a demo.
-// unknown command bytes are ignored, which makes resyncing from a half-sent
-// command cheap. send 0x04 and carry on.
+// config_loader.v - command decoder + config shifter. 8N1, one command byte
+// then a fixed arg count. full protocol in ../README.md
+//
+//   0x01 CONFIG  8   topology. nibble per cell, byte i upper -> cell 2i,
+//                    lower -> cell 2i+1, nibble is {op[1:0], dir[1:0]}
+//   0x02 INJECT  2   [row, value], sits at the west edge til the next tick
+//   0x03 TICKDIV 3   24-bit BE divider. <=1 is full clock rate
+//   0x04 CLEAR   0   drops in-flight data, config survives
+//   0x05 STEP    0   one tick
+//
+// unknown bytes ignored, so resync from a half-sent command is send 0x04.
 
 `timescale 1ns / 1ps
 `default_nettype none

@@ -1,7 +1,7 @@
 // morphcpu_case.scad - slim open-face frame for the MorphCPU board
-// the face is fully open on purpose. the 16-LED grid is the whole point of the
-// board so nothing sits between it and the viewer. the frame just wraps the
-// edge, lifts the board off the desk, and takes the USB-C strain.
+// face is fully open on purpose so nothing sits between the LED grid and the
+// viewer. the frame just wraps the edge, lifts the board off the desk and takes
+// the USB-C strain.
 // !! DIMENSIONS ARE ASSUMPTIONS, NOT MEASUREMENTS !!
 // the PCB doesnt exist yet so every board-derived number below is a stated
 // assumption. once the layout is finished set pcb_dia, pcb_thickness,

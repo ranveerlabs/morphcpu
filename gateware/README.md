@@ -1,10 +1,8 @@
 # gateware/
 
-verilog for the MorphCPU fabric. targets the Lattice iCE40UP5K-SG48.
+Verilog, targets iCE40UP5K-SG48
 
-## layout
-
-| Path | What it is |
+| | |
 |---|---|
 | [rtl/morph_cell.v](rtl/morph_cell.v) | one cell: config register, 4-op ALU, routing |
 | [rtl/grid.v](rtl/grid.v) | the 4x4 fabric and the neighbour interconnect |
@@ -16,13 +14,12 @@ verilog for the MorphCPU fabric. targets the Lattice iCE40UP5K-SG48.
 | [build.sh](build.sh) | yosys -> nextpnr -> icepack |
 | [sim/](sim/) | testbenches |
 
-its `morph_cell` and not `cell` because `cell` is a reserved word in
-Verilog-2001, it belongs to the `config`/`design` construct. found that one the
-hard way.
+its `morph_cell` not `cell` cuz `cell` is reserved in Verilog-2001, it belongs
+to the `config`/`design` construct. iverilog does not tell you this nicely
 
-## how a cell works
+## cells
 
-4 config bits per cell. an operation and a direction.
+4 config bits, an op and a direction
 
 | `op` | Operation | Result |
 |---|---|---|
@@ -40,15 +37,14 @@ hard way.
 
 inputs get scanned in a fixed priority order, N then E then S then W. first
 valid one is `a`, second valid one is `b`. only one input showed up? `b` falls
-back to whatever the cell is already holding.
+back to whatever the cell is already holding
 
-that fallback is the whole trick. its what gives ADD and XOR meaning:
-**two streams converging on a cell get combined**, and a lone stream walking
-through an ADD cell accumulates against itself instead.
+that fallback is what gives ADD and XOR meaning. two streams converging on a
+cell get combined, and a lone stream walking thru an ADD cell accumulates
+against itself instead.
 
-one `tick` moves data exactly one cell. so a value takes as many ticks as there
-are cells on its path. the path length *is* the latency, theres nothing else to
-it.
+one `tick` moves data exactly one cell, so a value takes as many ticks as there
+are cells on its path.
 
 ## grid and edges
 
@@ -85,9 +81,9 @@ of argument bytes.
 | `0x05` | STEP | 0 | advance exactly one tick |
 
 unknown command bytes get ignored, so recovering from a half-sent command is
-just: send `0x04`, carry on.
+just: send `0x04`, carry on
 
-results leaving the east edge come back as single bytes, lowest row first.
+results leaving the east edge come back as single bytes, lowest row first
 
 ### config packing
 
@@ -108,11 +104,11 @@ CONFIG
 ```
 
 the chain is wired highest-cell-index-first inside the fabric on purpose, so the
-host sends cells in plain ascending order and never has to reverse anything.
+host sends cells in plain ascending order and never has to reverse anything
 
 ### worked example: add two numbers while they travel
 
-route cell 0 south into cell 4, make cell 4 an adder, run east to the edge.
+route cell 0 south into cell 4, make cell 4 an adder, run east to the edge
 
 | Cell | op | dir | nibble |
 |---|---|---|---|
@@ -130,11 +126,11 @@ route cell 0 south into cell 4, make cell 4 an adder, run east to the edge.
                                -> board sends 0x2C (300 truncated to 8 bits)
 ```
 
-that exchange is exactly what `sim/tb_morphcpu_top.v` asserts, byte for byte.
+that exchange is exactly what `sim/tb_morphcpu_top.v` asserts, byte for byte
 
 ## simulation
 
-Icarus Verilog only, no vendor tools.
+Icarus Verilog only, no vendor tools
 
 ```sh
 cd gateware/sim
@@ -162,7 +158,7 @@ gtkwave tb_grid.vcd
 ## building a bitstream
 
 needs the [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build/releases)
-(yosys, nextpnr-ice40, icepack, iceprog) on `PATH`.
+(yosys, nextpnr-ice40, icepack, iceprog) on `PATH`
 
 ```sh
 cd gateware
@@ -187,24 +183,19 @@ icepack build/morphcpu_top.asc build/morphcpu_top.bin
 iceprog build/morphcpu_top.bin
 ```
 
-it also greps the nextpnr log for utilisation and Fmax so the numbers can go
-straight into `JOURNAL.md`.
+greps the nextpnr log for utilisation and Fmax at the end
 
-> **never actually run.** the OSS CAD Suite isnt installed on this machine, so
-> the synth and PnR flow above is written but unexercised. simulation is the part
-> thats genuinely been run. put real LUT counts and Fmax in the journal the
-> first time `build.sh` completes.
+**this has never run.** OSS CAD Suite isnt installed here. the flow above is
+written and unexercised. sim is the part thats actually been run.
 
-`morphcpu.pcf` also still needs updating from the
-[user I/O assignment](../hardware/DESIGN.md#user-io-assignment) in DESIGN.md
-before a bitstream means anything, its current pin numbers are candidates.
+`morphcpu.pcf` agrees with the
+[user I/O assignment](../hardware/DESIGN.md#user-io-assignment) in DESIGN.md,
+all 20 pins, checked. DESIGN.md is the source of truth they can drift.
 
 ## demo notes
 
-the tick defaults to **4 Hz**, not 16 MHz. a hop every 62.5 ns is invisible and
-the entire point of the board is watching data cross the LED grid. LEDs are also
-pulse-stretched to about 150 ms so a single-tick visit stays legible.
+tick defaults to 4 Hz. a hop every 62.5 ns is invisible. LEDs are pulse
+stretched to ~150 ms so a single-tick visit still reads
 
 at full tick rate the fabric outruns 115200 baud and east-edge results get
-dropped. thats expected. use `STEP` or a slow `TICKDIV` when you want every
-result back.
+dropped. use `STEP` or a slow `TICKDIV` if you want all of them

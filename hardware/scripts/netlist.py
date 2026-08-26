@@ -36,32 +36,24 @@ FP_FB = "Inductor_SMD:L_0603_1608Metric"
 
 components = []
 
-
 def add(ref, lib, sym, value, fp, nets, unit=1, nc=None, at=None):
     components.append({
         "ref": ref, "lib": lib, "sym": sym, "value": value, "fp": fp,
         "unit": unit, "nets": nets, "nc": nc or [], "at": at,
     })
 
-
-# U1 - iCE40UP5K-SG48I, four units
 FPGA = ("FPGA_Lattice", "ICE40UP5K-SG48ITR", "ICE40UP5K-SG48I",
         "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm")
 
-# Unit 1 - bank 0 top I/O plus VCCIO_0
-# UART lives on 34/36, not on 6/9 in the config bank. U2 is due east and pins
-# 6/9 face west, so the old assignment dragged both nets across the whole board
-# and through two rings on the way. 34 and 36 face U2 directly.
-# 34 is TX and 36 is RX, not the other way round: U2 pad 4 (its RXD) sits at
-# y=+0.95 and pad 20 (its TXD) at y=+2.86, so feeding the more southerly FPGA
-# pin from the more southerly U2 pad keeps the two traces from crossing.
+# UART on 34/36 not 6/9. U2 sits due east and 6/9 face west.
+# TX on 34 and RX on 36 not the other way round, U2 pad 4 is at y=+0.95 and pad
+# 20 at y=+2.86 so this way the two traces dont cross
 u1_nets = {33: P3V3, 35: "CLK", 34: "UART_TX_O", 36: "UART_RX_I"}
 u1_nc = [37, 38, 39, 40, 41, 42, 43]
 for pin in (23, 25, 26, 27, 28, 31, 32):
     u1_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u1_nets, unit=1, nc=u1_nc)
 
-# Unit 2 - bank 1, the configuration bank
 u2_nets = {
     7: "CDONE", 8: "CRESET_B", 10: "RST_N",
     14: "FLASH_DO", 15: "FLASH_CLK", 16: "FLASH_CS", 17: "FLASH_DI",
@@ -69,22 +61,19 @@ u2_nets = {
 }
 for pin in (11, 12, 13, 18, 19, 21):
     u2_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
-# pin 20 (IOB_25b_G3) deliberately free - keeps a second global clock available
-# 6 and 9 freed up when the UART moved to bank 0
+# 20 stays free, second global clock. 6 and 9 freed up by the UART move
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[6, 9, 20])
 
-# Unit 3 - bank 2
 u3_nets = {1: P3V3}
 for pin in (2, 3, 4):
     u3_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u3_nets, unit=3,
     nc=[44, 45, 46, 47, 48])
 
-# Unit 4 - supplies
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3],
     {5: P1V2, 24: VPP, 29: VCCPLL, 30: P1V2, 49: GND}, unit=4)
 
-# U2 - FT231XS-R.  TXD on the bridge goes to the FPGA's RX.
+# bridge TXD goes to the FPGA RX, the usual trap
 add("U2", "Interface_USB", "FT231XS", "FT231XS-R",
     "Package_SO:SSOP-20_3.9x8.7mm_P0.635mm",
     {15: FT_VCC, 13: FT3V3, 3: FT3V3, 11: "USB_DP_F", 12: "USB_DM_F",
@@ -92,20 +81,17 @@ add("U2", "Interface_USB", "FT231XS", "FT231XS-R",
      6: GND, 16: GND},
     nc=[1, 2, 5, 7, 8, 9, 10, 17, 18, 19])
 
-# U3 - W25Q32JVSSIQ configuration flash
 add("U3", "Memory_Flash", "W25Q32JVSS", "W25Q32JVSSIQ",
     "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm",
     {1: "FLASH_CS", 2: "FLASH_DO", 3: "FLASH_WP", 4: GND,
      5: "FLASH_DI", 6: "FLASH_CLK", 7: "FLASH_HOLD", 8: P3V3})
 
-# WP# and HOLD# held high through pull-ups rather than strapped to the rail:
-# same static level, but quad mode stays reachable and ERC stops flagging a
-# bidirectional pin wired straight to a power output.
+# pullups not strapped to the rail. same level, quad mode stays reachable, and
+# ERC stops flagging a bidir pin on a power output
 add("R29", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_WP"})
 add("R30", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_HOLD"})
 
-# Regulators.  Both SOT-23-5, same family, same footprint.
-# 1V2 is always on; 3V3 is held off by an RC on CE until 1V2 is up.
+# same footprint both. 1V2 always on, 3V3 held off by an RC on CE
 add("U4", "Regulator_Linear", "ME6211C33M5", "ME6211C33M5G-N",
     "Package_TO_SOT_SMD:SOT-23-5",
     {1: VBUS, 2: GND, 3: EN3V3, 5: P3V3}, nc=[4])
@@ -114,12 +100,11 @@ add("U5", "Regulator_Linear", "ME6211C12M5", "ME6211C12M5G-N",
     "Package_TO_SOT_SMD:SOT-23-5",
     {1: VBUS, 2: GND, 3: VBUS, 5: P1V2}, nc=[4])
 
-# X1 - 16 MHz active oscillator, output into the GBIN pin
 add("X1", "Oscillator", "ASE-xxxMHz", "1532H4-16000JWPDTSNL",
     "Oscillator:Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm",
     {1: "XO_EN", 2: GND, 3: "CLK", 4: P3V3})
 
-# J1 - USB-C receptacle, sink only
+# sink only
 add("J1", "Connector", "USB_C_Receptacle_USB2.0_16P", "TYPE-C-31-M-12",
     "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
     {"A1": GND, "A12": GND, "B1": GND, "B12": GND,
@@ -128,48 +113,40 @@ add("J1", "Connector", "USB_C_Receptacle_USB2.0_16P", "TYPE-C-31-M-12",
      "A5": "CC1", "B5": "CC2", "SH": GND},
     nc=["A8", "B8"])
 
-# U6 - USBLC6-2SC6 ESD array, in the D+/D- path between J1 and U2
-# Pins 1/6 are the two ends of one protected line and 3/4 the other; the pair
-# is shorted inside the package. Giving each end its own net name is what makes
-# the trace route *through* the part instead of stubbing off it, so the clamp
-# sits between the connector and the bridge where it can do its job. Place it
-# hard against J1 - protection downstream of a long trace protects nothing.
+# pins 1/6 are one protected line and 3/4 the other, shorted inside the package.
+# separate net names per end force the trace thru the part instead of stubbing
+# off it. keep it hard against J1
 add("U6", "Power_Protection", "USBLC6-2SC6", "USBLC6-2SC6",
     "Package_TO_SOT_SMD:SOT-23-6",
     {1: "USB_DM", 2: GND, 3: "USB_DP", 4: "USB_DP_F", 5: VBUS,
      6: "USB_DM_F"})
 
-# Reset button - to a user I/O, not CRESET_B
-# Footprint follows the part: the TL3342 land pattern is 6.3 x 3.8 mm pad
-# pitch, the XKB TS-1187A that JLC stocks as a Basic part is 6.0 x 3.75 mm.
-# Close enough to look fine on screen and not close enough to solder reliably,
-# so use the land pattern KiCad ships for the part actually being fitted.
+# user I/O not CRESET_B. footprint follows the part, TL3342 is 6.3 x 3.8 pad
+# pitch and the TS-1187A JLC stocks is 6.0 x 3.75. looks fine on screen, does
+# not solder
 add("SW1", "Switch", "SW_Push", "TS-1187A-B-A-B",
     "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A", {1: "RST_N", 2: GND})
 add("R28", "Device", "R", "10k", FP_R, {1: P3V3, 2: "RST_N"})
 
-# LED grid - 16 of them, pin sources 5 mA through 270R into the LED
-# R = (3.3 - 2.0) / 5mA = 260 -> 270R (E24).  LED_ACTIVE_LOW = 0.
+# R = (3.3 - 2.0) / 5mA = 260 -> 270R E24. LED_ACTIVE_LOW = 0
 for i in range(16):
     add("R%d" % (i + 1), "Device", "R", "270", FP_R,
         {1: LED_NETS[i], 2: "LED%d_A" % i})
     add("D%d" % (i + 1), "Device", "LED", "KT-0603R", FP_LED,
         {1: GND, 2: "LED%d_A" % i})
 
-# Configuration control
 add("R17", "Device", "R", "10k", FP_R, {1: P3V3, 2: "CRESET_B"})
 add("R18", "Device", "R", "10k", FP_R, {1: P3V3, 2: "CDONE"})
 add("R19", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_CS"})
 add("R20", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FT_RESET"})
 add("R21", "Device", "R", "10k", FP_R, {1: P3V3, 2: "XO_EN"})
 
-# CDONE indicator - lit means the FPGA configured
+# CDONE indicator, lit means configured
 add("R22", "Device", "R", "1k", FP_R, {1: P3V3, 2: "CDONE_A"})
-# Same physical LED as the grid - the value field carries the part, not the
-# function, so this row groups with D1-D16 in the BOM instead of splitting off.
+# same part as the grid LEDs, value field says so, so it groups in the BOM
 add("D17", "Device", "LED", "KT-0603R", FP_LED, {1: "CDONE", 2: "CDONE_A"})
 
-# USB-C CC pull-downs.  Two separate 5.1k, never shared.
+# two separate 5.1k, never shared
 add("R23", "Device", "R", "5k1", FP_R, {1: "CC1", 2: GND})
 add("R24", "Device", "R", "5k1", FP_R, {1: "CC2", 2: GND})
 
@@ -177,8 +154,8 @@ add("R24", "Device", "R", "5k1", FP_R, {1: "CC2", 2: GND})
 add("F1", "Device", "Polyfuse", "500mA", "Fuse:Fuse_1206_3216Metric",
     {1: "VBUS_IN", 2: VBUS})
 
-# RC on CE: 100k/100nF = 10 ms, far longer than the 1V2 rail takes to rise.
-# 10k bleed so CE discharges on power-down and the sequence repeats.
+# 100k/100nF = 10 ms on CE, way longer than 1V2 takes to rise. 10k bleed so CE
+# discharges on power-down and the sequence repeats
 add("R25", "Device", "R", "100k", FP_R, {1: VBUS, 2: EN3V3})
 add("C19", "Device", "C", "100n", FP_C, {1: EN3V3, 2: GND})
 add("R26", "Device", "R", "10k", FP_R, {1: EN3V3, 2: GND})

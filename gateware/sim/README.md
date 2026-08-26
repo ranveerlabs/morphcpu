@@ -1,22 +1,47 @@
 # gateware/sim/
 
-testbenches. Icarus Verilog only, no vendor tools.
+iverilog only, no vendor tools
 
 ```sh
 ./run_sims.sh
 ```
 
-18/18 checks passing.
+what that prints, tail end of it:
 
-| Testbench | Covers |
-|---|---|
-| [tb_grid.v](tb_grid.v) | the fabric. per-tick latency, all four ops, two streams converging, activity taps |
-| [tb_morphcpu_top.v](tb_morphcpu_top.v) | end to end over the real UART protocol |
+```
+  ok  tick 4 -> only cell 3 lit
 
-the split matters. `tb_grid` drives the config chain directly, so it tests the
-fabric. `tb_morphcpu_top` goes in through the UART and never reaches into the
-hierarchy, so it also proves the wire protocol and the config bit ordering are
-right. if only the second one breaks, its the protocol, not the logic.
+PASS: 13/13 checks
+
+tb_grid.v:252: $finish called at 4040000 (1ps)
+  tb_grid OK
+
+==============================================================
+  tb_morphcpu_top
+==============================================================
+VCD info: dumpfile tb_morphcpu_top.vcd opened for output.
+TEST 1: PASS chain across row 0, driven entirely over UART
+  ok  PASS chain result over UART -> 0xa5
+TEST 2: INV in the chain
+  ok  INV chain result over UART -> 0x5a
+TEST 3: ADD convergence across two rows
+  ok  ADD convergence result over UART -> 0x2c
+TEST 4: LEDs track fabric activity
+  ok  all LEDs dark after CLEAR
+  ok  led[0] lit while cell 0 holds the value
+
+PASS: 5/5 checks
+
+tb_morphcpu_top.v:228: $finish called at 7044773750 (1ps)
+  tb_morphcpu_top OK
+
+RESULT: all testbenches passed
+```
+
+13 + 5. [tb_grid.v](tb_grid.v) drives the config chain directly so it only tests
+the fabric. [tb_morphcpu_top.v](tb_morphcpu_top.v) goes in thru the UART and
+never reaches into the hierarchy, so it covers the wire protocol and the config
+bit ordering too. second one breaking on its own points at the protocol
 
 run one by hand:
 

@@ -1,22 +1,19 @@
-// morphcpu_top.v - top level for the iCE40UP5K-SG48
-// ties the fabric to the outside world:
-//   16 MHz oscillator ---> clk
-//   FT231X TXD     ---> uart_rx_i   (host -> board: config, inject, control)
-//   FT231X RXD     <--- uart_tx_o   (board -> host: east-edge results)
-//   reset button   ---> rst_n       (active low, external pull-up)
-//   16 LEDs        <--- led[15:0]   (one per cell, cell 0 = led[0])
-// two deliberate choices worth knowing abt.
-// the fabric tick defaults to 4 Hz, not 16 MHz. whole point of the board is
-// watching data ripple across the LED grid and a hop every 83 ns is invisible.
-// send TICKDIV to speed it up, or drive it by hand with STEP.
-// LEDs are pulse-stretched to ~150 ms. even at a slow tick a cell is only
-// active for one tick, and without stretching a fast tick just looks like a
-// uniform dim glow. stretching keeps the ripple legible at any rate.
-// east-edge results get latched at tick and drained to the UART one byte at a
-// time. at the default tick rate theres ~3M clocks between ticks and a byte
-// costs ~1042, so the link keeps up easily. set TICKDIV to full speed and the
-// fabric outruns 115200 baud and results get dropped. thats expected, and its
-// why STEP exists.
+// morphcpu_top.v - top level, iCE40UP5K-SG48
+//   16 MHz osc  -> clk
+//   FT231X TXD  -> uart_rx_i
+//   FT231X RXD  <- uart_tx_o
+//   button      -> rst_n (active low, external pullup)
+//   16 LEDs     <- led[15:0], cell 0 = led[0]
+//
+// tick defaults to 4 Hz. 62.5 ns a hop is invisible. TICKDIV to speed it up or
+// STEP to walk it by hand.
+//
+// LEDs pulse stretched to ~150 ms, a cell is only active for one tick and
+// without it a fast tick is just a dim glow.
+//
+// east results latch at tick and drain to the UART a byte at a time. ~3M clocks
+// between ticks vs ~1042 for a byte so it keeps up. at full speed the fabric
+// outruns 115200 and results get dropped, hence STEP.
 
 `timescale 1ns / 1ps
 `default_nettype none

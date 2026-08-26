@@ -51,7 +51,7 @@ adding both would double-count the parts.
 
 | Item | Basis | Cost |
 |---|---|---|
-| parts subtotal, rows 1-22 (informational, already inside the JLC quote) | 5 units | *$88.06* |
+| parts subtotal, rows 1-22 (informational, already inside the JLC quote) | 5 units | $88.06 |
 | JLCPCB PCBA order: fab + parts + assembly | 5 units | $198.15 |
 | case filament | 1 unit, off-PCB | $0.26 |
 | | | **$198.41** |
@@ -156,9 +156,9 @@ FB1 feeds VPP_2V5 on the FPGA (config only), both sit way inside that. a 0603
 
 ## the case filament number
 
-**1 unit, not 5.** the Gadget Market rule is that off-PCB parts only have to
-cover one assembled demo unit, and the case is off-PCB. five frames would be
-64.5 g and $1.29 if anyone ever wants them.
+**1 unit, not 5.** off-PCB parts only have to cover one assembled demo unit
+and the case is off-PCB. five frames would be 64.5 g and $1.29 if anyone ever
+wants them.
 
 **$0.26 (12.9 g PLA @ 20% infill, $19.99/kg)**
 
