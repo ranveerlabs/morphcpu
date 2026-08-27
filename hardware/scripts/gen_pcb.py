@@ -249,7 +249,11 @@ def main():
     board = pcbnew.CreateEmptyBoard()
 
     # Board stackup / rules
-    board.SetCopperLayerCount(2)
+    # 4 layers. 2 could not route it, the resistor ring and the decap ring both
+    # sit inside the F.Cu keepout so every LED escape was stuck on B.Cu alone
+    board.SetCopperLayerCount(4)
+    board.SetLayerType(pcbnew.In1_Cu, pcbnew.LT_SIGNAL)
+    board.SetLayerType(pcbnew.In2_Cu, pcbnew.LT_SIGNAL)
     settings = board.GetDesignSettings()
     settings.SetBoardThickness(mm(1.6))
 
