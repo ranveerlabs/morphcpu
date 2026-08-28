@@ -1,8 +1,14 @@
 # routing prep
 
-Still zero tracks and zero zones, no copper placed. whats here is Board Setup,
-ten net classes, JLC-shaped DRC minimums, a `morphcpu.kicad_dru` for the rules
-the dialog cant express, and the order to route in
+Copper is placed now, on 4 layers: 666 tracks and 141 vias, four GND pours and
+the one F.Cu rule area. What this file still holds is Board Setup, ten net classes,
+JLC-shaped DRC minimums, a `morphcpu.kicad_dru` for the rules the dialog cant
+express, and the order to route in
+
+current state: **0 DRC violations, 10 unrouted connections**. it was 1 violation
+and 17 unrouted before this pass. see [what is left unrouted](#what-is-left-unrouted)
+at the bottom - six of the ten cannot be added as extra copper at all, the pads are
+walled in by the existing fanout and need neighbouring nets ripped up first.
 
 placement did move once after the first pass. the 16 LED resistors went onto
 their own LEDs' rays which took the anode ratsnest 405 mm -> 53.4 mm, and the
@@ -127,15 +133,22 @@ for 2-layer 1 oz FR-4:
 - copper to routed board edge only needs 0.2 mm. were at 0.5 mm, so the round outline
   has room even where J1 overhangs.
 
-current DRC, `kicad-cli 10.0.5 --severity-all`: **1 violation** and 167 unconnected
-pads. the one violation is a cosmetic silk overlap between the C20 and R27 reference
-fields. zero courtyard overlaps, zero shorting pads, zero clearance errors. it was 3
-violations before the resistors moved, so that pass cleared two of them by accident lol.
+current DRC, `kicad-cli 10.0.5 --severity-all`: **0 violations** and **10 unconnected
+items** (was 167 unconnected pads before any copper went down). the C20/R27 silk
+overlap is gone - C20s reference field moved 1.3 mm in X, both run vertically and
+were stacked in Y. zero courtyard overlaps, zero shorting pads, zero clearance errors.
+
+**run DRC with the `.kicad_pro` beside the board.** `kicad-cli pcb drc` on a lone
+`.kicad_pcb` silently falls back to *default* Board Setup, not this one, and then
+reports every 0.15 mm track as a `track_width` error against a 0.2 mm minimum that
+isnt ours. copy `morphcpu.kicad_pro` and `morphcpu.kicad_dru` next to any board you
+verify out of tree.
 
 ## the freerouting attempt
 
-reverted, board is back to 0 tracks. keeping the numbers here so nobody spends
-another evening finding out the same thing.
+the *first* attempt was reverted and the board went back to 0 tracks. a later pass
+did land - thats where the copper on the board now came from - but keeping the
+numbers here so nobody spends another evening rediscovering the setup.
 
 freerouting 2.3.0 needs **Java 25**, not 21. the jar is class file version 69 and
 Temurin 21 refuses to load it. winget install of the Temurin MSI wants elevation
@@ -414,3 +427,83 @@ new since this pass:
       and an LCSC part or itll fail the PCBA parse.
 - [ ] **confirm Board Setup survived** any `gen_pcb.py` re-run. the script prints
       `restored Board Setup: 10 net classes + DRC rules` when it worked.
+
+## what is left unrouted
+
+10 connections, from `kicad-cli pcb drc`, measured 28 Aug 2026 against the board as
+committed. seven of the original seventeen went in this pass: GND fragments at C4.2,
+C12.2 and C7.2, plus VCCPLL_F, VBUS_IN, LED2 and LED15. 84 segments and 11 vias, all
+of it exact-clearance checked against every foreign copper item before placement, and
+nothing already on the board was moved.
+
+| # | Net | From | To | Layers |
+|---|---|---|---|---|
+| 2 | GND | C5.2 144.3327,95.9255 | main B.Cu pour | B.Cu |
+| 4 | GND | C21.2 155.2335,95.3814 | main B.Cu pour | B.Cu |
+| 5 | GND | U2.16 172.6000,100.3175 | main B.Cu pour | B.Cu |
+| 7 | CDONE | track end 149.2125,119.7045 | U1.7 146.5625,99.7500 | F.Cu -> B.Cu |
+| 8 | LED5_A | R6.2 142.2289,92.2289 | D6.2 146.2875,95.5000 | B.Cu -> F.Cu |
+| 9 | +3V3 | U1.22 151.7500,96.5625 | U1.33 153.4375,101.2500 | B.Cu |
+| 10 | +3V3 | FB1.1 156.1603,94.5690 | U1.22 151.7500,96.5625 | B.Cu |
+| 11 | +1V2 | U1.5 146.5625,100.7500 | U1.30 153.4375,99.7500 | B.Cu |
+| 12 | +1V2 | track end 155.9286,103.8361 | U1.30 153.4375,99.7500 | B.Cu |
+| 16 | LED12 | R13.1 140.1076,109.8924 | U1.27 153.4375,98.2500 | B.Cu |
+
+DRC reports the three GND items at 185.0,100.0, which is the zone bounding-box corner
+and tells you nothing. the pad coordinates above come from clustering the GND net
+instead.
+
+### six of these cannot be routed by adding copper
+
+reachability per connection, each net on its own, most permissive legal geometry the
+rules allow (0.20 mm track, 0.6/0.3 mm via, 0.2 mm clearance), flood-filled across all
+four layers:
+
+| Blocked | Why |
+|---|---|
+| 2, 4, 5 (GND) | the fragment's B.Cu pocket never touches the main pour and holds no 0.6 mm via site. C5.2 reaches 1956 grid cells, C21.2 579, U2.16 1831 - none of them off B.Cu |
+| 9, 10 (+3V3) | U1.22 reaches **51 cells**, about 0.13 mm2, walled by the LED8 and LED9 escapes and the U1.49 paddle. no direction clears more than 0.50 mm so no via fits either |
+| 16 (LED12) | R13.1's side is wide open, U1.27's pocket is sealed by the LED11 and LED13 escapes |
+
+7, 8, 11 and 12 are individually routable - they lost to contention for the same
+channels, not to geometry.
+
+the underlying cause is the U1 fanout. tightest genuine foreign-copper clearance in
+the pad ring is **0.2000 mm exactly**, pads against the U1.49 paddle, which is the
+netclass minimum with zero slack. the escapes leave 0.5 mm channels and a 0.6 mm via
+needs 0.5 mm of clearance radius, so nothing can change layer inside a channel. once a
+channel dead-ends the net is stuck on B.Cu.
+
+finishing the board means ripping up and rerouting the U1 fanout - LED8, LED9, LED11,
+LED13, LED14, UART_TX_O at minimum - not just adding tracks. **do this one in pcbnew
+by hand.** two automated attempts are recorded below and neither got there.
+
+### two automated attempts, both short
+
+**a grid maze router** (0.05 mm cells, 4 layers, 45 degrees, exact-clearance gated).
+7/17 with nothing ripped up, 12/23 with the fanout ripped, oscillating between 9 and
+12 across rounds and never converging. its paths are the problem: 39 segments and 4
+vias for one LED net where the existing fanout is compact, so it burns the channel
+space it then needs. rip-up-and-retry without a history cost just thrashes - it tore
+up exactly the nets it had placed the round before.
+
+**freerouting 2.3.0, second go**, now that the two things the first attempt wanted are
+in place: the F.Cu keepout exists and the GND pours are filled. it did not help.
+
+- the DSN *does* carry the keepout correctly, all 16 per-LED windows come through as
+  `(window (polygon F.Cu ...))` inside the `wire_keepout`. the LED grid is safe now.
+- **`(type fix)` on the wiring is ignored.** marking all 573 existing wires `fix` gave
+  a byte-identical score to leaving them `route` - 593.13, 50 unrouted, 106
+  violations. freerouting rips the board up regardless, so you cannot ask it to only
+  fill in the gaps.
+- **GND is the whole cost.** with GND in the netlist a pass took 462-494 s; deleting
+  the `(net GND ...)` block from the DSN dropped fanout from 80 s to 3.7 s and a pass
+  to ~30 s. `-inc GND` still does nothing, deleting the net block is what works.
+- it stalls anyway. GND-excluded it sat at 45-46 unrouted and 72 violations across
+  four passes, score bouncing 483.75 -> 492.29 -> 483.75. that is far worse than the
+  10 the board already has, so nothing was imported.
+
+the LED grid keepout is a rectangle with **16 windows punched in it**, one per LED, so
+a bounding-box test says every anode escape violates it when none of them do. test it
+as outline-minus-holes. it also reads `(vias allowed)` - blocking vias with it costs
+you every GND stitch site under the grid.
