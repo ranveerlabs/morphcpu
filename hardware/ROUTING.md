@@ -7,8 +7,8 @@ express, and the order to route in
 
 current state: **0 DRC violations, 10 unrouted connections**. it was 1 violation
 and 17 unrouted before this pass. see [what is left unrouted](#what-is-left-unrouted)
-at the bottom - six of the ten cannot be added as extra copper at all, the pads are
-walled in by the existing fanout and need neighbouring nets ripped up first.
+at the bottom - the ten need the U1 fanout rearranged, not just extra copper - the pads are
+walled in by neighbouring escapes.
 
 placement did move once after the first pass. the 16 LED resistors went onto
 their own LEDs' rays which took the anode ratsnest 405 mm -> 53.4 mm, and the
@@ -453,30 +453,43 @@ DRC reports the three GND items at 185.0,100.0, which is the zone bounding-box c
 and tells you nothing. the pad coordinates above come from clustering the GND net
 instead.
 
-### six of these cannot be routed by adding copper
+### what is actually blocking each one
 
-reachability per connection, each net on its own, most permissive legal geometry the
-rules allow (0.20 mm track, 0.6/0.3 mm via, 0.2 mm clearance), flood-filled across all
-four layers:
+reachability per connection, each net on its own, most permissive legal geometry
+the rules allow (0.20 mm track, 0.6/0.3 mm via, 0.2 mm clearance), flood-filled
+across all four layers:
 
-| Blocked | Why |
+| | |
 |---|---|
 | 2, 4, 5 (GND) | the fragment's B.Cu pocket never touches the main pour and holds no 0.6 mm via site. C5.2 reaches 1956 grid cells, C21.2 579, U2.16 1831 - none of them off B.Cu |
-| 9, 10 (+3V3) | U1.22 reaches **51 cells**, about 0.13 mm2, walled by the LED8 and LED9 escapes and the U1.49 paddle. no direction clears more than 0.50 mm so no via fits either |
-| 16 (LED12) | R13.1's side is wide open, U1.27's pocket is sealed by the LED11 and LED13 escapes |
+| 9, 10 (+3V3) | U1.22 reaches **51 cells** as the board stands, about 0.13 mm2, walled by the LED8/LED9 escapes and the U1.49 paddle |
+| 16 (LED12) | U1.27's pocket is sealed by the LED11 and LED13 escapes |
+| 7, 11, 12 | individually routable; they lose to contention for the same channels |
 
-7, 8, 11 and 12 are individually routable - they lost to contention for the same
-channels, not to geometry.
+**9, 10 and 16 are not impossible.** an earlier version of this file said they
+could not be routed by adding copper at all. that was too strong, and a
+whole-fanout group reroute disproved it: rip out U1's entire north row and east
+column (17 two-pad nets) and re-solve them together with +3V3, +1V2 and LED12
+competing on equal terms from the start, and **all three place**. what defeats the
+one-net-at-a-time approach is that the channel assignment predates them - +3V3
+takes U1.22's only slot and LED9 at U1.23 then has nowhere to go, at every cut
+radius from 1 mm to 8 mm.
 
-the underlying cause is the U1 fanout. tightest genuine foreign-copper clearance in
-the pad ring is **0.2000 mm exactly**, pads against the U1.49 paddle, which is the
-netclass minimum with zero slack. the escapes leave 0.5 mm channels and a 0.6 mm via
-needs 0.5 mm of clearance radius, so nothing can change layer inside a channel. once a
-channel dead-ends the net is stuck on B.Cu.
+so the wall is the *search*, not the copper. the prior routing shows those 17
+fanout nets fit together; the group run shows the 3 new ones fit. nothing has yet
+shown all 20 fit **simultaneously** - the group run peaked at 15 of 27 and left
+12 unplaced, which is worse than the 10 the board already has, so it was not kept.
 
-finishing the board means ripping up and rerouting the U1 fanout - LED8, LED9, LED11,
-LED13, LED14, UART_TX_O at minimum - not just adding tracks. **do this one in pcbnew
-by hand.** two automated attempts are recorded below and neither got there.
+the underlying pressure is real either way. tightest genuine foreign-copper
+clearance in the U1 pad ring is **0.2000 mm exactly**, pads against the U1.49
+paddle, the netclass minimum with zero slack. the escapes leave 0.5 mm channels
+and a 0.6 mm via needs 0.5 mm of clearance radius, so nothing can change layer
+inside a channel. once a channel dead-ends the net is stuck on B.Cu.
+
+finishing this needs either a router that can hold the whole fanout at once, or a
+pin swap that gives +3V3 an outer-row pad. **do it in pcbnew by hand** - you can
+drag the fanout into a new pattern, which is exactly the move none of the
+automated attempts below can make.
 
 ### two automated attempts, both short
 
