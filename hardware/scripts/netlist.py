@@ -24,9 +24,30 @@ FT_VCC = "FT_VCC"      # 5 V behind a ferrite, into FT231X VCC
 LED_NETS = ["LED%d" % i for i in range(16)]
 
 # FPGA pin -> LED index, from DESIGN.md "User I/O assignment"
+#
+# LED9/12/13/14 sit on the south row, not the east column or the north row.
+# The east column ran twelve nets out of twelve 0.5 mm channels and four of them
+# (LED12, LED13, CLK, VCCPLL_F) have destinations on the far side of the board,
+# so they crossed the fan twice and +3V3 (22, 33), +1V2 (5, 30) and LED12 had no
+# way out at all. A 0.6 mm via needs 1.2 mm of clearance from its neighbours'
+# copper while adjacent escape rays are only 0.5 mm apart, so nothing can change
+# layer until the fan has spread, and there was nothing left to spread into.
+# R10/R13/R14/R15 all sit south or south-west of the package and pads 37-48 were
+# entirely unused, so those four move to south pads ordered by their resistors'
+# x, which keeps them from crossing:
+#     LED12 -> 48 (R13 x=140.1), LED9 -> 47 (R10 x=141.5),
+#     LED13 -> 46 (R14 x=146.5), LED14 -> 38 (R15 x=153.5)
+# LED2 and LED3 are the other two far-side crossers: both sit on the west face
+# and both of their resistors are north-east, so they cut clean across the
+# package, and LED2's diagonal is what walled in +1V2 at pin 5. They take the
+# two north/east pads LED9 and LED12 just vacated:
+#     LED2 -> 23 (R3 due north at 153.5, 89.6), LED3 -> 27 (R4 at 159.9, 90.1)
+# 46/47/48 are bank 2 (VCCIO_2 = pin 1) and 23/27/38 are bank 0 (VCCIO_0 = pin
+# 33), both already +3V3, so no level change. None is a global buffer pin (37 is
+# G1, 44 is G6, 20 is G3 and stays free) or an RGB driver (39-41).
 LED_PIN_MAP = {
-    2: 0,  3: 1,  4: 2,  11: 3, 12: 4, 13: 5, 18: 6, 19: 7,
-    21: 8, 23: 9, 25: 10, 26: 11, 27: 12, 28: 13, 31: 14, 32: 15,
+    2: 0,  3: 1,  23: 2, 27: 3, 12: 4, 13: 5, 18: 6, 19: 7,
+    21: 8, 47: 9, 25: 10, 26: 11, 48: 12, 46: 13, 38: 14, 32: 15,
 }
 
 FP_R = "Resistor_SMD:R_0402_1005Metric"
@@ -49,8 +70,8 @@ FPGA = ("FPGA_Lattice", "ICE40UP5K-SG48ITR", "ICE40UP5K-SG48I",
 # TX on 34 and RX on 36 not the other way round, U2 pad 4 is at y=+0.95 and pad
 # 20 at y=+2.86 so this way the two traces dont cross
 u1_nets = {33: P3V3, 35: "CLK", 34: "UART_TX_O", 36: "UART_RX_I"}
-u1_nc = [37, 38, 39, 40, 41, 42, 43]
-for pin in (23, 25, 26, 27, 28, 31, 32):
+u1_nc = [28, 31, 37, 39, 40, 41, 42, 43]
+for pin in (23, 25, 26, 27, 32, 38):
     u1_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u1_nets, unit=1, nc=u1_nc)
 
@@ -59,16 +80,16 @@ u2_nets = {
     14: "FLASH_DO", 15: "FLASH_CLK", 16: "FLASH_CS", 17: "FLASH_DI",
     22: P3V3,
 }
-for pin in (11, 12, 13, 18, 19, 21):
+for pin in (12, 13, 18, 19, 21):
     u2_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 # 20 stays free, second global clock. 6 and 9 freed up by the UART move
-add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[6, 9, 20])
+add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[6, 9, 11, 20])
 
 u3_nets = {1: P3V3}
-for pin in (2, 3, 4):
+for pin in (2, 3, 46, 47, 48):
     u3_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u3_nets, unit=3,
-    nc=[44, 45, 46, 47, 48])
+    nc=[4, 44, 45])
 
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3],
     {5: P1V2, 24: VPP, 29: VCCPLL, 30: P1V2, 49: GND}, unit=4)

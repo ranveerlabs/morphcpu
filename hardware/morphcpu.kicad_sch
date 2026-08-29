@@ -6537,7 +6537,7 @@
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "86b4e3bc-92df-5e3e-946e-8c5bfb758082")
 	)
-	(global_label "LED9"
+	(global_label "LED2"
 		(shape bidirectional)
 		(at 59.69 41.91 180)
 		(effects (font (size 1.27 1.27)) (justify right))
@@ -6555,29 +6555,23 @@
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "e832e4e3-d1fd-54b0-b663-8b4bdfd661a5")
 	)
-	(global_label "LED12"
+	(global_label "LED3"
 		(shape bidirectional)
 		(at 59.69 44.45 180)
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "eade7ad9-5503-5624-8b73-37053ba48995")
-	)
-	(global_label "LED13"
-		(shape bidirectional)
-		(at 59.69 49.53 180)
-		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "69c447c2-3fcd-57b1-a62e-3e62b1636c67")
-	)
-	(global_label "LED14"
-		(shape bidirectional)
-		(at 59.69 52.07 180)
-		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "6cbbf971-936b-55fa-906d-1cf6461247ae")
 	)
 	(global_label "LED15"
 		(shape bidirectional)
 		(at 59.69 54.61 180)
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "fafe6327-198b-5ac6-943f-028446f31c7e")
+	)
+	(global_label "LED14"
+		(shape bidirectional)
+		(at 59.69 69.85 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "3ab74039-cae7-5aac-9d8d-2fc9dcf58ab3")
 	)
 	(global_label "CDONE"
 		(shape bidirectional)
@@ -6627,12 +6621,6 @@
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "0601910f-aa82-5532-b331-f169ee86faf7")
 	)
-	(global_label "LED3"
-		(shape bidirectional)
-		(at 57.15 147.32 180)
-		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "aeedd88b-856c-5d5b-a1f2-2fc137056924")
-	)
 	(global_label "LED4"
 		(shape bidirectional)
 		(at 57.15 149.86 180)
@@ -6681,11 +6669,23 @@
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "7e5c3b98-efb7-5d66-8cd4-29d761dc5c60")
 	)
-	(global_label "LED2"
+	(global_label "LED13"
 		(shape bidirectional)
-		(at 59.69 255.27 180)
+		(at 59.69 240.03 180)
 		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "1a592801-8c29-5903-9d77-01a89908fd3b")
+		(uuid "8fda522c-8216-524a-971b-55222497860c")
+	)
+	(global_label "LED9"
+		(shape bidirectional)
+		(at 59.69 242.57 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "354b0634-aad3-517c-9820-4bc7176036ab")
+	)
+	(global_label "LED12"
+		(shape bidirectional)
+		(at 59.69 247.65 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "a91a39c5-a3da-5f66-a2f3-f590ce196ede")
 	)
 	(global_label "+1V2"
 		(shape bidirectional)
@@ -7917,8 +7917,9 @@
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5239e24e-f033-5f2c-b1cd-e71acd0b13d6")
 	)
+	(no_connect (at 59.69 49.53) (uuid "c7a362d9-aa6f-52b3-ae92-f3419d4710cc"))
+	(no_connect (at 59.69 52.07) (uuid "9cc763be-86a7-563e-93ec-1cfc5b9e3adc"))
 	(no_connect (at 59.69 59.69) (uuid "3360e204-c47e-500a-8bed-c88e55d086c0"))
-	(no_connect (at 59.69 69.85) (uuid "a8330111-5358-5594-bac1-1aac19bfb71b"))
 	(no_connect (at 59.69 74.93) (uuid "37779e87-bfb4-58d2-99e9-4688ca197bf5"))
 	(no_connect (at 59.69 77.47) (uuid "b9ff9ddf-06cc-5371-bd36-75c7e18e59f2"))
 	(no_connect (at 59.69 80.01) (uuid "d341e091-29f5-57ce-a651-644b9ad22132"))
@@ -7926,12 +7927,11 @@
 	(no_connect (at 59.69 67.31) (uuid "e6d83a95-e8f7-5fe0-a70e-c136b50ea8ee"))
 	(no_connect (at 57.15 139.7) (uuid "3491c4fc-1b27-501b-b223-83df69f2437a"))
 	(no_connect (at 57.15 142.24) (uuid "5fb8f5fd-39b1-5cca-a761-ecf46059f9f0"))
+	(no_connect (at 57.15 147.32) (uuid "593e9f7c-2fa3-541b-8c48-4cf489b61817"))
 	(no_connect (at 57.15 157.48) (uuid "5c0d0154-88cd-552c-adf8-d756b559ad95"))
+	(no_connect (at 59.69 255.27) (uuid "e090edcb-0cd3-5113-b997-3931132a2057"))
 	(no_connect (at 59.69 245.11) (uuid "391d6bad-5721-5d63-9cc9-58db2761dca8"))
 	(no_connect (at 59.69 250.19) (uuid "03c16340-ea3a-5121-970b-88a06c88f385"))
-	(no_connect (at 59.69 240.03) (uuid "e9dcaeb1-b631-5fd2-83bd-321ebd1b125c"))
-	(no_connect (at 59.69 242.57) (uuid "81e45f50-6166-5330-b2ef-faa4cb484b32"))
-	(no_connect (at 59.69 247.65) (uuid "a9815bb8-cf07-57e0-a827-432595ba7d6a"))
 	(no_connect (at 302.26 54.61) (uuid "9920a55b-a745-502a-932c-53230142c601"))
 	(no_connect (at 302.26 49.53) (uuid "1e09cb15-7e47-52a9-a079-aa7b18703c0b"))
 	(no_connect (at 302.26 62.23) (uuid "50a33174-0fbe-5d14-8009-eb353eea09b2"))

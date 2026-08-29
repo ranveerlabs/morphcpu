@@ -5,10 +5,14 @@ the one F.Cu rule area. What this file still holds is Board Setup, ten net class
 JLC-shaped DRC minimums, a `morphcpu.kicad_dru` for the rules the dialog cant
 express, and the order to route in
 
-current state: **0 DRC violations, 10 unrouted connections**. it was 1 violation
-and 17 unrouted before this pass. see [what is left unrouted](#what-is-left-unrouted)
-at the bottom - the ten need the U1 fanout rearranged, not just extra copper - the pads are
-walled in by neighbouring escapes.
+current state: **0 DRC violations, 3 unrouted connections**, on 737 tracks and 145
+vias. it was 0 / 7 before this pass, and the seven needed six FPGA pins moved, not
+more copper. see [what is left unrouted](#what-is-left-unrouted) at the bottom.
+
+**the old "10 unrouted" number was wrong.** `kicad-cli pcb drc` refills the zones
+before it checks, and on a refill two of the three GND items and LED5_A close by
+themselves. the board was at **7**, not 10, for the whole of the previous pass.
+always read the count off `kicad-cli`, not off a stale fill.
 
 placement did move once after the first pass. the 16 LED resistors went onto
 their own LEDs' rays which took the anode ratsnest 405 mm -> 53.4 mm, and the
@@ -133,7 +137,7 @@ for 2-layer 1 oz FR-4:
 - copper to routed board edge only needs 0.2 mm. were at 0.5 mm, so the round outline
   has room even where J1 overhangs.
 
-current DRC, `kicad-cli 10.0.5 --severity-all`: **0 violations** and **10 unconnected
+current DRC, `kicad-cli 10.0.5 --severity-all`: **0 violations** and **3 unconnected
 items** (was 167 unconnected pads before any copper went down). the C20/R27 silk
 overlap is gone - C20s reference field moved 1.3 mm in X, both run vertically and
 were stacked in Y. zero courtyard overlaps, zero shorting pads, zero clearance errors.
@@ -232,6 +236,9 @@ the paddle needs its 3x3 or 4x4 field of 0.3 mm vias per DESIGN.md. those alread
 match the class geometry.
 
 ### 4. LED0 thru LED15, the pin side
+
+**stale as written.** LED2, LED3, LED9, LED12, LED13 and LED14 no longer come off
+the faces described here, see [the fanout was over-subscribed](#the-fanout-was-over-subscribed-so-six-pins-moved).
 
 193 mm across 16 nets, each a hop from a QFN pad out to its resistor at
 r = 11.5 mm, or r = 14.5 mm for the four corners. this is now the biggest signal
@@ -430,93 +437,121 @@ new since this pass:
 
 ## what is left unrouted
 
-10 connections, from `kicad-cli pcb drc`, measured 28 Aug 2026 against the board as
-committed. seven of the original seventeen went in this pass: GND fragments at C4.2,
-C12.2 and C7.2, plus VCCPLL_F, VBUS_IN, LED2 and LED15. 84 segments and 11 vias, all
-of it exact-clearance checked against every foreign copper item before placement, and
-nothing already on the board was moved.
+3 connections, from `kicad-cli pcb drc --severity-all`, measured 29 Aug 2026
+against the board as committed. **0 violations.**
 
-| # | Net | From | To | Layers |
-|---|---|---|---|---|
-| 2 | GND | C5.2 144.3327,95.9255 | main B.Cu pour | B.Cu |
-| 4 | GND | C21.2 155.2335,95.3814 | main B.Cu pour | B.Cu |
-| 5 | GND | U2.16 172.6000,100.3175 | main B.Cu pour | B.Cu |
-| 7 | CDONE | track end 149.2125,119.7045 | U1.7 146.5625,99.7500 | F.Cu -> B.Cu |
-| 8 | LED5_A | R6.2 142.2289,92.2289 | D6.2 146.2875,95.5000 | B.Cu -> F.Cu |
-| 9 | +3V3 | U1.22 151.7500,96.5625 | U1.33 153.4375,101.2500 | B.Cu |
-| 10 | +3V3 | FB1.1 156.1603,94.5690 | U1.22 151.7500,96.5625 | B.Cu |
-| 11 | +1V2 | U1.5 146.5625,100.7500 | U1.30 153.4375,99.7500 | B.Cu |
-| 12 | +1V2 | track end 155.9286,103.8361 | U1.30 153.4375,99.7500 | B.Cu |
-| 16 | LED12 | R13.1 140.1076,109.8924 | U1.27 153.4375,98.2500 | B.Cu |
+| # | Net | From | To |
+|---|---|---|---|
+| 1 | +1V2 | track end on B.Cu, 3.000 mm | U1.5 |
+| 2 | LED2 | U1.23 | R3.1 |
+| 3 | LED9 | U1.47 | R10.1 |
 
-DRC reports the three GND items at 185.0,100.0, which is the zone bounding-box corner
-and tells you nothing. the pad coordinates above come from clustering the GND net
-instead.
+each of the three routes on its own. what stops all of them at once is the same
+thing that stopped the previous seven, one notch further out - see below.
 
-### what is actually blocking each one
+## the fanout was over-subscribed, so six pins moved
 
-reachability per connection, each net on its own, most permissive legal geometry
-the rules allow (0.20 mm track, 0.6/0.3 mm via, 0.2 mm clearance), flood-filled
-across all four layers:
+the previous pass left seven connections open: GND at C5.2, CDONE at U1.7, +3V3
+at U1.22 and U1.33, +1V2 at U1.5 and U1.30, and LED12 at U1.27. every one of them
+had exactly one blocker, measured against exact pcbnew geometry rather than
+guessed at:
 
-| | |
+| Connection | Blocked by |
 |---|---|
-| 2, 4, 5 (GND) | the fragment's B.Cu pocket never touches the main pour and holds no 0.6 mm via site. C5.2 reaches 1956 grid cells, C21.2 579, U2.16 1831 - none of them off B.Cu |
-| 9, 10 (+3V3) | U1.22 reaches **51 cells** as the board stands, about 0.13 mm2, walled by the LED8/LED9 escapes and the U1.49 paddle |
-| 16 (LED12) | U1.27's pocket is sealed by the LED11 and LED13 escapes |
-| 7, 11, 12 | individually routable; they lose to contention for the same channels |
+| U1.5 (+1V2) | LED2's B.Cu diagonal cutting across at y = 100.974 |
+| U1.22 (+3V3) | LED9's jog to x = 152.087, itself forced by LED3's via at 152.765, 95.550 |
+| U1.30 (+1V2) | the VCCPLL_F via at 154.450, 99.388 |
+| U1.33 (+3V3) | the LED15 via at 154.488, 101.150 |
+| C5.2 (GND) | the In1.Cu LED3 bus at y = 96.488 - 1833 of 6100 candidate via cells in the pocket, blocked by that one track |
+| U1.7 (CDONE) | the In2.Cu VBUS bus - 245 cells, again a single net |
 
-**9, 10 and 16 are not impossible.** an earlier version of this file said they
-could not be routed by adding copper at all. that was too strong, and a
-whole-fanout group reroute disproved it: rip out U1's entire north row and east
-column (17 two-pad nets) and re-solve them together with +3V3, +1V2 and LED12
-competing on equal terms from the start, and **all three place**. what defeats the
-one-net-at-a-time approach is that the channel assignment predates them - +3V3
-takes U1.22's only slot and LED9 at U1.23 then has nowhere to go, at every cut
-radius from 1 mm to 8 mm.
+### why more copper could never fix it
 
-so the wall is the *search*, not the copper. the prior routing shows those 17
-fanout nets fit together; the group run shows the 3 new ones fit. nothing has yet
-shown all 20 fit **simultaneously** - the group run peaked at 15 of 27 and left
-12 unplaced, which is worse than the 10 the board already has, so it was not kept.
+**a 0.6 mm via needs 1.2 mm of clear space between its neighbours, and adjacent
+escape rays are 0.5 mm apart.** via pad radius 0.3 + track half-width 0.1 +
+clearance 0.2 = 0.6 mm to each side. so nothing can change layer anywhere inside
+the pad ring, and nothing can change layer in the fan either until the fan has
+spread to roughly 2.4x the pad radius. that is why there was no legal via site
+anywhere in a 7 x 1.2 mm band around the GND island, and none in U1.7's escape
+pocket.
 
-the underlying pressure is real either way. tightest genuine foreign-copper
-clearance in the U1 pad ring is **0.2000 mm exactly**, pads against the U1.49
-paddle, the netclass minimum with zero slack. the escapes leave 0.5 mm channels
-and a 0.6 mm via needs 0.5 mm of clearance radius, so nothing can change layer
-inside a channel. once a channel dead-ends the net is stuck on B.Cu.
+the staggered two-row via fanout, which is the standard trick for 0.5 mm pitch,
+fails here for the same reason: the outer row's neck has to pass between two
+inner-row vias with 1.0 mm available and 1.2 mm required. tested, not assumed.
 
-finishing this needs either a router that can hold the whole fanout at once, or a
-pin swap that gives +3V3 an outer-row pad. **do it in pcbnew by hand** - you can
-drag the fanout into a new pattern, which is exactly the move none of the
-automated attempts below can make.
+meanwhile **U1's east column carried twelve nets on twelve channels**, and four
+of them - LED12, LED13, CLK and VCCPLL_F - have destinations on the far side of
+the board, so they crossed the fan twice. the west column had the same problem
+with LED2 and LED3, whose resistors are both north-east. the fan was full.
 
-### two automated attempts, both short
+### the six pins that moved
 
-**a grid maze router** (0.05 mm cells, 4 layers, 45 degrees, exact-clearance gated).
-7/17 with nothing ripped up, 12/23 with the fanout ripped, oscillating between 9 and
-12 across rounds and never converging. its paths are the problem: 39 segments and 4
-vias for one LED net where the existing fanout is compact, so it burns the channel
-space it then needs. rip-up-and-retry without a history cost just thrashes - it tore
-up exactly the nets it had placed the round before.
+pads 37-48 were **entirely unused** and the area south of the package is open, so
+the far-side crossers went there, ordered by their resistors' x so none of them
+cross each other:
 
-**freerouting 2.3.0, second go**, now that the two things the first attempt wanted are
-in place: the F.Cu keepout exists and the GND pours are filled. it did not help.
+| Net | was | now | why |
+|---|---|---|---|
+| LED12 | 27 IOT_38b | **48** IOB_4a | R13 at x = 140.1 |
+| LED9 | 23 IOT_37a | **47** IOB_2a | R10 at x = 141.5 |
+| LED13 | 28 IOT_41a | **46** IOB_0a | R14 at x = 146.5 |
+| LED14 | 31 IOT_42b | **38** IOT_50b | R15 at x = 153.5 |
+| LED2 | 4 IOB_8a | **23** IOT_37a | R3 due north at 153.5, 89.6 |
+| LED3 | 11 IOB_20a | **27** IOT_38b | R4 at 159.9, 90.1 |
 
-- the DSN *does* carry the keepout correctly, all 16 per-LED windows come through as
-  `(window (polygon F.Cu ...))` inside the `wire_keepout`. the LED grid is safe now.
-- **`(type fix)` on the wiring is ignored.** marking all 573 existing wires `fix` gave
-  a byte-identical score to leaving them `route` - 593.13, 50 unrouted, 106
-  violations. freerouting rips the board up regardless, so you cannot ask it to only
-  fill in the gaps.
-- **GND is the whole cost.** with GND in the netlist a pass took 462-494 s; deleting
-  the `(net GND ...)` block from the DSN dropped fanout from 80 s to 3.7 s and a pass
-  to ~30 s. `-inc GND` still does nothing, deleting the net block is what works.
-- it stalls anyway. GND-excluded it sat at 45-46 unrouted and 72 violations across
-  four passes, score bouncing 483.75 -> 492.29 -> 483.75. that is far worse than the
-  10 the board already has, so nothing was imported.
+checks this passes, same list the original assignment had to pass:
 
-the LED grid keepout is a rectangle with **16 windows punched in it**, one per LED, so
-a bounding-box test says every anode escape violates it when none of them do. test it
-as outline-minus-holes. it also reads `(vias allowed)` - blocking vias with it costs
-you every GND stitch site under the grid.
+- 46/47/48 are bank 2 (VCCIO_2 = pin 1); 23/27/38 are bank 0 (VCCIO_0 = pin 33).
+  **both rails are already +3V3, so no level changes.**
+- no LED lands on a config pin (14-17), CRESET_B (8) or CDONE (7).
+- no LED lands on an RGB driver (39-41).
+- no LED takes a global buffer pin. 37 is G1, 44 is G6, and **20 is G3 and still
+  free**, so a second global clock is still available.
+- CLK stays on 35, still a GBIN.
+- bank balance is 25 / 25 / 30 mA across VCCIO_2 / VCCIO_1 / VCCIO_0, better
+  than the 15 / 30 / 35 it was.
+- ERC after regenerating the schematic: **0 violations**.
+
+`netlist.py`, `gateware/morphcpu.pcf` and the
+[DESIGN.md pin table](DESIGN.md#user-io-assignment) all moved together, and the
+`unconnected-(...)` names the regenerated netlist produces match the ones written
+onto the board pad for pad.
+
+the payoff is immediate. LED12, LED13 and LED14 went from 42.0 / 36.1 mm and
+unroutable to 12.5 / 7.8 / 8.0 mm, and **eleven of the twelve outstanding
+connections then routed with nothing ripped up at all**.
+
+### four bugs in the routing tooling, all of them real
+
+worth recording because each one silently lost channels that were actually legal:
+
+- **the rasteriser was half a cell out.** `fill_poly` treated grid cells as
+  half-open squares while `cell()` and `pos()` treated them as lattice points, so
+  every obstacle sat 0.025 mm off. that is enough on its own to lose a QFN escape.
+- **a 0.01 mm inflation bias.** obstacles were grown by clearance + 0.01 mm. the
+  tightest real clearances in this fanout are 0.2019 mm against a 0.2 mm rule, so
+  the bias closed them. rasterise at exactly the netclass clearance and verify
+  exactly afterwards.
+- **hole-to-hole checks read the board's original track list**, which still held
+  the vias that had just been ripped up, so every candidate via in a ripped
+  pocket was rejected against copper that no longer existed.
+- **a route's own vias were never checked against each other.** two layer changes
+  in neighbouring cells put two holes 0.07 mm apart; same-net clearance ignores
+  it, `jlc_via_hole_to_hole` does not.
+
+fixing those four took the same router from re-routing nothing to reproducing
+every previously-routed net.
+
+### what would close the last three
+
++1V2 at U1.5, LED2 and LED9 each route alone. measured with every small net
+removed, +1V2 wants CDONE, VCCPLL_F, LED15 and LED1 out of the way, LED9 wants
+LED12, and LED2 has no path at all while the +3V3 escape at pad 22 holds its
+current shape - pad 23 sits between +3V3 at 22 and VPP_2V5 at 24. ripping those
+and re-placing them lands back on three open, just a different three.
+
+so it is the same over-subscription one notch out, and the same two options:
+a router that holds the whole fanout simultaneously, or two more pins moved. the
+obvious candidates are **CLK (35) and VCCPLL_F (29)**, the two remaining far-side
+crossers on the east column - though VCCPLL_F is a dedicated PLL supply pin and
+cannot move, and CLK wants to stay on a GBIN.

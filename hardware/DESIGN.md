@@ -245,19 +245,19 @@ general fabric instead of a global buffer makes timing closure needlessly hard.
 | 36 | IOT_48b | UART_RX_I (from FT231X TXD) |
 | 2 | IOB_6a | LED0 |
 | 3 | IOB_9b | LED1 |
-| 4 | IOB_8a | LED2 |
-| 11 | IOB_20a | LED3 |
+| 23 | IOT_37a | LED2 |
+| 27 | IOT_38b | LED3 |
 | 12 | IOB_22a | LED4 |
 | 13 | IOB_24a | LED5 |
 | 18 | IOB_31b | LED6 |
 | 19 | IOB_29b | LED7 |
 | 21 | IOB_23b | LED8 |
-| 23 | IOT_37a | LED9 |
+| 47 | IOB_2a | LED9 |
 | 25 | IOT_36b | LED10 |
 | 26 | IOT_39a | LED11 |
-| 27 | IOT_38b | LED12 |
-| 28 | IOT_41a | LED13 |
-| 31 | IOT_42b | LED14 |
+| 48 | IOB_4a | LED12 |
+| 46 | IOB_0a | LED13 |
+| 38 | IOT_50b | LED14 |
 | 32 | IOT_43a | LED15 |
 
 checks this assignment passes:
@@ -267,9 +267,30 @@ checks this assignment passes:
 - The clock is on a GBIN pin (35).
 - Pin 20 (G3) is left free rather than spent on an LED, so a second global
   clock is still available later.
-- LEDs are split across banks, 2, 3, 4, 11, 12, 13, 18, 19, 21 in bank 1/2 and
-  23, 25, 26, 27, 28, 31, 32 in bank 0, so 80 mA is not drawn through one
-  VCCIO pin.
+- LEDs are split across banks, 2, 3, 46, 47, 48 on VCCIO_2 (pin 1), 12, 13, 18,
+  19, 21 on VCCIO_1 (pin 22) and 23, 25, 26, 27, 32, 38 on VCCIO_0 (pin 33), so
+  80 mA is not drawn through one VCCIO pin, 25 / 25 / 30 mA. All three VCCIO
+  pins are +3V3.
+- **LED9, LED12, LED13 and LED14 are on the south row**, not the east column and
+  the north row. The east column ran twelve nets out of twelve 0.5 mm channels
+  and four of them (LED12, LED13, CLK, VCCPLL_F) have destinations on the far
+  side of the board, so they crossed the fan twice and +3V3 (22, 33), +1V2
+  (5, 30) and LED12 had no way out at all. A 0.6 mm via needs 1.2 mm of
+  clearance from its neighbours' copper while adjacent escape rays are only
+  0.5 mm apart, so nothing can change layer until the fan has spread, and there
+  was nothing left to spread into. R10, R13, R14 and R15 all sit south or
+  south-west of the package and pads 37-48 were entirely unused, so LED12 -> 48,
+  LED9 -> 47, LED13 -> 46, LED14 -> 38, ordered by their resistors' x so that
+  none of the four crosses another. Moving LED9 off pin 23 also frees the
+  channel beside pin 22, a +3V3 VCCIO pin that previously had no escape at all.
+  **LED2 and LED3 moved too**, off the west face onto the pads LED9 and LED12
+  vacated: LED2 -> 23 (R3 is due north at 153.5, 89.6) and LED3 -> 27 (R4 at
+  159.9, 90.1). Those two were the other far-side crossers, both on the west
+  column with north-east resistors, and LED2's diagonal was what walled in +1V2
+  at pin 5. Pins 46/47/48 are bank 2 and 23/27/38 are bank 0, both already
+  +3V3, so no level change; none is a global buffer pin (37 is G1, 44 is G6, 20
+  is G3 and stays free) or an RGB driver (39-41). With the six moves, eleven of
+  the twelve outstanding connections route with nothing ripped up at all.
 - The UART sits on 34/36 in bank 0, not 6/9 in the config bank. Same +3V3
   VCCIO either way, and it costs no LED pin and no GBIN pin, but it puts both
   nets on the face that looks at the FT231X instead of the face opposite it.
