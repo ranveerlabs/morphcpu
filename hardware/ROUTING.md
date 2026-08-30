@@ -568,17 +568,37 @@ only, and exact-item - lands back on two open. the pin trials run were, all with
 | 20 | 9 | 3 | 2: LED1, LED2 |
 | **23** | **9** | **3** | **2: LED1, LED2** (kept - the two opens are LED nets, not CDONE) |
 
-the north face is now the tight one: eleven nets, and FLASH_DO / CLK / CS / DI all
-cross to U3 in the west. the honest options from here are
+**the last two are a capacity result, not a search result.** moving LED1 does not
+close anything, it just moves which net fails:
 
-1. **move the flash bus.** pins 14-17 are fixed by the iCE40 config block, so this
-   means moving **U3 itself** round to the north instead of the west. that is a
-   placement change, and DESIGN.md picked west deliberately.
-2. **two more free pads on the north face.** pin 20 is G3 and is being kept as a
-   spare global clock; spending it buys one.
+| LED1 on | ripped and re-placed | still open |
+|---|---|---|
+| 3 | LED0, LED5, LED6, LED7, VPP_2V5 | 3: LED1, LED7, LED2 |
+| **20** (G3) | LED0, LED5, LED6, LED7 | 2: LED7, LED2 |
+| **20** (G3) | + FLASH_DI, FLASH_DO | 2: LED7, LED2 |
+| **11** | LED0, LED4, LED5 | 2: LED5, LED2 |
+
+LED1 routes from pin 20 or pin 11, and LED7 or LED5 opens in its place. across
+every configuration tried the count is conserved at two, which is what an
+over-subscribed face looks like from the inside - the north face is **exactly two
+nets past what it can fan out**. spending pin 20 buys nothing.
+
+the north face carries eleven nets and FLASH_DO / CLK / CS / DI all cross to U3
+in the west. the honest options from here are
+
+1. **move the flash bus off the north face.** pins 14-17 are fixed by the iCE40
+   config block, so this means moving **U3 itself** round to the north instead of
+   the west, which takes four crossers out of the north fan in one step. it is a
+   placement change and DESIGN.md picked west deliberately, but it is the change
+   that actually removes the congestion rather than shuffling it.
+2. **move the two inner LED resistors.** R2 and R3 sit at y = 89.6, due north,
+   which is what forces LED1 and LED2 across the package in the first place. the
+   ring geometry is generated, so this is a `gen_pcb.py` change, not a hand edit.
 3. **a router that holds the whole fanout at once.** negotiated congestion,
    PathFinder history costs. the greedy-plus-rip-up in the scratch scripts gets to
    two and stops.
+
+spending pin 20 (G3) is **not** on this list - it was tried and buys nothing.
 
 do not spend another evening on plain rip-up-and-retry. it has now been tried at
 whole-net, radius-limited and per-item granularity, with ordering search over
