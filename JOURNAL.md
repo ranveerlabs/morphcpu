@@ -85,9 +85,13 @@ two whatever i do, so the north face is two nets past what it can fan out. leavi
 it, cuz deadline. two of the sixteen grid leds dont light, everything else is
 connected
 
+fab_output replotted off the routed board while i was in there. gen_fab.py was
+still on F.Cu,B.Cu from the 2 layer days so it had been dropping In1 and In2
+entirely, which quotes fine and arrives dead
+
 next:
 - [ ] move U3 north or move R2/R3, either takes the north fan under
-- [ ] regenerate fab_output, gerbers are still off the unrouted board
+- [ ] requote, $198.41 was 2 layers and this is 4
 
 ---
 
