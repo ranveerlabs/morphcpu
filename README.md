@@ -29,7 +29,7 @@ on B.Cu alone
 no bitstream either. OSS CAD Suite isnt installed on this machine so build.sh
 has literally never run so idk, salt on the timing numbers
 
-sim 18/18, ERC 0/0, BOM $198.41 for 5
+sim 18/18, ERC 0/0, BOM $203.73 for 5
 
 ## ops
 
@@ -71,7 +71,7 @@ plus a worked example
 | flash | W25Q32JVSSIQ | SOIC-8 | [C179173](https://www.lcsc.com/product-detail/C179173.html) |
 | usb-c | TYPE-C-31-M-12 | 16pin | [C165948](https://www.lcsc.com/product-detail/C165948.html) |
 | esd | USBLC6-2SC6 | SOT-23-6 | [C7519](https://www.lcsc.com/product-detail/C7519.html) |
-| 3v3 | ME6211C33M5G-N | SOT-23-5 | [C82942](https://www.lcsc.com/product-detail/C82942.html) |
+| 3v3 | AP2112K-3.3TRG1 | SOT-23-5 | [C51118](https://www.lcsc.com/product-detail/C51118.html) |
 | 1v2 | ME6211C12M5G-N | SOT-23-5 | [C236672](https://www.lcsc.com/product-detail/C236672.html) |
 | clk | 1532H4-16000JWPDTSNL 16MHz | 3225 | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) |
 | leds | KT-0603R ×17 | 0603 | [C2286](https://www.lcsc.com/product-detail/C2286.html) |
@@ -92,6 +92,8 @@ cd case && ./export.sh
 ## pics
 
 ![case with a board in it](docs/img/case-assembly-preview.png)
+
+![case with the real board in it](docs/img/case-pcb-assembly.png)
 
 ![frame](docs/img/case-frame-preview.png)
 
@@ -114,14 +116,20 @@ under the QFN paddle, which took embarrassingly long to spot, rip. both sorted
 six leds also ended up on different fpga pins than they started on, cuz the east
 side of the package ran out of escape room. thats in ROUTING.md too
 
+![3d top](docs/img/routed-3d-top.png)
+
+![top copper and silk](docs/img/pcb-top.svg)
+
+![schematic](docs/img/schematic.svg)
+
 ## if you order it
 
 gerbers in `hardware/fab_output/` are off the routed board now, all four copper
 layers with copper actually in them, drill included. two nets are still open tho
 so D2 and D3 wont light, read that before you spend money
 
-- **$198.41 was costed at 2 layers and this is 4 now.** i have not requoted it,
-  the $11.59 headroom might be gone. requote before you commit to anything
+- **$203.73 is a real 4 layer quote.** $6.27 of headroom under the $210 Complex
+  cap, so dont add parts casually. re-quote if the BOM moves
 - fpga stock was 546 when i looked. oscillator 147
 - C7519 and C136491 tiers are guesses, confirm in the quote
 - QFN paddle is the only ground to the die, SG48 has no GND pin at all. window

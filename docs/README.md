@@ -1,6 +1,6 @@
 # docs/
 
-[BOM.md](BOM.md) is the costed BOM, 22 rows all pinned to LCSC, $198.41 for 5.
+[BOM.md](BOM.md) is the costed BOM, 23 rows all pinned to LCSC, $203.73 for 5.
 [img/](img/) is renders and screenshots
 
 The machine-readable BOM and CPL live in

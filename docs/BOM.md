@@ -21,7 +21,7 @@ is pinned to an LCSC part number and priced. rows 1-8 checked 20 aug 2026, rows
 | 3 | SPI config flash, 32 Mbit | W25Q32JVSSIQ | [C179173](https://www.lcsc.com/product-detail/C179173.html) | SOIC-8-208mil | 1 | 5 | $1.6846 | **$8.42** |
 | 4 | USB-C receptacle, 16-pin | TYPE-C-31-M-12 | [C165948](https://www.lcsc.com/product-detail/C165948.html) | SMD right-angle | 1 | 5 | $0.1716 | **$0.86** |
 | 5 | 16 MHz oscillator (XO) | 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | SMD3225-4P | 1 | 5 | $0.3609 | **$1.80** |
-| 6 | 3.3 V LDO (with enable) | ME6211C33M5G-N | [C82942](https://www.lcsc.com/product-detail/C82942.html) | SOT-23-5 | 1 | 5 | $0.053 | **$0.27** |
+| 6 | 3.3 V LDO (with enable) | AP2112K-3.3TRG1 | [C51118](https://www.lcsc.com/product-detail/C51118.html) | SOT-23-5 | 1 | 5 | $0.0967 | **$0.48** |
 | 7 | 1.2 V LDO (with enable) | ME6211C12M5G-N | [C236672](https://www.lcsc.com/product-detail/C236672.html) | SOT-23-5 | 1 | 5 | $0.0606 | **$0.30** |
 | 8 | LED, red, 16 grid + 1 CDONE | KT-0603R | [C2286](https://www.lcsc.com/product-detail/C2286.html) | 0603 | 17 | 85 | $0.0075 | **$0.64** |
 | 9 | ESD array, USB D+/D- | USBLC6-2SC6 | [C7519](https://www.lcsc.com/product-detail/C7519.html) | SOT-23-6 | 1 | 5 | $0.1858 | **$0.93** |
@@ -34,38 +34,40 @@ is pinned to an LCSC part number and priced. rows 1-8 checked 20 aug 2026, rows
 | 16 | Res 270 Ω 1%, LED series | RC0402FR-07270RL | [C163474](https://www.lcsc.com/product-detail/C163474.html) | 0402 | 16 | 80 | $0.0041 | **$0.33** |
 | 17 | Res 1 kΩ 1%, CDONE LED | 0402WGF1001TCE | [C11702](https://www.lcsc.com/product-detail/C11702.html) | 0402 | 1 | 5 | $0.0067 | **$0.03** |
 | 18 | Res 5.1 kΩ 1%, CC pull-down | 0402WGF5101TCE | [C25905](https://www.lcsc.com/product-detail/C25905.html) | 0402 | 2 | 10 | $0.0044 | **$0.04** |
-| 19 | Res 10 kΩ 1% | 0402WGF1002TCE | [C25744](https://www.lcsc.com/product-detail/C25744.html) | 0402 | 9 | 45 | $0.0019 | **$0.09** |
+| 19 | Res 10 kΩ 1% | 0402WGF1002TCE | [C25744](https://www.lcsc.com/product-detail/C25744.html) | 0402 | 8 | 40 | $0.0019 | **$0.08** |
 | 20 | Res 100 kΩ 1% | 0402WGF1003TCE | [C25741](https://www.lcsc.com/product-detail/C25741.html) | 0402 | 1 | 5 | $0.0054 | **$0.03** |
-| 21 | Polyfuse, 500 mA hold, 6 V | BSMD1206-050-6V | [C883122](https://www.lcsc.com/product-detail/C883122.html) | 1206 | 1 | 5 | $0.0466 | **$0.23** |
-| 22 | Ferrite bead, 600 Ω @ 100 MHz | MMZ1608Y601BTA00 | [C136491](https://www.lcsc.com/product-detail/Ferrite-Beads_TDK_C136491.html) | 0603 | 2 | 10 | $0.0126 | **$0.13** |
-| | | | | | **80** | **400** | **parts subtotal** | **$88.06** |
+| 21 | Res 1 MΩ 1%, EN_3V3 bleed | 0402WGF1004TCE | [C26083](https://www.lcsc.com/product-detail/C26083.html) | 0402 | 1 | 5 | $0.0016 | **$0.01** |
+| 22 | Polyfuse, 500 mA hold, 6 V | BSMD1206-050-6V | [C883122](https://www.lcsc.com/product-detail/C883122.html) | 1206 | 1 | 5 | $0.0466 | **$0.23** |
+| 23 | Ferrite bead, 600 Ω @ 100 MHz | MMZ1608Y601BTA00 | [C136491](https://www.lcsc.com/product-detail/Ferrite-Beads_TDK_C136491.html) | 0603 | 2 | 10 | $0.0126 | **$0.13** |
+| | | | | | **80** | **400** | **parts subtotal** | **$88.27** |
 
-$17.61 of parts per board. rounding each line to the cent and summing gives the
-same $88.06 as summing unrounded, so its not a rounding artefact.
+$17.65 of parts per board. the line totals are rounded to the cent and sum to
+$88.27, unrounded it comes to $88.2765. a cent apart now, the table carries the
+rounded one.
 
 ## what it actually costs
 
-careful here. the $88.06 above is **not** a separate line item. its already
+careful here. the $88.27 above is **not** a separate line item. its already
 inside the JLC PCBA quote, which bundles fab + parts + assembly into one number.
 adding both would double-count the parts.
 
 | Item | Basis | Cost |
 |---|---|---|
-| parts subtotal, rows 1-22 (informational, already inside the JLC quote) | 5 units | $88.06 |
-| JLCPCB PCBA order: fab + parts + assembly | 5 units | $198.15 |
+| parts subtotal, rows 1-23 (informational, separate from the JLC PCBA total) | 5 units | $88.27 |
+| JLCPCB PCBA order: fab + parts + assembly | 5 units | $203.47 |
 | case filament | 1 unit, off-PCB | $0.26 |
-| | | **$198.41** |
+| | | **$203.73** |
 
-so **$198.41** all-in, $39.63/unit across 5 boards. thats under the Complex
-($210) tier with $11.59 of headroom, which is not much, so dont add parts
+so **$203.73** all-in, $40.75/unit across 5 boards. thats under the Complex
+($210) tier with $6.27 of headroom, which is not much, so dont add parts
 casually.
 
-the $110.09 gap between the parts subtotal and the JLC quote is fab + assembly
+the $115.20 gap between the parts subtotal and the JLC quote is fab + assembly
 setup + extended-part feeder fees. JLC quotes it bundled and doesnt split it out
 line by line, so treat that gap as one number.
 
-still not in the $198.41: shipping and duty. those only get quoted at checkout
-with a real address, so they arent here yet, and they eat into the $11.59.
+still not in the $203.73: shipping and duty. those only get quoted at checkout
+with a real address, so they arent here yet, and they eat into the $6.27.
 
 ### R and C counts
 
@@ -78,10 +80,11 @@ from the schematic, which is the authority:
 | 4.7 µF | 4 | LDO bulk and FT231X |
 | 10 µF | 2 | rail bulk |
 | 270 Ω | 16 | LED grid series |
-| 10 kΩ | 9 | CRESET_B, CDONE, SPI_SS, FT231X RESET#, XO enable, EN_3V3 bleed, reset button, two on the flash |
+| 10 kΩ | 8 | CRESET_B, CDONE, SPI_SS, FT231X RESET#, XO enable, reset button, two on the flash |
 | 1 kΩ | 1 | CDONE indicator series |
 | 5.1 kΩ | 2 | USB-C CC1/CC2 pull-downs, never shared |
 | 100 kΩ | 1 | 3V3 enable RC |
+| 1 MΩ | 1 | EN_3V3 bleed, was 10 kΩ and divided CE down to 0.45 V |
 | 100 Ω | 1 | VCCPLL filter |
 
 an older version of this table said 100 nF ×11, 10 kΩ ×5, no 1 kΩ row at all,
@@ -96,7 +99,7 @@ and 16 LEDs instead of 17. schematic was right every time.
 | W25Q32JVSSIQ | 39,664 | ample |
 | TYPE-C-31-M-12 | 407,730 | ample |
 | 1532H4-16000JWPDTSNL | 147 | ok but thin, see note below |
-| ME6211C33M5G-N | 272,820 | ample |
+| AP2112K-3.3TRG1 | 70,670 | ample |
 | ME6211C12M5G-N | 28,080 | ample |
 | KT-0603R | 3,752,200 | ample |
 | USBLC6-2SC6 | 35,370 | ample |
@@ -136,6 +139,7 @@ and pay for it.
 |---|---|---|
 | FT231XS-U (C89607) | **FT231XS-R (C132160)** | C89607 is out of stock and `-U` is tube packaging. `-R` is tape-and-reel, which an assembly line wants. same SSOP-20-150mil footprint, no pin changes |
 | AMS1117-3.3 (C6186) | **ME6211C33M5G-N (C82942)** | power-up sequence needs 3.3 V held off until 1.2 V is up. AMS1117 is SOT-223 with **no enable pin**. ME6211 has CE, is Basic tier, cheaper, and shares a footprint with the 1.2 V part |
+| ME6211C33M5G-N (C82942) | **AP2112K-3.3TRG1 (C51118)** | C82942 went to 0 at JLC, 11 day lead and a 196 MOQ behind it. same SOT-23-5, same 1 VIN 2 GND 3 EN 4 NC 5 VOUT pinout, so nothing on the board moves. 600 mA instead of 500. tier didnt render on JLC's listing so thats unconfirmed |
 | 12 MHz crystal + 2 load caps | **16 MHz XO (C5383161)** + 1 × 100 nF | iCE40 has no crystal amp. 12 MHz active XOs at LCSC had 9 and 1 in stock, the 16 MHz part has 147. costs a gateware param change, and UART divisor error improves from 0.16% to 0.08% |
 | no ESD protection | **USBLC6-2SC6 (C7519)** | this doc listed an ESD array from day one and the schematic never had one. now U6, in the D+/D- path between J1 and U2, placed next to the connector |
 | reset switch on `SW_SPST_TL3342` | **TS-1187A-B-A-B (C318884)** on `SW_Push_1P1T_XKB_TS-1187A` | the part JLC stocks Basic is the XKB TS-1187A, pads at 6.0 × 3.75 mm. TL3342's are 6.3 × 3.8 mm. close enough to look fine on screen, not close enough to solder. footprint follows the part now |
@@ -203,7 +207,7 @@ moves those fees and roughly halves their per-unit share, worth considering if
 the budget allows.
 
 gerbers, BOM and CPL live in
-[../hardware/fab_output/](../hardware/fab_output/) and are what the $198.15 quote
+[../hardware/fab_output/](../hardware/fab_output/) and are what the $203.47 quote
 was generated from. re-quote if any of them change.
 
 ## sources
@@ -214,7 +218,7 @@ was generated from. re-quote if any of them change.
 - [W25Q32JVSSIQ, LCSC C179173](https://www.lcsc.com/product-detail/C179173.html)
 - [TYPE-C-31-M-12, LCSC C165948](https://www.lcsc.com/product-detail/C165948.html)
 - [1532H4-16000JWPDTSNL, LCSC C5383161](https://www.lcsc.com/product-detail/C5383161.html)
-- [ME6211C33M5G-N, LCSC C82942](https://www.lcsc.com/product-detail/C82942.html)
+- [AP2112K-3.3TRG1, LCSC C51118](https://www.lcsc.com/product-detail/C51118.html)
 - [ME6211C12M5G-N, LCSC C236672](https://www.lcsc.com/product-detail/C236672.html)
 - [KT-0603R, LCSC C2286](https://www.lcsc.com/product-detail/C2286.html)
 - [USBLC6-2SC6, LCSC C7519](https://www.lcsc.com/product-detail/C7519.html)

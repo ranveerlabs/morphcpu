@@ -1,16 +1,17 @@
 # morphcpu build journal
 
-**Total time: 127h**
+**Total time: 128h**
 
 build log. spatially-reconfigurable processor on a small low power fpga.
-nine sessions 127h of actual keyboard time
+ten sessions 128h of actual keyboard time
 
 most of it went on two things and neither was the fun part. reading the power up
 sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
 turned out to have less room in it than it needed
 
-sessions run across days, the date on each one is when it landed not when it
-started. template is in [docs/journal-template.txt](docs/journal-template.txt)
+the date on a session is the day its commits landed, thats all it is. six of them
+landed the same evening, the work behind them didnt. dont divide the dates into
+the hours. template is in [docs/journal-template.txt](docs/journal-template.txt)
 
 ![board back, copper down round the fpga](docs/img/pcb-routed-back.png)
 
@@ -28,6 +29,59 @@ both of them are leds
 | 007 | 2026-08-22 | 21h | datasheet items closed, schematic, pcb placement |
 | 008 | 2026-08-28 | 26h | 4 layers, first copper, 0 violations |
 | 009 | 2026-08-30 | 24h | fanout was full, six pins moved |
+| 010 | 2026-08-30 | 1h | ldo went out of stock, en divider was wrong |
+
+---
+
+## session 010 - 2026-08-30
+
+**Time spent:** 1h
+**Running total:** 128h
+
+C82942 hit 0 stock at JLC, 11 day lead and a 196 MOQ sitting behind it, so the
+3V3 regulator is an AP2112K-3.3TRG1 now, C51118, 70,670 in stock. same SOT-23-5
+and the same 1 VIN 2 GND 3 EN 4 NC 5 VOUT pinout so nothing on the board moved,
+600 mA instead of 500. i couldnt get a tier out of JLC's listing for it, that
+column came back Extended for every row i searched including parts that arent,
+so idk, read it off the quote
+
+then the actual find. the RC holding 3V3 off until 1V2 is up has a 100k feed and
+what was a 10k bleed, and those two are a divider. EN sat at 5 x 10k/110k =
+0.45 V, under the enable threshold of any LDO in this class, so the 3V3 rail
+would never have come up at all. tau was 0.9ms not the 10ms this was documented
+at, that number was 100k x 100n with the bleed left out of the sum. bleed is 1M
+now, C26083
+
+    EN  = 5 x 1M/1.1M              = 4.545 V
+    tau = (100k || 1M) x 100n      = 9.09 ms
+
+0402 to 0402 so no footprint moved. i checked rather than assumed, all 12 gerbers
+came back identical to the previous plot once the creation dates are stripped
+
+![the fpga side](docs/img/routed-3d-bottom.png)
+the back, and U1 actually renders now. the footprint asks for
+QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm.step and KiCad only ships the EP5.15x5.15mm
+one, so the fpga was just absent from every 3D export. pointed at EP5.15, BOM and
+CPL came back byte identical after, J1 SW1 and X1 are still missing models
+
+```
+$ kicad-cli sch erc --severity-all hardware/morphcpu.kicad_sch
+Found 0 violations
+$ kicad-cli pcb drc --severity-all hardware/morphcpu.kicad_pcb
+Found 0 violations
+Found 2 unconnected items
+```
+
+real 4 layer quote came back $203.73 all in, $40.75 a board, $6.27 under the
+$210 cap. the old $198.41 was 2 layers. parts on their own are $88.27 and thats
+already inside the JLC number, not on top of it
+
+case has a STEP at last. FreeCAD 1.1.3, 3MF in, sew the mesh, solid out. closed,
+75.4 x 75.4 x 7.8mm, 2621 faces, all of them triangles rather than real cylinders
+
+next:
+- [ ] move U3 north or move R2/R3, either takes the north fan under
+- [ ] J1 SW1 X1 have no 3D models, only matters for renders
 
 ---
 
@@ -91,7 +145,7 @@ entirely, which quotes fine and arrives dead
 
 next:
 - [ ] move U3 north or move R2/R3, either takes the north fan under
-- [ ] requote, $198.41 was 2 layers and this is 4
+- [x] requote, $198.41 was 2 layers, the 4 layer number is $203.73
 
 ---
 
