@@ -34,7 +34,9 @@ CLI = r"C:/Users/ranve/AppData/Local/Programs/KiCad/10.0/bin/kicad-cli.exe"
 PROJECT = "morphcpu"
 
 # Layers JLC needs. Silkscreen and mask both sides, copper both sides, outline.
-GERBER_LAYERS = "F.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts"
+# 4 layers since routing. In1/In2 are signal, missing them off here plots a
+# board that quotes fine and arrives dead
+GERBER_LAYERS = "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts"
 
 # Value -> LCSC part number, transcribed from docs/BOM.md. Every row the
 # schematic produces is pinned; if this map ever goes stale the run reports the

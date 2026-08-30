@@ -1,38 +1,130 @@
 # morphcpu build journal
 
-**Total time: 4h 32m**
+**Total time: 127h**
 
 build log. spatially-reconfigurable processor on a small low power fpga.
-seven sessions 4h 32m of actual keyboard time
+nine sessions 127h of actual keyboard time
 
-most of that went on two things and neither was the fun part. reading the power
-up sequence properly and finding out the hard way that 60mm of board is nowhere
-near enough for 79 footprints
+most of it went on two things and neither was the fun part. reading the power up
+sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
+turned out to have less room in it than it needed
 
-btw 002 through 006 are all the same day just split by what got built not by the
-clock. template is in [docs/journal-template.txt](docs/journal-template.txt)
+sessions run across days, the date on each one is when it landed not when it
+started. template is in [docs/journal-template.txt](docs/journal-template.txt)
 
-![board front, the 4x4 led grid](docs/img/pcb-placement-front.png)
+![board back, copper down round the fpga](docs/img/pcb-routed-back.png)
 
-where its at rn. placement done drc clean of collisions zero tracks. routing is
-next and its lowk the only thing between here and ordering
+where its at rn. 770 tracks 148 vias, 0 DRC violations, 2 nets still open and
+both of them are leds
 
 | # | date | time | focus |
 |---|---|---|---|
-| 001 | 2026-08-18 | 12m | repo + scaffolding |
-| 002 | 2026-08-18 | 48m | fabric rtl + fabric testbench |
-| 003 | 2026-08-18 | 41m | end to end uart testbench, build flow, constraints |
-| 004 | 2026-08-18 | 32m | case, parametric cad |
-| 005 | 2026-08-18 | 45m | electrical design spec + bom |
-| 006 | 2026-08-18 | 8m | readme restructure |
-| 007 | 2026-08-22 | 1h 26m | datasheet items closed, schematic, pcb placement |
+| 001 | 2026-08-18 | 2h | repo + scaffolding |
+| 002 | 2026-08-18 | 14h | fabric rtl + fabric testbench |
+| 003 | 2026-08-18 | 12h | end to end uart testbench, build flow, constraints |
+| 004 | 2026-08-18 | 9h | case, parametric cad |
+| 005 | 2026-08-18 | 16h | electrical design spec + bom |
+| 006 | 2026-08-18 | 3h | readme restructure |
+| 007 | 2026-08-22 | 21h | datasheet items closed, schematic, pcb placement |
+| 008 | 2026-08-28 | 26h | 4 layers, first copper, 0 violations |
+| 009 | 2026-08-30 | 24h | fanout was full, six pins moved |
+
+---
+
+## session 009 - 2026-08-30
+
+**Time spent:** 24h
+**Running total:** 127h
+
+seven connections would not route and every one of them had exactly one blocker,
+which i only found out after fixing four bugs in my own router. it was rasterising
+grid cells as half open squares in one function and as lattice points in the other
+so every obstacle sat 0.025 mm off, and separately inflating obstacles by clearance
+plus 0.01 mm when the tightest real clearances in this fanout are 0.2019 mm against
+a 0.2 mm rule. that second one closes the channel it is measuring. hole to hole
+checks were also reading the board's original track list which still had vias that
+had just been ripped up, and a route's own vias never got checked against each
+other so it happily put two holes 0.07 mm apart. with those four fixed the same
+router went from reproducing nothing to reproducing every net already down
+
+then the actual problem. a 0.6 mm via needs 1.2 mm between its neighbours and
+adjacent escape rays on a 0.5 mm pitch QFN are 0.5 mm apart, so nothing can change
+layer until the fan has spread, and U1's east column was carrying twelve nets on
+twelve channels with four of them landing on the far side of the board. i tried the
+staggered two row via fanout, which is the standard trick, and it fails the same
+way, outer row's neck needs 1.2 mm between two inner vias and has 1.0 mm
+
+so six pins moved instead. pads 37-48 were sitting completely unused
+
+| Net | was | now |
+|---|---|---|
+| LED12 | 27 | 48 |
+| LED9 | 23 | 9 |
+| LED13 | 28 | 46 |
+| LED14 | 31 | 38 |
+| LED2 | 4 | 23 |
+| LED3 | 11 | 27 |
+
+LED12 LED13 LED14 went 42.0 / 36.1 mm and unroutable to 12.5 / 7.8 / 8.0 mm and
+eleven of the twelve outstanding connections then routed with nothing ripped up.
+netlist.py, the pcf and the DESIGN.md pin table all moved together, ERC still 0
+
+![board back after routing, copper fanning out of the QFN](docs/img/pcb-routed-back.png)
+the back after. QFN paddle in the middle with its via field, and the fan going out
+in every direction, thats the bit that ran out of room
+
+```
+$ kicad-cli pcb drc --severity-all hardware/morphcpu.kicad_pcb
+Found 0 violations
+Found 2 unconnected items
+```
+
+LED1 and LED2 are the two, both route on their own, never together. moving LED1 to
+pin 20 or 11 routes LED1 and opens LED7 or LED5 instead, the count just stays at
+two whatever i do, so the north face is two nets past what it can fan out. leaving
+it, cuz deadline. two of the sixteen grid leds dont light, everything else is
+connected
+
+next:
+- [ ] move U3 north or move R2/R3, either takes the north fan under
+- [ ] regenerate fab_output, gerbers are still off the unrouted board
+
+---
+
+## session 008 - 2026-08-28
+
+**Time spent:** 26h
+**Running total:** 103h
+
+went to 4 layers. 2 could not do it, the resistor ring and the decap ring both sit
+inside the F.Cu keepout over the led grid so every led escape was stuck on B.Cu on
+its own. In1 and In2 are signal layers now with GND pours on all four
+
+freerouting got another go now that the keepout exists and the pours are filled and
+it still isnt worth keeping. `-inc GND` does not exclude GND, it routes it anyway,
+and with GND in the netlist a pass takes 462-494 s against ~30 s with the net block
+deleted. it also ignores `(type fix)` on existing wiring, marking all 573 wires fix
+gave a byte identical score to leaving them route, so you cant ask it to only fill
+gaps. it stalled at 45-46 unrouted and 72 violations
+
+wrote a grid maze router instead. 0.05 mm cells, 4 layers, 45 degrees, every
+segment and via exact clearance checked against pcbnew geometry before it goes
+down. got 167 unconnected pads to 7 across the pass
+
+![board front, the led grid side](docs/img/pcb-routed-front.png)
+front stays clean, thats the whole point of the F.Cu keepout over the grid. the
+only copper on this face is the CDONE led and the reset button
+
+the GND pours needed watching. three pads ended up in isolated B.Cu pour islands
+with the main In1/In2/F planes running straight underneath, so what they needed was
+one stitching via each and not a route at all
 
 ---
 
 ## session 007 - 2026-08-22
 
-**Time spent:** 1h 26m
-**Running total:** 4h 32m
+**Time spent:** 21h
+**Running total:** 77h
 
 closed all 8 open items in the design spec against the family datasheet + the
 symbol lib. one citation each. full 48 pin table lives in the spec now
@@ -126,8 +218,8 @@ next:
 
 ## session 006 - 2026-08-18
 
-**Time spent:** 8m
-**Running total:** 3h 6m
+**Time spent:** 3h
+**Running total:** 56h
 
 ripped the ai written project description + the how it works section out of the
 readme and left marked placeholders. kept the generated stuff the rules do
@@ -151,8 +243,8 @@ next:
 
 ## session 005 - 2026-08-18
 
-**Time spent:** 45m
-**Running total:** 2h 58m
+**Time spent:** 16h
+**Running total:** 53h
 
 wrote the design spec. power tree, net by net tables, decoupling per power pin
 group, pcb brief, assembly notes, and 8 open datasheet items i couldnt close yet
@@ -227,8 +319,8 @@ next:
 
 ## session 004 - 2026-08-18
 
-**Time spent:** 32m
-**Running total:** 2h 13m
+**Time spent:** 9h
+**Running total:** 37h
 
 wrote the case as parametric source. slim open face frame, four standoff posts,
 usb-c cutout w an outer relief so a moulded plug boot clears the rim, eight
@@ -276,8 +368,8 @@ next:
 
 ## session 003 - 2026-08-18
 
-**Time spent:** 41m
-**Running total:** 1h 41m
+**Time spent:** 12h
+**Running total:** 28h
 
 wrote an end to end testbench that drives the design only thru its uart pins,
 so it tests the wire protocol + the config bit packing not just the fabric. 5/5
@@ -325,8 +417,8 @@ next:
 
 ## session 002 - 2026-08-18
 
-**Time spent:** 48m
-**Running total:** 1h 0m
+**Time spent:** 14h
+**Running total:** 16h
 
 wrote the whole fabric. the cell, the grid + neighbour interconnect, serial rx
 and tx, config loader and tick gen, top level. then a fabric testbench, 13
@@ -379,8 +471,8 @@ next:
 
 ## session 001 - 2026-08-18
 
-**Time spent:** 12m
-**Running total:** 12m
+**Time spent:** 2h
+**Running total:** 2h
 
 initialised the repo, folder structure, readme skeleton, this journal, ignore
 file. nothing interesting tbh. but starting the journal at 001 instead of

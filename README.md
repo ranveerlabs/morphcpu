@@ -16,15 +16,20 @@ cuz the board diameter kept moving anyway still no traces on it
 
 ## state
 
-Not routed, 0 tracks, thats the blocker really, everything else is more or less
-there. route order is in [hardware/ROUTING.md](hardware/ROUTING.md) if you feel
-like it. i did try freerouting, it ran 211 segments straight across the led face
-so that went in the bin
+routed. 770 tracks 148 vias across 4 layers, DRC 0 violations, 2 nets still open
+and theyre both leds so 14 of the 16 light. leaving it there cuz deadline, the
+board powers and configures and boots and talks. why its two and what would close
+them is in [hardware/ROUTING.md](hardware/ROUTING.md). freerouting got two goes and
+both went in the bin, the first one ran 211 segments straight across the led face
+
+it needed 4 layers in the end. 2 couldnt do it, the resistor ring and the decap
+ring both sit inside the F.Cu keepout over the grid so every led escape was stuck
+on B.Cu alone
 
 no bitstream either. OSS CAD Suite isnt installed on this machine so build.sh
 has literally never run so idk, salt on the timing numbers
 
-sim 18/18, ERC 0/0, placement DRC clean of collisions, BOM $198.41 for 5
+sim 18/18, ERC 0/0, BOM $198.41 for 5
 
 ## ops
 
@@ -92,28 +97,35 @@ cd case && ./export.sh
 
 75.4mm, 12.9g, like 26c of PLA
 
-![front](docs/img/pcb-placement-front.png)
+![front](docs/img/pcb-routed-front.png)
 
-front. 4x4 on 9mm pitch plus the reset button and the CDONE led
+front. 4x4 on 9mm pitch plus the reset button and the CDONE led. no tracks on
+this face on purpose, theres an F.Cu keepout over the whole grid
 
-![back](docs/img/pcb-placement-back.png)
+![back](docs/img/pcb-routed-back.png)
 
-back, rings around the fpga, placement only so theres no copper in that render
+back. fpga in the middle, ring of decaps then the resistor ring, and everything
+fanning out of a QFN-48 on 0.5mm pitch which is where all the pain was
 
 board was 60mm at first and everything overlapped. the resistor ring also sat
 180 out from its own leds for ages, so every single anode trace ran straight
 under the QFN paddle, which took embarrassingly long to spot, rip. both sorted
 
-## dont order it
+six leds also ended up on different fpga pins than they started on, cuz the east
+side of the package ran out of escape room. thats in ROUTING.md too
 
-Gerbers in `hardware/fab_output/` came off an unrouted board so the copper
-layers are empty. JLC will still quote off them tho
+## if you order it
 
+gerbers in `hardware/fab_output/` are off the routed board now, all four copper
+layers with copper actually in them, drill included. two nets are still open tho
+so D2 and D3 wont light, read that before you spend money
+
+- **$198.41 was costed at 2 layers and this is 4 now.** i have not requoted it,
+  the $11.59 headroom might be gone. requote before you commit to anything
 - fpga stock was 546 when i looked. oscillator 147
 - C7519 and C136491 tiers are guesses, confirm in the quote
 - QFN paddle is the only ground to the die, SG48 has no GND pin at all. window
   the paste stencil
-- $11.59 headroom on $198.41, before shipping
 
 case prints flat, no supports, 0.2mm layers, 3 perimeters
 

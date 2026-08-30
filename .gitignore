@@ -100,3 +100,7 @@ hardware/morphcpu.net
 # gen_fab.py working directory — loose plots, drill maps and the job file are
 # all regenerable; hardware/fab_output/*.zip and *.csv stay tracked.
 hardware/fab_output/gerbers/
+
+# vscode local history
+hardware/.history/
+.history/
