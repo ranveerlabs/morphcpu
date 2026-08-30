@@ -64,7 +64,7 @@ the whole requirement collapses to one rule:
 so feed both regulators from 5 V in parallel and hold the 3.3 V one off
 with an RC delay on its enable until 1.2 V is up. which means the 3.3 V
 regulator **needs an enable pin**, so **AMS1117-3.3 is out** (SOT-223, no
-enable). ME6211C33M5G-N replaces it.
+enable). AP2112K-3.3TRG1 replaces it.
 
 running 1.2 V straight off 5 V costs (5 - 1.2) × 30 mA ~ 114 mW in a SOT-23-5,
 about a 28 °C rise. fine, and it kills the ordering problem outright instead of
@@ -120,7 +120,7 @@ USB-C VBUS 5V
    |         |
    |         +--> (rail is up within ~200 us of VBUS)
    |
-   +--> ME6211C33M5G-N (SOT-23-5)  CE via RC delay from 5V  <-- holds 3V3 off
+   +--> AP2112K-3.3TRG1 (SOT-23-5) EN via RC delay from 5V  <-- holds 3V3 off
    |         |                                                  until 1V2 is up
    |         +--> +3V3 --> FPGA VCCIO_0    (pin 33)
    |                   --> FPGA SPI_VCCIO1 (pin 22)
@@ -139,24 +139,31 @@ USB-C VBUS 5V
 |---|---|---|---|---|
 | VBUS | 5.0 V | - | Both regulators, FT231X | ~250 mA worst case |
 | +1V2 | 1.2 V | ME6211C12M5G-N, [C236672](https://www.lcsc.com/product-detail/C236672.html) | VCC ×2, VCCPLL | 10-30 mA |
-| +3V3 | 3.3 V | ME6211C33M5G-N, [C82942](https://www.lcsc.com/product-detail/C82942.html) | VCCIO ×3, VPP_2V5, flash, XO, LEDs | ~110 mA (80 mA of it LEDs) |
+| +3V3 | 3.3 V | AP2112K-3.3TRG1, [C51118](https://www.lcsc.com/product-detail/C51118.html) | VCCIO ×3, VPP_2V5, flash, XO, LEDs | ~110 mA (80 mA of it LEDs) |
 
 both regulators are SOT-23-5 from the same family, so they share a footprint.
 
 | Part | Vout | Iout | Vin | CE | Price @1 | Stock |
 |---|---|---|---|---|---|---|
-| ME6211C33M5G-N | 3.3 V | 500 mA | 2.0-6.0 V | yes | $0.053 | 272,820 |
+| AP2112K-3.3TRG1 | 3.3 V | 600 mA | up to 6.0 V | yes | $0.0967 | 70,670 |
 | ME6211C12M5G-N | 1.2 V | 300 mA | 1.2-6.0 V | yes | $0.0606 | 28,080 |
 
 ### sequencing RC
 
-the 3.3 V regulator's CE is pulled to VBUS through **100 kΩ** with **100 nF** to
-GND, so τ = 10 ms. the 1.2 V regulator starts the moment VBUS rises (hundreds of
-microseconds), so VCC is well past 0.5 V long before 3.3 V is enabled.
+the 3.3 V regulator's EN is pulled to VBUS through **100 kΩ** with **100 nF** to
+GND and a **1 MΩ** bleed. EN settles at 5 × 1M/1.1M = **4.55 V** and τ is
+(100 kΩ || 1 MΩ) × 100 nF = **9.1 ms**. the 1.2 V regulator starts the moment
+VBUS rises (hundreds of microseconds), so VCC is well past 0.5 V long before
+3.3 V is enabled.
 
-the **10 kΩ** bleed to GND is not optional. without it CE doesnt discharge on
-power-down and a fast power cycle skips the sequence. §4.5 says the sequence has
-to be re-followed every time supplies are re-powered.
+the bleed to GND is not optional. without it EN doesnt discharge on power-down
+and a fast power cycle skips the sequence. §4.5 says the sequence has to be
+re-followed every time supplies are re-powered.
+
+it was 10 kΩ up until now, which is a divider against the 100 kΩ feed, EN sat at
+0.45 V and the 3.3 V rail would never have come up at all. τ was 0.9 ms too. the
+10 ms this section used to claim was 100 kΩ × 100 nF with the bleed left out of
+the sum. nothing here has been on a bench so it took a re-read to catch.
 
 ### VPP_2V5
 
@@ -531,7 +538,7 @@ pour ground on both layers, stitch it, no isolated islands.
 | FT231XS-R | C132160 | Extended | 1,657 |
 | W25Q32JVSSIQ | C179173 | Extended | 39,664 |
 | TYPE-C-31-M-12 | C165948 | Extended | 407,730 |
-| ME6211C33M5G-N | C82942 | Basic | 272,820 |
+| AP2112K-3.3TRG1 | C51118 | unverified | 70,670 |
 | ME6211C12M5G-N | C236672 | Basic | 28,080 |
 | KT-0603R | C2286 | Basic | 3,752,200 |
 | 1532H4-16000JWPDTSNL | C5383161 | Extended | 147 |
@@ -555,9 +562,11 @@ are from that date. "Inferred" means the part appears in neither JLC's Basic
 category listings nor a published Basic-parts export, likely Extended, but not
 quoted. Confirm in the PCBA quote.
 
-both regulators are **Basic**. AMS1117 was Basic too, so swapping it for
-ME6211C33M5G-N is fee-neutral, not a saving. the actual win is that the ME6211
-pair share a footprint, which helped placement.
+the 1V2 part is Basic. the 3V3 one is an AP2112K since C82942 went to 0 stock
+and JLC's category listing wont render a tier for it, so that one is unknown
+until the quote comes back. it might land Extended, thats one more setup fee
+than this doc used to assume. both are still SOT-23-5 and still share a
+footprint, which helped placement.
 
 1. **extended parts carry a per-part setup fee**, charged once per distinct
    extended part per order. between **7 and 9** parts here are Extended

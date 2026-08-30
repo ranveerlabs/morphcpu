@@ -117,7 +117,9 @@ add("R29", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_WP"})
 add("R30", "Device", "R", "10k", FP_R, {1: P3V3, 2: "FLASH_HOLD"})
 
 # same footprint both. 1V2 always on, 3V3 held off by an RC on CE
-add("U4", "Regulator_Linear", "ME6211C33M5", "ME6211C33M5G-N",
+# C82942 went to 0 stock at JLC so the 3V3 part is an AP2112K now. same
+# 1 VIN 2 GND 3 EN 4 NC 5 VOUT pinout, symbol stays the ME6211 one
+add("U4", "Regulator_Linear", "ME6211C33M5", "AP2112K-3.3TRG1",
     "Package_TO_SOT_SMD:SOT-23-5",
     {1: VBUS, 2: GND, 3: EN3V3, 5: P3V3}, nc=[4])
 
@@ -179,11 +181,12 @@ add("R24", "Device", "R", "5k1", FP_R, {1: "CC2", 2: GND})
 add("F1", "Device", "Polyfuse", "500mA", "Fuse:Fuse_1206_3216Metric",
     {1: "VBUS_IN", 2: VBUS})
 
-# 100k/100nF = 10 ms on CE, way longer than 1V2 takes to rise. 10k bleed so CE
-# discharges on power-down and the sequence repeats
+# 100k/1M/100nF puts CE at 4.5V with tau 9.1ms, way longer than 1V2 takes to
+# rise. the bleed was 10k, which divided CE down to 0.45V and nothing ever
+# enabled. it still has to be there so CE discharges on power-down
 add("R25", "Device", "R", "100k", FP_R, {1: VBUS, 2: EN3V3})
 add("C19", "Device", "C", "100n", FP_C, {1: EN3V3, 2: GND})
-add("R26", "Device", "R", "10k", FP_R, {1: EN3V3, 2: GND})
+add("R26", "Device", "R", "1M", FP_R, {1: EN3V3, 2: GND})
 
 # VCCPLL RC filter from the 1V2 rail (DS Table 4.2 note 1)
 add("R27", "Device", "R", "100", FP_R, {1: P1V2, 2: VCCPLL})
