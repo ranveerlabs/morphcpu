@@ -38,15 +38,16 @@ the PCB doesnt exist yet so
 
 update those seven after routing and re-run export.sh
 
-## no STEP
+## STEP
 
 OpenSCAD wont do it. the CLI does `stl, off, wrl, amf, 3mf, csg, dxf, svg, pdf,
 png` and thats the lot, its a mesh modeller and STEP is B-rep
 
-if something downstream wants STEP, import the 3MF into FreeCAD and export from
-there. you get a valid file but a tessellated one, thousands of facets instead
-of real cylinders. fine for a fit check. rebuild it in FreeCAD Part Design or
-CadQuery if you need a proper one
+`morphcpu_case.step` is the 3MF pushed through FreeCAD 1.1.3, `Mesh.insert` then
+`makeShapeFromMesh` with sewing then `Part.export`. it comes out a closed solid,
+75.4 x 75.4 x 7.8mm, 11627.5mm3, 2621 faces. tessellated though, those faces are
+mesh triangles welded up and not real cylinders. fine for a fit check, rebuild it
+in Part Design or CadQuery if you need a proper one
 
 ## printing
 
