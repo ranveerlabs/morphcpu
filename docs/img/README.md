@@ -9,6 +9,11 @@ renders, screenshots and build photos.
 | `pcb-placement-front.png` | board front, the 4x4 led grid |
 | `pcb-placement-back.png` | board back, everything else |
 | `pcb-3d.png` | 3d render, top |
+| `case-pcb-assembly.png` | case with the real routed board seated in it |
+| `routed-3d-top.png` | 3d render of the routed board, top |
+| `routed-3d-bottom.png` | 3d render of the routed board, bottom, the fpga side |
+| `pcb-top.svg` | F.Cu + silk + mask + outline, top view |
+| `schematic.svg` | the whole schematic on one sheet |
 | `pcb-3d-back.png` | 3d render, bottom |
 | `sim-002-grid-activity.png` | activity taps over 28 ticks, from the fabric sim |
 | `sim-003-uart-activity.png` | led states through the end to end run |
