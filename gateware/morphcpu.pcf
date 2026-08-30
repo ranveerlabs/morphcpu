@@ -28,7 +28,7 @@ set_io -nowarn led[5]     13
 set_io -nowarn led[6]     18
 set_io -nowarn led[7]     19
 set_io -nowarn led[8]     21
-set_io -nowarn led[9]     47
+set_io -nowarn led[9]      9
 set_io -nowarn led[10]    25
 set_io -nowarn led[11]    26
 set_io -nowarn led[12]    48

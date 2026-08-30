@@ -5,9 +5,10 @@ the one F.Cu rule area. What this file still holds is Board Setup, ten net class
 JLC-shaped DRC minimums, a `morphcpu.kicad_dru` for the rules the dialog cant
 express, and the order to route in
 
-current state: **0 DRC violations, 3 unrouted connections**, on 737 tracks and 145
-vias. it was 0 / 7 before this pass, and the seven needed six FPGA pins moved, not
-more copper. see [what is left unrouted](#what-is-left-unrouted) at the bottom.
+current state: **0 DRC violations, 2 unrouted connections**, and both of them are
+LED drive nets - **every power, ground, clock, config, flash, USB and UART net is
+complete.** it was 0 / 7 before this pass, and closing those seven needed seven
+FPGA pins moved, not more copper. see [what is left unrouted](#what-is-left-unrouted) at the bottom.
 
 **the old "10 unrouted" number was wrong.** `kicad-cli pcb drc` refills the zones
 before it checks, and on a refill two of the three GND items and LED5_A close by
@@ -437,17 +438,24 @@ new since this pass:
 
 ## what is left unrouted
 
-3 connections, from `kicad-cli pcb drc --severity-all`, measured 29 Aug 2026
+2 connections, from `kicad-cli pcb drc --severity-all`, measured 30 Aug 2026
 against the board as committed. **0 violations.**
 
 | # | Net | From | To |
 |---|---|---|---|
-| 1 | +1V2 | track end on B.Cu, 3.000 mm | U1.5 |
+| 1 | LED1 | U1.3 | R2.1 |
 | 2 | LED2 | U1.23 | R3.1 |
-| 3 | LED9 | U1.47 | R10.1 |
 
-each of the three routes on its own. what stops all of them at once is the same
-thing that stopped the previous seven, one notch further out - see below.
+both are LED drive nets, so the board powers, configures, boots and talks; two of
+the sixteen grid LEDs will not light. nothing else is open - +1V2 at U1.5 was the
+one that mattered, it is a core VCC pin, and it is routed.
+
+both route on their own. what stops them together is the same over-subscription
+as before, one notch further out: R2 and R3 both sit due **north** of the package
+at y = 89.6, LED1 comes off the **west** face at pad 3 and LED2 off the north face
+at pad 23, and the north face already carries eleven nets of which the four flash
+signals all cross to U3 in the **west**. every rip-and-replace tried lands back on
+two open, just a different two.
 
 ## the fanout was over-subscribed, so six pins moved
 
@@ -488,12 +496,14 @@ with LED2 and LED3, whose resistors are both north-east. the fan was full.
 
 pads 37-48 were **entirely unused** and the area south of the package is open, so
 the far-side crossers went there, ordered by their resistors' x so none of them
-cross each other:
+cross each other. LED9 started on pad 47 but then fought LED12 on pad 48 for the
+same south-west corridor, so it took pad 9 on the west face instead - that single
+move is what closed +1V2 at U1.5:
 
 | Net | was | now | why |
 |---|---|---|---|
 | LED12 | 27 IOT_38b | **48** IOB_4a | R13 at x = 140.1 |
-| LED9 | 23 IOT_37a | **47** IOB_2a | R10 at x = 141.5 |
+| LED9 | 23 IOT_37a | **9** IOB_16a | R10 at 141.5, 108.5, and pad 9's ray points at it |
 | LED13 | 28 IOT_41a | **46** IOB_0a | R14 at x = 146.5 |
 | LED14 | 31 IOT_42b | **38** IOT_50b | R15 at x = 153.5 |
 | LED2 | 4 IOB_8a | **23** IOT_37a | R3 due north at 153.5, 89.6 |
@@ -542,16 +552,34 @@ worth recording because each one silently lost channels that were actually legal
 fixing those four took the same router from re-routing nothing to reproducing
 every previously-routed net.
 
-### what would close the last three
+### what would close the last two
 
-+1V2 at U1.5, LED2 and LED9 each route alone. measured with every small net
-removed, +1V2 wants CDONE, VCCPLL_F, LED15 and LED1 out of the way, LED9 wants
-LED12, and LED2 has no path at all while the +3V3 escape at pad 22 holds its
-current shape - pad 23 sits between +3V3 at 22 and VPP_2V5 at 24. ripping those
-and re-placing them lands back on three open, just a different three.
+LED1 and LED2 both route alone. every rip-and-replace tried - whole net, near-U1
+only, and exact-item - lands back on two open. the pin trials run were, all with
++1V2 placed first:
 
-so it is the same over-subscription one notch out, and the same two options:
-a router that holds the whole fanout simultaneously, or two more pins moved. the
-obvious candidates are **CLK (35) and VCCPLL_F (29)**, the two remaining far-side
-crossers on the east column - though VCCPLL_F is a dedicated PLL supply pin and
-cannot move, and CLK wants to stay on a GBIN.
+| LED2 | LED9 | LED1 | still open |
+|---|---|---|---|
+| 23 | 47 | 3 | 3: +1V2, LED2, LED9 |
+| 23 | 4 | 3 | 3: LED1, LED9, LED2 |
+| 20 | 4 | 3 | 3: LED1, LED9, LED2 |
+| 4 | 6 | 3 | 3: CDONE, LED2, LED9 |
+| 4 | 9 | 3 | 2: CDONE, LED2 |
+| 20 | 9 | 3 | 2: LED1, LED2 |
+| **23** | **9** | **3** | **2: LED1, LED2** (kept - the two opens are LED nets, not CDONE) |
+
+the north face is now the tight one: eleven nets, and FLASH_DO / CLK / CS / DI all
+cross to U3 in the west. the honest options from here are
+
+1. **move the flash bus.** pins 14-17 are fixed by the iCE40 config block, so this
+   means moving **U3 itself** round to the north instead of the west. that is a
+   placement change, and DESIGN.md picked west deliberately.
+2. **two more free pads on the north face.** pin 20 is G3 and is being kept as a
+   spare global clock; spending it buys one.
+3. **a router that holds the whole fanout at once.** negotiated congestion,
+   PathFinder history costs. the greedy-plus-rip-up in the scratch scripts gets to
+   two and stops.
+
+do not spend another evening on plain rip-up-and-retry. it has now been tried at
+whole-net, radius-limited and per-item granularity, with ordering search over
+seeds, and it converges to the same two every time.

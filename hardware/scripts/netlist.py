@@ -35,8 +35,11 @@ LED_NETS = ["LED%d" % i for i in range(16)]
 # R10/R13/R14/R15 all sit south or south-west of the package and pads 37-48 were
 # entirely unused, so those four move to south pads ordered by their resistors'
 # x, which keeps them from crossing:
-#     LED12 -> 48 (R13 x=140.1), LED9 -> 47 (R10 x=141.5),
-#     LED13 -> 46 (R14 x=146.5), LED14 -> 38 (R15 x=153.5)
+#     LED12 -> 48 (R13 x=140.1), LED13 -> 46 (R14 x=146.5),
+#     LED14 -> 38 (R15 x=153.5)
+# LED9 went to the south row too at first, but pad 47 then fought LED12 on pad 48
+# for the same south-west corridor, so it sits on pad 9 on the west face instead:
+# R10 is at 141.5, 108.5 and pad 9's ray points straight at it.
 # LED2 and LED3 are the other two far-side crossers: both sit on the west face
 # and both of their resistors are north-east, so they cut clean across the
 # package, and LED2's diagonal is what walled in +1V2 at pin 5. They take the
@@ -47,7 +50,7 @@ LED_NETS = ["LED%d" % i for i in range(16)]
 # G1, 44 is G6, 20 is G3 and stays free) or an RGB driver (39-41).
 LED_PIN_MAP = {
     2: 0,  3: 1,  23: 2, 27: 3, 12: 4, 13: 5, 18: 6, 19: 7,
-    21: 8, 47: 9, 25: 10, 26: 11, 48: 12, 46: 13, 38: 14, 32: 15,
+    21: 8,  9: 9, 25: 10, 26: 11, 48: 12, 46: 13, 38: 14, 32: 15,
 }
 
 FP_R = "Resistor_SMD:R_0402_1005Metric"
@@ -83,13 +86,14 @@ u2_nets = {
 for pin in (12, 13, 18, 19, 21):
     u2_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 # 20 stays free, second global clock. 6 and 9 freed up by the UART move
-add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[6, 9, 11, 20])
+u2_nets[9] = LED_NETS[9]
+add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[6, 11, 20])
 
 u3_nets = {1: P3V3}
-for pin in (2, 3, 46, 47, 48):
+for pin in (2, 3, 46, 48):
     u3_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u3_nets, unit=3,
-    nc=[4, 44, 45])
+    nc=[4, 44, 45, 47])
 
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3],
     {5: P1V2, 24: VPP, 29: VCCPLL, 30: P1V2, 49: GND}, unit=4)

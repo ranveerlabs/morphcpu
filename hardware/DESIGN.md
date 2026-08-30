@@ -252,7 +252,7 @@ general fabric instead of a global buffer makes timing closure needlessly hard.
 | 18 | IOB_31b | LED6 |
 | 19 | IOB_29b | LED7 |
 | 21 | IOB_23b | LED8 |
-| 47 | IOB_2a | LED9 |
+| 9 | IOB_16a | LED9 |
 | 25 | IOT_36b | LED10 |
 | 26 | IOT_39a | LED11 |
 | 48 | IOB_4a | LED12 |
@@ -267,7 +267,7 @@ checks this assignment passes:
 - The clock is on a GBIN pin (35).
 - Pin 20 (G3) is left free rather than spent on an LED, so a second global
   clock is still available later.
-- LEDs are split across banks, 2, 3, 46, 47, 48 on VCCIO_2 (pin 1), 12, 13, 18,
+- LEDs are split across banks, 2, 3, 46, 48 on VCCIO_2 (pin 1), 9, 12, 13, 18,
   19, 21 on VCCIO_1 (pin 22) and 23, 25, 26, 27, 32, 38 on VCCIO_0 (pin 33), so
   80 mA is not drawn through one VCCIO pin, 25 / 25 / 30 mA. All three VCCIO
   pins are +3V3.
@@ -280,8 +280,10 @@ checks this assignment passes:
   0.5 mm apart, so nothing can change layer until the fan has spread, and there
   was nothing left to spread into. R10, R13, R14 and R15 all sit south or
   south-west of the package and pads 37-48 were entirely unused, so LED12 -> 48,
-  LED9 -> 47, LED13 -> 46, LED14 -> 38, ordered by their resistors' x so that
-  none of the four crosses another. Moving LED9 off pin 23 also frees the
+  LED13 -> 46, LED14 -> 38, ordered by their resistors' x so that none of them
+  crosses another. LED9 went south too at first, but pad 47 then fought LED12 on
+  pad 48 for the same south-west corridor, so it sits on **pad 9** on the west
+  face instead - R10 is at 141.5, 108.5 and pad 9's ray points straight at it. Moving LED9 off pin 23 also frees the
   channel beside pin 22, a +3V3 VCCIO pin that previously had no escape at all.
   **LED2 and LED3 moved too**, off the west face onto the pads LED9 and LED12
   vacated: LED2 -> 23 (R3 is due north at 153.5, 89.6) and LED3 -> 27 (R4 at
