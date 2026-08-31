@@ -1,9 +1,9 @@
 # morphcpu build journal
 
-**Total time: 128h**
+**Total time: 129h**
 
 build log. spatially-reconfigurable processor on a small low power fpga.
-ten sessions 128h of actual keyboard time
+eleven sessions 129h of actual keyboard time
 
 most of it went on two things and neither was the fun part. reading the power up
 sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
@@ -30,6 +30,65 @@ both of them are leds
 | 008 | 2026-08-28 | 26h | 4 layers, first copper, 0 violations |
 | 009 | 2026-08-30 | 24h | fanout was full, six pins moved |
 | 010 | 2026-08-30 | 1h | ldo went out of stock, en divider was wrong |
+| 011 | 2026-08-30 | 1h | silkscreen, the board had none |
+
+---
+
+## session 011 - 2026-08-30
+
+**Time spent:** 1h
+**Running total:** 129h
+
+the only graphic on this board was the edge cuts circle. no name no rev nothing,
+which someone pointed out is going to read as unfinished next to the actual
+requirement, "Round your corners, add silkscreen art, remove empty space from the
+PCB". corners were never an issue cuz its a 70mm circle, the other two were
+
+kicad has no curved text so the title is eight separate PCB_TEXT items placed
+round r=29.7 with each one rotated to the tangent. front got that, a frame circle
+at 32.9, IN and OUT arrows on the west and east lobes pointing the same way cuz
+thats the direction data actually moves, and eight little boxed arrows in the two
+side lobes for the four directions a cell can route
+
+three things that didnt work first. a cartesian lattice of small squares in the
+annulus, culled against every footprint, came out looking like debris rather than
+a pattern, the culling breaks the grid up into clumps. then a ring of 16 cells,
+one per fabric cell, which is the idea i wanted, except the M2 holes sit at r=29
+and their bounding boxes reach in to r=25.5 so the diagonals are pinched between
+those and the led grid corners at r=21.8. swept radius against placement count and
+the best was 13 of 16 at r=31, and r=31 is where the title already is
+
+```
+gs 2.6 off 11.25  R 31.0 -> 13/16
+gs 2.6 off 11.25  R 31.5 -> 13/16
+gs 2.6 off 11.25  R 32.0 -> 13/16
+```
+
+third one was my own bug, i was culling front silk against every footprint
+including the back ones, so half the glyphs vanished for parts that arent on that
+side. only front footprints and anything with a through hole pad block front silk
+
+![front with the silkscreen on it](docs/img/silk-front.png)
+
+back arc came out UPCHPROM the first time. mirroring a layer flips the whole run
+and not just each glyph so the string has to go in reversed. and the first back
+pass threw 4 silk warnings, the frame circle crossed J1's outline at 182,95.3 and
+182,104.7 and the full url arc ran its c and its t straight into the H3 and H4
+NPTH pads. dropped the circle on that side and the url is straight text in the
+bottom band now, arc up top is just the name
+
+![back, url and part number in the bottom band](docs/img/silk-back.png)
+
+```
+$ kicad-cli pcb drc --severity-all hardware/morphcpu.kicad_pcb
+Found 0 violations
+Found 2 unconnected items
+```
+
+same 2 open leds as before, no copper moved. the empty space one im leaving, the
+components sit inside about 40mm and the board is 70 cuz the case is built round
+70 and the led grid wants the room, shrinking it now means re routing the fanout
+again with a week to go
 
 ---
 
