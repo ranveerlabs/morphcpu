@@ -90,6 +90,11 @@ components sit inside about 40mm and the board is 70 cuz the case is built round
 70 and the led grid wants the room, shrinking it now means re routing the fanout
 again with a week to go
 
+rev A came back off the bottom band after. nothing in this project says the board
+is rev A, sch_revision in the .kicad_pro is empty and theres never been an earlier
+spin of it, so that line was a marking that said whatever i felt like rather than
+anything true. url and the part number stay, those are both real
+
 ---
 
 ## session 010 - 2026-08-30
