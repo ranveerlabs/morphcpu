@@ -5,7 +5,7 @@ the one F.Cu rule area. rest of this file is Board Setup, ten net classes, JLC
 shaped DRC minimums, a `morphcpu.kicad_dru` for the rules the dialog cant express,
 and the order to route in
 
-**0 violations, 2 unrouted.** both leftovers are LED drive nets so every power,
+0 violations, 2 unrouted. both leftovers are LED drive nets so every power,
 ground, clock, config, flash, USB and UART net is done. was 0 / 7 going in and
 closing those seven took six FPGA pins moved, not more copper, [what is left
 unrouted](#what-is-left-unrouted) at the bottom has it
@@ -17,8 +17,8 @@ read the count off kicad-cli, not off a stale fill
 
 placement did move once after the first pass. the 16 LED resistors went onto
 their own LEDs' rays which took the anode ratsnest 405 mm -> 53.4 mm, and the
-UART went from pins 6/9 to 34/36. both generator changes not hand edits, whats
-at the bottom of the route order covers it.
+UART went from pins 6/9 to 34/36. both generator changes not hand edits, whats at
+the bottom of the route order covers it
 
 open `morphcpu.kicad_pcb`, work down [route these in this order](#route-these-in-this-order),
 then the [post-routing checklist](#post-routing-checklist)
@@ -39,7 +39,7 @@ then the [post-routing checklist](#post-routing-checklist)
 | Default | 0.20 mm | 0.2 mm | 0.6 / 0.3 mm | the other 43, mostly LED* and LED*_A |
 
 USB also carries diff pair width 0.25 mm / gap 0.25 mm so the pair tool doesnt fight
-you. every class got a pcb_color too.
+you. every class got a pcb_color too
 
 verified against the actual board, all 63 real nets land in a class and nothing fell
 thru to Default that shouldnt have:
@@ -66,9 +66,9 @@ publish. at dT = 10 C:
 | 0.40 mm | 15.75 | 1.23 A | 1.67 A |
 | 0.50 mm | 19.69 | 1.45 A | 1.96 A |
 
-cross-check: schemalyzer's published table says 5 mil -> 0.5 A and 10 mil -> 1 A at
-1 oz / 10 C. my 5.91 mil -> 0.60 A and 9.84 mil -> 0.88 A sit either side of those, so
-the arithmetic tracks.
+cross-check, schemalyzer's published table says 5 mil -> 0.5 A and 10 mil -> 1 A at
+1 oz / 10 C. my 5.91 mil -> 0.60 A and 9.84 mil -> 0.88 A sit either side of those so
+the arithmetic tracks
 
 run it backwards against [DESIGN.md's power tree](DESIGN.md#power-tree) and
 **nothing on this board is current-limited**:
@@ -81,20 +81,20 @@ run it backwards against [DESIGN.md's power tree](DESIGN.md#power-tree) and
 | +1V2 worst case | 0.030 A | 0.002 mm |
 
 IR drop says the same thing. 1 oz copper is 0.4914 mOhm/square, so a 30 mm run of
-0.5 mm VBUS at 500 mA drops **14.7 mV**, 30 mm of 0.4 mm +3V3 at 110 mA drops
-**4.1 mV**, and 25 mm of 0.4 mm +1V2 at 30 mA drops **0.92 mV** against a 1.14-1.26 V
-window. all of it is noise.
+0.5 mm VBUS at 500 mA drops 14.7 mV, 30 mm of 0.4 mm +3V3 at 110 mA drops 4.1 mV, and
+25 mm of 0.4 mm +1V2 at 30 mA drops 0.92 mV against a 1.14-1.26 V window. all of it
+is noise
 
-so the widths arent thermal and they arent IR. theyre picked so 0.5 mm VBUS has ~2.9x
-margin over the fuse it sits behind, so the rails are visually obvious while you hand
-route, and so DRC catches you if you ever pull VBUS out of a pad at signal width by
-accident.
+the widths arent thermal and they arent IR then. theyre picked so 0.5 mm VBUS has
+~2.9x margin over the fuse it sits behind, so the rails are visually obvious while
+you hand route, and so DRC catches you if you ever pull VBUS out of a pad at signal
+width by accident
 
-**neck the escapes.** U1 is a QFN-48 on 0.5 mm pitch with 0.25 mm pads, so the gap
-between adjacent pads is 0.25 mm. a 0.4 mm power trace centred on one leaves 0.175 mm
-to its neighbour, which is under the 0.2 mm class clearance -> DRC error. come off pins
-1, 5, 22, 24, 30 and 33 at 0.2 mm and widen once youre clear of the package. the board
-minimum is 0.1524 mm so youve got room to neck.
+neck the escapes. U1 is a QFN-48 on 0.5 mm pitch with 0.25 mm pads so the gap
+between adjacent pads is 0.25 mm, and a 0.4 mm power trace centred on one leaves
+0.175 mm to its neighbour, under the 0.2 mm class clearance -> DRC error. come off
+pins 1, 5, 22, 24, 30 and 33 at 0.2 mm and widen once youre clear of the package,
+board minimum is 0.1524 mm so theres room to neck
 
 ## DRC rules
 
@@ -116,49 +116,50 @@ Board Setup minimums now:
 
 the two silk numbers are exactly JLC's floor and the board already sits on it, all 168
 reference and value fields are 1.0 mm high / 0.15 mm thick. nothing to fix, the rules
-are there so a future edit cant drift under.
+are there so a future edit cant drift under
 
 `morphcpu.kicad_dru` holds the five rules the dialog cant express, all of them scoped
-to one item type: via drill 0.3-6.3 mm, via pad 0.6 mm, via-to-via hole spacing 0.2 mm,
-pad-to-pad hole spacing 0.45 mm, plated-pad-to-track 0.3 mm.
+to one item type, via drill 0.3-6.3 mm, via pad 0.6 mm, via-to-via hole spacing
+0.2 mm, pad-to-pad hole spacing 0.45 mm, plated-pad-to-track 0.3 mm
 
 ### what JLC charges extra for
 
 per [jlcpcb.com/capabilities/pcb-capabilities](https://jlcpcb.com/capabilities/pcb-capabilities)
-and [schemalyzer's JLCPCB design rules](https://www.schemalyzer.com/en/blog/manufacturing/jlcpcb/jlcpcb-design-rules),
-for 2-layer 1 oz FR-4:
+and [schemalyzer's JLCPCB design rules](https://www.schemalyzer.com/en/blog/manufacturing/jlcpcb/jlcpcb-design-rules).
+these were all read off the 2-layer 1 oz FR-4 page and the board went to 4 layers
+after, i havent re-read them against the 4 layer tier:
 
-- the hard process floor is **0.10 mm / 0.10 mm (4 mil / 4 mil)** track and space, but
-  the number you actually want to design to is **5 mil**, which is the economical tier
-  for 2-layer. 6 mil is a mil clear of that, so **nothing here triggers a fine trace
-  fee**. 3.5 mil is a multilayer-only thing anyway and carries +20% on 4-8 layers.
-- **0.15 mm drills cost more.** JLC flags it on the page. 0.3 mm hole / 0.6 mm pad is
-  the free combination and thats what every class is set to. dont hand-place a 0.25 mm
-  via to squeeze under the FPGA, the `.kicad_dru` will catch it but its easier not to.
-- copper to routed board edge only needs 0.2 mm. were at 0.5 mm, so the round outline
-  has room even where J1 overhangs.
+- the hard process floor is 0.10 mm / 0.10 mm (4 mil / 4 mil) track and space, but
+  the number you actually design to is 5 mil, the economical tier for 2-layer. 6 mil
+  is a mil clear of that so nothing here triggers a fine trace fee. 3.5 mil is a
+  multilayer-only thing anyway and carries +20% on 4-8 layers
+- 0.15 mm drills cost more, JLC flags it on the page. 0.3 mm hole / 0.6 mm pad is the
+  free combination and thats what every class is set to. dont hand-place a 0.25 mm
+  via to squeeze under the FPGA, the `.kicad_dru` will catch it but its easier not to
+- copper to routed board edge only needs 0.2 mm. were at 0.5 mm so the round outline
+  has room even where J1 overhangs
 
-current DRC, `kicad-cli 10.0.5 --severity-all`: **0 violations** and **2 unconnected
-items** (was 167 unconnected pads before any copper went down). the C20/R27 silk
-overlap is gone - C20s reference field moved 1.3 mm in X, both run vertically and
-were stacked in Y. zero courtyard overlaps, zero shorting pads, zero clearance errors.
+current DRC, `kicad-cli 10.0.5 --severity-all`, 0 violations and 2 unconnected items,
+was 167 unconnected pads before any copper went down. the C20/R27 silk overlap is
+gone, C20s reference field moved 1.3 mm in X, both run vertically and were stacked in
+Y. zero courtyard overlaps, zero shorting pads, zero clearance errors
 
-**run DRC with the `.kicad_pro` beside the board.** `kicad-cli pcb drc` on a lone
-`.kicad_pcb` silently falls back to *default* Board Setup, not this one, and then
+run DRC with the `.kicad_pro` beside the board. `kicad-cli pcb drc` on a lone
+`.kicad_pcb` silently falls back to default Board Setup, not this one, and then
 reports every 0.15 mm track as a `track_width` error against a 0.2 mm minimum that
 isnt ours. copy `morphcpu.kicad_pro` and `morphcpu.kicad_dru` next to any board you
-verify out of tree.
+verify out of tree
 
 ## the freerouting attempt
 
-the *first* attempt was reverted and the board went back to 0 tracks. a later pass
-did land - thats where the copper on the board now came from - but keeping the
-numbers here so nobody spends another evening rediscovering the setup.
+the first attempt got reverted and the board went back to 0 tracks. a later pass did
+land, thats where the copper on the board now came from, keeping the numbers here so
+nobody spends another evening rediscovering the setup
 
-freerouting 2.3.0 needs **Java 25**, not 21. the jar is class file version 69 and
-Temurin 21 refuses to load it. winget install of the Temurin MSI wants elevation
-and dies with 1602 if nothing is there to click the prompt, so unpack the Adoptium
-zip instead, no admin needed.
+freerouting 2.3.0 wants Java 25, not 21. the jar is class file version 69 and Temurin
+21 refuses to load it. winget install of the Temurin MSI wants elevation and dies
+with 1602 if nothing is there to click the prompt, so unpack the Adoptium zip
+instead, no admin needed
 
 `pcbnew.ExportSpecctraDSN` and `pcbnew.ImportSpecctraSES` both exist in the python
 API, so the round trip is scriptable. `kicad-cli pcb export` has no dsn subcommand
@@ -186,22 +187,21 @@ the 13 were 8 `track_width` at 0.150 mm against the 0.1524 minimum, 2
 cosmetic silk overlap. widths came back off-class in six different values it
 invented on the fly, 0.1874 and 0.2502 and 0.3998 and so on.
 
-three things made it not worth keeping. **`-inc GND` doesnt exclude GND**, it
-routed it anyway, 339.1 mm across 168 segments, which is the opposite of the pour
-plan. the **QFN paddle came out with zero vias in it** and U1-49 was one of the
-unconnected, and thats the only ground path to the die. and the 8 unconnected were
-real breaks on +3V3, VBUS, +1V2 and VBUS_IN, not pour artifacts.
+three things made it not worth keeping. `-inc GND` doesnt exclude GND, it routed it
+anyway, 339.1 mm across 168 segments, opposite of the pour plan. the QFN paddle came
+out with zero vias in it and U1-49 was one of the unconnected, and thats the only
+ground path to the die. and the 8 unconnected were real breaks on +3V3, VBUS, +1V2
+and VBUS_IN, not pour artifacts
 
-the front face is the main reason it got reverted. 211 segments and long
-diagonals running corner to corner straight thru the LED grid, which is the face
-people actually look at. renders are in
+the front face is the main reason it got reverted, 211 segments and long diagonals
+running corner to corner straight thru the LED grid. renders are in
 [docs/img/routed-3d-top.png](../docs/img/routed-3d-top.png) and
 [routed-3d-bottom.png](../docs/img/routed-3d-bottom.png) if you want to see it, the
-back was fine, roughly radial fan-out from the QFN.
+back was fine, roughly radial fan-out from the QFN
 
-the DSN in `hardware/route/` is still there and still valid, so if you want another
-go at it the export step is done. would want GND actually excluded and a keepout
-over the LED grid on F.Cu first.
+the DSN in `hardware/route/` is still there and still valid so the export step is
+done if you want another go. would want GND actually excluded and a keepout over the
+LED grid on F.Cu first
 
 ## route these in this order
 
@@ -210,9 +210,9 @@ for why they dont any more.
 
 ### 1. VBUS and VBUS_IN
 
-0.5 mm wide, 137 mm of ratsnest combined, and it spans the entire back layer
-which is also the only crowded layer. do it first while the rim is still empty,
-cuz a 0.5 mm trace cannot squeeze thru gaps that a 0.2 mm signal left behind.
+0.5 mm wide, 137 mm of ratsnest combined, and it spans the entire back layer which
+is also the only crowded layer. do it first while the rim is still empty, a 0.5 mm
+trace cannot squeeze thru gaps that a 0.2 mm signal left behind
 
 the awkward bit is that F1, the polyfuse, is at th = 90 deg (north, r = 25-27)
 while J1 is at th = 0 deg (east). so VBUS_IN runs ~26 mm around the rim from the
@@ -222,34 +222,34 @@ th = 345 deg). nine pads spread over ~300 deg of arc.
 
 ### 2. +3V3
 
-25 pads, 147 mm, back layer only, touches basically every part on the board. and
-note the LED current path: the grid sources from FPGA I/O, so the whole **80 mA
-of LED drive arrives thru VCCIO pins 1, 22 and 33**. dont neck +3V3 down anywhere
-between U4 and those three pins.
+25 pads, 147 mm, back layer only, touches basically every part on the board. the LED
+current path is the bit to watch, the grid sources from FPGA I/O so the whole 80 mA
+of LED drive arrives thru VCCIO pins 1, 22 and 33. dont neck +3V3 down anywhere
+between U4 and those three pins
 
 ### 3. GND
 
-there is **no zone in the file yet**, zero of them, so all 58 GND pads are
-currently floating and thats most of the 167 unconnected. pour both layers early
-and refill often, every later net changes the pour.
+there was no zone in the file at all going in, zero of them, so all 58 GND pads were
+floating and thats most of the 167 unconnected. pour early and refill often, every
+later net changes the pour
 
 the paddle needs its 3x3 or 4x4 field of 0.3 mm vias per DESIGN.md. those already
-match the class geometry.
+match the class geometry
 
 ### 4. LED0 thru LED15, the pin side
 
-**stale as written.** LED2, LED3, LED9, LED12, LED13 and LED14 no longer come off
-the faces described here, see [the fanout was over-subscribed](#the-fanout-was-over-subscribed-so-six-pins-moved).
+stale as written, LED2, LED3, LED9, LED12, LED13 and LED14 no longer come off the
+faces described here, [the fanout ran out of room](#the-fanout-ran-out-of-room-so-six-pins-moved)
+has where they went
 
-193 mm across 16 nets, each a hop from a QFN pad out to its resistor at
-r = 11.5 mm, or r = 14.5 mm for the four corners. this is now the biggest signal
-group on the board and its a congestion problem, cuz 16 escapes plus 7
-decoupling vias plus 6 supply escapes all leave the same 8.7 x 9.8 mm package
-footprint.
+193 mm across 16 nets, each a hop from a QFN pad out to its resistor at r = 11.5 mm,
+or r = 14.5 mm for the four corners. biggest signal group on the board and a
+congestion problem, cuz 16 escapes plus 7 decoupling vias plus 6 supply escapes all
+leave the same 8.7 x 9.8 mm package footprint
 
-this total did **not** improve when the resistors moved. 193.4 mm before, 193.4 mm
-after. makes sense, the hop length is set by the ring radius and the ring radius
-didnt change. the whole win was on the anode side.
+this total did not improve when the resistors moved, 193.4 mm before and 193.4 mm
+after. the hop length is set by the ring radius and the ring radius didnt change, the
+win was all on the anode side
 
 ### 5. the USB pair
 
@@ -258,12 +258,11 @@ short, 10-14 mm each, but U6 sits at r = 29-32 mm which is outboard of J1 at
 r = 26 mm, so the pair goes out to the clamp and back in to the bridge. thats
 deliberate, DESIGN.md wants the trace routed thru the part not stubbed off it.
 
-impedance, plainly: **you cannot hit 90 Ohm differential on 2-layer 1.6 mm
-FR-4.** a 50 Ohm single-ended microstrip over 1.6 mm of dielectric wants a trace
-~2.9 mm wide. not happening on a 70 mm board. the FT231X is full speed, 12 Mbps,
-over ~15 mm of trace, so it works untuned and everyone does it. route them short,
-symmetric, tightly coupled at the 0.25 mm class gap, over unbroken ground. dont
-pretend to tune it.
+impedance, plainly, you cannot hit 90 Ohm differential on 2-layer 1.6 mm FR-4. a 50
+Ohm single-ended microstrip over 1.6 mm of dielectric wants a trace ~2.9 mm wide, not
+happening on a 70 mm board. the FT231X is full speed, 12 Mbps, over ~15 mm of trace,
+so it works untuned and everyone does it. route them short, symmetric, tightly
+coupled at the 0.25 mm class gap, over unbroken ground, dont pretend to tune it
 
 ### 6. CLK
 
@@ -273,28 +272,28 @@ the decap ring on the way in.
 
 [DESIGN.md](DESIGN.md#placement-scheme) says west holds the flash and the
 oscillator "both kept close to the FPGA because the SPI and clock nets care". X1
-is at r = 26.8 mm, which makes it the **furthest-out part on the west side**,
-outboard of U3 at r = 20 mm. so the clock net is 29.5 mm and no pin choice fixes
-that. moving X1 inward would, if you decide its worth reopening placement.
+is at r = 26.8 mm which makes it the furthest-out part on the west side, outboard of
+U3 at r = 20 mm. so the clock net is 29.5 mm and no pin choice fixes that, moving X1
+inward would if you decide its worth reopening placement
 
-**this got slightly harder, and its the one real cost of the UART move.** pin 35
-used to have empty pads either side of it, 34 and 36, so CLK could escape straight
-out between them with nothing to cross. both are UART now. CLK still escapes
-cleanly outward but it has to cross one UART trace to turn west, so plan on a via
-down to the front within a couple of mm of the package and run it west on the
-front, which is nearly empty anyway. one via on a 16 MHz clock over a ground pour
-is a non-event, but its no longer optional the way it was.
+this got slightly harder and its the one real cost of the UART move. pin 35 used to
+have empty pads either side of it, 34 and 36, so CLK could escape straight out
+between them with nothing to cross. both are UART now. CLK still escapes cleanly
+outward but it has to cross one UART trace to turn west, so plan on a via down to the
+front within a couple of mm of the package and run it west on the front, which is
+nearly empty anyway. one via on a 16 MHz clock over a ground pour is a non-event, its
+just no longer optional
 
-dont let it run parallel to the UART for any distance, and give it more clearance
-by hand than the 0.2 mm class rule asks for.
+dont let it run parallel to the UART for any distance, and give it more clearance by
+hand than the 0.2 mm class rule asks for
 
 ### 7. the flash, FLASH_CLK / CS / DI / DO
 
 15-27 mm each. U1 pins 14-17 sit at th = 102-123 deg (north face) but U3 is at
 th = 173-185 deg (west), so they sweep round the northwest quadrant. FLASH_CS and
 FLASH_DO come off U3's far pads at r = 23.6 mm so theyre the long two at 27 mm and
-22 mm. keep CLK and DO about the same length. its only a config-time bus but its
-the bus that decides whether the board boots.
+22 mm. keep CLK and DO abt the same length. its only a config-time bus but its the
+bus that decides whether the board boots
 
 ### 8. +1V2
 
@@ -310,12 +309,12 @@ directions at once.
 
 ### 10. UART_TX_O and UART_RX_I
 
-**was** 21.0 mm and 26.2 mm crossing the whole board, cuz the bridge is east and
-pins 6/9 face west. **now 14.0 mm and 19.2 mm**, both straight shots at U2.
+was 21.0 mm and 26.2 mm crossing the whole board, cuz the bridge is east and pins
+6/9 face west. now 14.0 mm and 19.2 mm, both straight shots at U2
 
-UART moved off pins 6/9 in the config bank onto **34 and 36 in bank 0**, which look
-directly at U2. checked for tradeoffs and there is exactly one, the CLK escape
-above. everything else came back clean:
+UART moved off pins 6/9 in the config bank onto 34 and 36 in bank 0, which look
+directly at U2. checked for tradeoffs and there is exactly one, the CLK escape above.
+everything else came back clean:
 
 | Check | Result |
 |---|---|
@@ -326,12 +325,11 @@ above. everything else came back clean:
 | RGB driver pins | 39-41 still unused |
 | ERC | 0 errors, 0 warnings after the change |
 
-**34 is TX and 36 is RX, not the other way round.** U2 pad 4, its RXD, sits at
-y = +0.95 and pad 20, its TXD, at y = +2.86, both on U2's south edge, and pin 36 is
-the more southerly FPGA pin. feeding the southern target from the southern pin runs
-the two traces parallel. the literal 6->34, 9->36 swap puts them the other way and
-they cross about 14 mm out. one line of difference, and not crossing was the whole
-point of the change.
+34 is TX and 36 is RX, not the other way round. U2 pad 4, its RXD, sits at y = +0.95
+and pad 20, its TXD, at y = +2.86, both on U2's south edge, and pin 36 is the more
+southerly FPGA pin. feeding the southern target from the southern pin runs the two
+traces parallel. the literal 6->34, 9->36 swap puts them the other way and they cross
+abt 14 mm out
 
 pins 6 and 9 are free ordinary I/O now.
 
@@ -342,10 +340,10 @@ VCCPLL_F, VPP_2V5. all short, all local to one cluster, none over 15 mm. mop-up.
 
 ### 12. the LED anodes
 
-**was 405 mm with all 16 chords passing within 3.11 mm of board centre**, ie
-straight under the QFN paddle. **now 53.4 mm, and the closest any of them gets to
-centre is 5.83 mm**, which is the LED pad itself on the four inner cells, not a
-crossing. nothing passes under the package any more.
+was 405 mm with all 16 chords passing within 3.11 mm of board centre, ie straight
+under the QFN paddle. now 53.4 mm, and the closest any of them gets to centre is
+5.83 mm, which is the LED pad itself on the four inner cells and not a crossing.
+nothing passes under the package any more
 
 | | before | after |
 |---|---|---|
@@ -360,21 +358,20 @@ directly inboard or outboard of it. route them last, theyre 16 near-identical
 short stubs and they will fall out of whatever the pour leaves.
 
 the cause was one line in `scripts/gen_pcb.py`. it sorted the LEDs by angle,
-correctly, then handed out ring slots at `k * 22.5` starting from zero. the sorted
-list starts at -161.6 deg. so slot 0 went to the LED at -161.6 deg and every
-resistor landed 157-180 deg from its partner. the sort was never the problem, the
-handout was.
+correctly, then handed out ring slots at `k * 22.5` starting from zero, and the
+sorted list starts at -161.6 deg. so slot 0 went to the LED at -161.6 deg and every
+resistor landed 157-180 deg from its partner. the sort was fine, the handout wasnt
 
-the fix isnt a rotation either, cuz a uniform 16-slot ring cant work here at all.
-a 4x4 grid on 9 mm pitch puts the four inner LEDs and the four corner LEDs on the
-**same four diagonals**, 45/135/225/315, so eight parts want four rays. the corner
-resistors go out to r = 14.5 mm and the other twelve stay on r = 11.5 mm, which
-breaks the tie with 3.00 mm between the closest pair.
+the fix isnt a rotation either, a uniform 16-slot ring cant work here at all. a 4x4
+grid on 9 mm pitch puts the four inner LEDs and the four corner LEDs on the same four
+diagonals, 45/135/225/315, so eight parts want four rays. the corner resistors go out
+to r = 14.5 mm and the other twelve stay on r = 11.5 mm, 3.00 mm between the closest
+pair
 
 the LED grid itself did not move. all 16 are still at their exact 9 mm pitch
 positions, cell 0 top-left row-major, front layer, each `D(n+1)` still carrying
-`LED(n)_A`. verified pad by pad after regeneration, cuz that mapping is what
-makes the demo mean anything.
+`LED(n)_A`. verified pad by pad after regeneration cuz that mapping is what makes the
+demo mean anything
 
 ### watch out for gen_pcb.py
 
@@ -390,51 +387,49 @@ if that line ever stops appearing, check Board Setup before you route anything.
 
 ## post-routing checklist
 
-working copy. the original lives in [DESIGN.md](DESIGN.md#post-routing-checklist) and
-stays there unchanged.
+the one that gets ticked. DESIGN.md used to carry a copy and now points here
 
-- [ ] **DRC.** run it with the JLCPCB constraints (6 mil track/clearance, 0.3 mm
-      via hole). zero errors, and review and justify every warning.
-- [ ] **check the paddle.** via field present and connected, paste aperture
-      windowed rather than one big square.
-- [ ] **verify the 4x4 grid.** measure LED positions, 9 mm pitch, centred, cell 0
-      top-left. silkscreen order matches the fabric map.
-- [ ] **confirm the artwork annulus** (r = 22-29 mm) is still clear.
-- [ ] **update the case.** set `pcb_dia`, `pcb_thickness`, `mount_hole_r`,
-      `mount_hole_count`, `mount_hole_angle_offset`, `usb_angle`, `usb_z_centre`
-      in `case/morphcpu_case.scad` from the finished board, then `./export.sh`.
-- [ ] **re-check the PCF against the [pin table](DESIGN.md#user-io-assignment)**
-      if any pin moved during routing. they agree right now, all 20.
-- [ ] **build a bitstream.** install the OSS CAD Suite, run `gateware/build.sh`,
-      put real LUT/BRAM utilisation and Fmax in `JOURNAL.md`.
-- [ ] **re-run `gen_fab.py`.** the fab package already exists but was generated
-      from the unrouted board, so it has no copper in it. regenerate after
-      routing or youll ship blank layers.
-- [ ] **3D view screenshot** for the README:
-      `kicad-cli pcb render` (or KiCad's 3D viewer) -> `docs/img/pcb-3d.png`.
-- [ ] **composite render** of case + PCB together for the README hero image.
-- [ ] **re-check the BOM** in `docs/BOM.md` against the final board. its costed
-      and all 22 rows are pinned, but quantities come from the schematic and the
-      two inferred Extended tiers still need confirming in the quote.
-- [ ] **confirm the USB-C overhang** against the board edge and the case cutout
-      once the outline is final.
-- [ ] **tidy silkscreen.** one cosmetic text overlap left, C20 against R27. was
-      three before the resistor ring moved. itll move as you adjust parts anyway.
+- [ ] DRC with the JLCPCB constraints (6 mil track/clearance, 0.3 mm via hole),
+      zero errors, and review and justify every warning
+- [ ] paddle via field present and connected, paste aperture windowed rather than
+      one big square
+- [ ] measure the 4x4 grid, 9 mm pitch, centred, cell 0 top-left, silkscreen order
+      matching the fabric map
+- [ ] artwork annulus (r = 22-29 mm) still clear
+- [ ] case updated, `pcb_dia`, `pcb_thickness`, `mount_hole_r`, `mount_hole_count`,
+      `mount_hole_angle_offset`, `usb_angle`, `usb_z_centre` in
+      `case/morphcpu_case.scad` off the finished board, then `./export.sh`
+- [ ] PCF against the [pin table](DESIGN.md#user-io-assignment) if any pin moved
+      during routing. they agree right now, all 20
+- [ ] build a bitstream. install the OSS CAD Suite, run `gateware/build.sh`, put
+      real LUT/BRAM utilisation and Fmax in `JOURNAL.md`
+- [ ] re-run `gen_fab.py`. the fab package exists but the copper in it has to be off
+      the routed board or youll ship blank layers
+- [ ] 3D view screenshot for the README, `kicad-cli pcb render` (or KiCad's 3D
+      viewer) -> `docs/img/pcb-3d.png`
+- [ ] composite render of case + PCB together for the README hero image
+- [ ] re-check the BOM in `docs/BOM.md` against the final board. its costed and all
+      22 rows are pinned, but quantities come from the schematic and the two inferred
+      Extended tiers still need confirming in the quote
+- [ ] USB-C overhang against the board edge and the case cutout once the outline is
+      final
+- [ ] tidy silkscreen. one cosmetic text overlap left, C20 against R27, was three
+      before the resistor ring moved. itll move as you adjust parts anyway
 
 new since this pass:
 
-- [ ] **ground zones exist and are filled** on both layers, stitched, no isolated
-      islands. there were zero zones in the file when routing started.
-- [ ] **every track is on its net class width.** select by net class in pcbnew and
-      confirm nothing got drawn at Default width on a power net, and that the QFN
-      escapes you necked to 0.2 mm actually widen again once theyre clear.
-- [ ] **DRC with `morphcpu.kicad_dru` active.** confirm no via ended up under 0.3 mm
-      drill / 0.6 mm pad, thats the JLC surcharge line.
-- [ ] **BOM/CPL regeneration picks up any net added while routing.** if you added a
-      test point, a stitching pad or a zero-ohm link it needs a designator, a footprint
-      and an LCSC part or itll fail the PCBA parse.
-- [ ] **confirm Board Setup survived** any `gen_pcb.py` re-run. the script prints
-      `restored Board Setup: 10 net classes + DRC rules` when it worked.
+- [ ] ground zones exist and are filled, stitched, no isolated islands. there were
+      zero zones in the file when routing started
+- [ ] every track on its net class width. select by net class in pcbnew and confirm
+      nothing got drawn at Default width on a power net, and that the QFN escapes you
+      necked to 0.2 mm actually widen again once theyre clear
+- [ ] DRC with `morphcpu.kicad_dru` active, no via under 0.3 mm drill / 0.6 mm pad,
+      thats the JLC surcharge line
+- [ ] BOM/CPL regeneration picks up any net added while routing. a test point, a
+      stitching pad or a zero-ohm link needs a designator, a footprint and an LCSC
+      part or itll fail the PCBA parse
+- [ ] Board Setup survived any `gen_pcb.py` re-run. the script prints
+      `restored Board Setup: 10 net classes + DRC rules` when it worked
 
 ## what is left unrouted
 

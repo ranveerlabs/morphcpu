@@ -76,8 +76,8 @@ plus a worked example
 | clk | 1532H4-16000JWPDTSNL 16MHz | 3225 | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) |
 | leds | KT-0603R ×17 | 0603 | [C2286](https://www.lcsc.com/product-detail/C2286.html) |
 
-two regulators, and the 1v2 one has to be up before the 3v3, which is backwards
-from the cascade youd reach for first. i would not wing that bit,
+two regulators, and the 1v2 one has to be up before the 3v3, backwards from the
+cascade youd reach for first. i would not wing that bit,
 [hardware/DESIGN.md](hardware/DESIGN.md) has it with page numbers, money is in
 [docs/BOM.md](docs/BOM.md)
 
@@ -107,7 +107,7 @@ this face on purpose, theres an F.Cu keepout over the whole grid
 ![back](docs/img/pcb-routed-back.png)
 
 back. fpga in the middle, ring of decaps then the resistor ring, and everything
-fanning out of a QFN-48 on 0.5mm pitch which is where all the pain was
+fanning out of a QFN-48 on 0.5mm pitch. all the pain was in there
 
 board was 60mm at first and everything overlapped. the resistor ring also sat
 180 out from its own leds for ages, so every single anode trace ran straight
@@ -128,8 +128,8 @@ gerbers in `hardware/fab_output/` are off the routed board now, all four copper
 layers with copper actually in them, drill included. two nets are still open tho
 so D2 and D3 wont light, read that before you spend money
 
-- **$203.73 is a real 4 layer quote.** $6.27 of headroom under the $210 Complex
-  cap, so dont add parts casually. re-quote if the BOM moves
+- $203.73 is a real 4 layer quote, $6.27 of headroom under the $210 Complex cap
+  so dont add parts casually. re-quote if the BOM moves
 - fpga stock was 546 when i looked. oscillator 147
 - C7519 and C136491 tiers are guesses, confirm in the quote
 - QFN paddle is the only ground to the die, SG48 has no GND pin at all. window

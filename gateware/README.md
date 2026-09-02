@@ -36,15 +36,14 @@ to the `config`/`design` construct. iverilog does not tell you this nicely
 | `3` | west |
 
 inputs get scanned in a fixed priority order, N then E then S then W. first
-valid one is `a`, second valid one is `b`. only one input showed up? `b` falls
+valid one is `a`, second valid one is `b`. only one input showed up, `b` falls
 back to whatever the cell is already holding
 
-that fallback is what gives ADD and XOR meaning. two streams converging on a
-cell get combined, and a lone stream walking thru an ADD cell accumulates
-against itself instead.
+that fallback is what gives ADD and XOR meaning. two streams converging on a cell
+get combined, a lone stream walking thru an ADD cell accumulates against itself
 
 one `tick` moves data exactly one cell, so a value takes as many ticks as there
-are cells on its path.
+are cells on its path
 
 ## grid and edges
 
@@ -65,12 +64,12 @@ are cells on its path.
 
 anything routed off the north, south or west edges is dropped. anything going
 east out of column 3 leaves the fabric and goes back to the host over UART.
-`led[i]` follows cell `i`.
+`led[i]` follows cell `i`
 
 ## host protocol
 
-8N1 UART, 115200 baud, through the FT231X. one command byte then a fixed number
-of argument bytes.
+8N1 UART, 115200 baud, thru the FT231X. one command byte then a fixed number of
+argument bytes
 
 | Cmd | Name | Args | Effect |
 |---|---|---|---|
@@ -144,9 +143,9 @@ cd gateware/sim
 | [sim/tb_grid.v](sim/tb_grid.v) | fabric: per-tick latency, all four ops, convergence, activity taps |
 | [sim/tb_morphcpu_top.v](sim/tb_morphcpu_top.v) | end to end over the real UART protocol |
 
-`tb_grid` drives the config chain directly. `tb_morphcpu_top` goes in through the
-UART and never reaches into the hierarchy, so it validates the wire protocol and
-the config bit ordering too.
+`tb_grid` drives the config chain directly. `tb_morphcpu_top` goes in thru the
+UART and never reaches into the hierarchy so it covers the wire protocol and the
+config bit ordering too
 
 waveforms:
 
@@ -185,8 +184,8 @@ iceprog build/morphcpu_top.bin
 
 greps the nextpnr log for utilisation and Fmax at the end
 
-**this has never run.** OSS CAD Suite isnt installed here. the flow above is
-written and unexercised. sim is the part thats actually been run.
+this has never run, OSS CAD Suite isnt installed here. the flow above is written
+and unexercised, sim is the part thats actually been run
 
 `morphcpu.pcf` agrees with the
 [user I/O assignment](../hardware/DESIGN.md#user-io-assignment) in DESIGN.md,

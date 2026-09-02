@@ -3,7 +3,7 @@
 [BOM.md](BOM.md) is the costed BOM, 23 rows all pinned to LCSC, $203.73 for 5.
 [img/](img/) is renders and screenshots
 
-The machine-readable BOM and CPL live in
+the machine-readable BOM and CPL live in
 [../hardware/fab_output/](../hardware/fab_output/) instead. `gen_fab.py` spits
 them out with the gerbers and they have to match the board
 

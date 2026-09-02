@@ -1,6 +1,6 @@
 # docs/img/
 
-renders, screenshots and build photos.
+renders, screenshots and build photos
 
 | File | What |
 |---|---|
@@ -21,8 +21,8 @@ renders, screenshots and build photos.
 case renders come out of `case/export.sh`. board renders out of
 `kicad-cli pcb render`. the two sim rasters out of
 [../../gateware/sim/vcd_png.js](../../gateware/sim/vcd_png.js), which reads the
-simulation dump directly so they regenerate from a real run rather than being
-screenshots of one.
+dump directly so they regenerate off a real run instead of being screenshots of
+one
 
-naming for anything new: `session-NNN-<short-description>.png`. referenced from
-[../../JOURNAL.md](../../JOURNAL.md).
+naming for anything new, `session-NNN-<short-description>.png`. referenced from
+[../../JOURNAL.md](../../JOURNAL.md)

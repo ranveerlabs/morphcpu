@@ -2,15 +2,15 @@
 
 5 units of everything on the board, 1 unit for the case (its off-PCB). every row
 is pinned to an LCSC part number and priced. rows 1-8 checked 20 aug 2026, rows
-9-22 checked 23 aug 2026 when the schematic got reconciled against this file.
+9-22 checked 23 aug 2026 when the schematic got reconciled against this file
 
-- prices and stock move. re-check the day you order, especially the FPGA.
+- prices and stock move, re-check the day you order, especially the FPGA
 - price basis is LCSC unit price at the lowest qty break, which is what a 5-board
   build actually pays. for most passives that break is 50 or 100 pcs, way above
-  the 5-85 we need. JLCPCB's own component prices differ and arent used here.
+  the 5-85 we need. JLCPCB's own component prices differ and arent used here
 - quantities come from the schematic, not from this file. regen
   [../hardware/fab_output/morphcpu-bom.csv](../hardware/fab_output/morphcpu-bom.csv)
-  with `gen_fab.py` and the counts below have to match it.
+  with `gen_fab.py` and the counts below have to match it
 
 ## the parts
 
@@ -42,14 +42,14 @@ is pinned to an LCSC part number and priced. rows 1-8 checked 20 aug 2026, rows
 | | | | | | **80** | **400** | **parts subtotal** | **$88.27** |
 
 $17.65 of parts per board. the line totals are rounded to the cent and sum to
-$88.27, unrounded it comes to $88.2765. a cent apart now, the table carries the
-rounded one.
+$88.27, unrounded it comes to $88.2765. a cent apart, the table carries the
+rounded one
 
 ## what it actually costs
 
-careful here. the $88.27 above is **not** a separate line item. its already
-inside the JLC PCBA quote, which bundles fab + parts + assembly into one number.
-adding both would double-count the parts.
+careful here, the $88.27 above is not a separate line item. its already inside
+the JLC PCBA quote, which bundles fab + parts + assembly into one number, adding
+both double-counts the parts
 
 | Item | Basis | Cost |
 |---|---|---|
@@ -58,16 +58,15 @@ adding both would double-count the parts.
 | case filament | 1 unit, off-PCB | $0.26 |
 | | | **$203.73** |
 
-so **$203.73** all-in, $40.75/unit across 5 boards. thats under the Complex
-($210) tier with $6.27 of headroom, which is not much, so dont add parts
-casually.
+so $203.73 all-in, $40.75/unit across 5 boards. under the Complex ($210) tier
+with $6.27 of headroom, which is not much, so dont add parts casually
 
 the $115.20 gap between the parts subtotal and the JLC quote is fab + assembly
 setup + extended-part feeder fees. JLC quotes it bundled and doesnt split it out
-line by line, so treat that gap as one number.
+line by line, so treat that gap as one number
 
-still not in the $203.73: shipping and duty. those only get quoted at checkout
-with a real address, so they arent here yet, and they eat into the $6.27.
+still not in the $203.73, shipping and duty. those only get quoted at checkout
+with a real address so they arent here yet, and they eat into the $6.27
 
 ### R and C counts
 
@@ -88,7 +87,7 @@ from the schematic, which is the authority:
 | 100 Ω | 1 | VCCPLL filter |
 
 an older version of this table said 100 nF ×11, 10 kΩ ×5, no 1 kΩ row at all,
-and 16 LEDs instead of 17. schematic was right every time.
+and 16 LEDs instead of 17. schematic was right every time
 
 ### stock at lookup time
 
@@ -111,8 +110,8 @@ and 16 LEDs instead of 17. schematic was right every time.
 
 ## JLC parts tier
 
-tier drives the per-part feeder fee, so it matters way more than cent-level part
-price. Basic parts are already loaded on the machines.
+tier drives the per-part feeder fee so it matters way more than cent-level part
+price. Basic parts are already loaded on the machines
 
 | Tier | Parts |
 |---|---|
@@ -121,17 +120,16 @@ price. Basic parts are already loaded on the machines.
 | **Extended**, assumed, not confirmed | C2678152, C132160, C179173, C165948, C5383161 (the five actives, costed as Extended from the start); C7519 (ESD); C136491 (ferrite) |
 
 two notes on the unconfirmed rows. JLC's part-detail pages render the tier badge
-in JS so it cant be read directly, the tiers above come from JLC's category
-listings, which do print it. C7519 and C136491 show up in neither the Basic
-listings nor a published Basic-parts export, hence Extended, but thats an
-inference, not a quote. **confirm both in the PCBA quote before ordering**, each
-distinct Extended part carries its own feeder fee.
+in JS so it cant be read directly, the tiers above come off JLC's category
+listings which do print it. C7519 and C136491 show up in neither the Basic
+listings nor a published Basic-parts export, so Extended, but thats an inference
+and not a quote. confirm both in the PCBA quote before ordering, each distinct
+Extended part carries its own feeder fee
 
-**270 Ω 0402 is the one value with no Basic option.** every 270 Ω 0402 in JLC's
-library is Extended. options were dropping to 300 Ω or 330 Ω (Basic in 0402, but
-LED current goes 5 mA to 4.3 or 3.9 mA), or moving to 0603 (Basic at 270 Ω, but
-16 footprints change). neither trade is worth one feeder fee, so we keep 270 Ω
-and pay for it.
+270 Ω 0402 has no Basic option at all, every 270 Ω 0402 in JLC's library is
+Extended. options were dropping to 300 Ω or 330 Ω (Basic in 0402, but LED current
+goes 5 mA to 4.3 or 3.9 mA), or moving to 0603 (Basic at 270 Ω, but 16 footprints
+change). neither trade is worth one feeder fee so we keep 270 Ω and pay for it
 
 ## parts that changed since the first costing
 
@@ -150,21 +148,20 @@ and pay for it.
 [C7503622](https://www.lcsc.com/product-detail/C7503622.html) had 9 units and
 [C2451123](https://www.lcsc.com/product-detail/C2451123.html) had 1 at $5.94. if
 C5383161 dries up, any 3.3 V HCMOS XO in SMD3225-4P drops straight in, only
-`CLK_HZ` in the gateware and `--freq` in `build.sh` follow the frequency.
+`CLK_HZ` in the gateware and `--freq` in `build.sh` follow the frequency
 
 ### ferrite current rating
 
 MMZ1608Y601BTA00 is 500 mA with 400 mΩ DCR. FB2 feeds FT231X VCC (tens of mA),
 FB1 feeds VPP_2V5 on the FPGA (config only), both sit way inside that. a 0603
-600 Ω bead rated 200 mA would've worked too, 500 mA was picked for margin on FB2.
+600 Ω bead rated 200 mA wouldve worked too, i took 500 mA for margin on FB2
 
 ## the case filament number
 
-**1 unit, not 5.** off-PCB parts only have to cover one assembled demo unit
-and the case is off-PCB. five frames would be 64.5 g and $1.29 if anyone ever
-wants them.
+1 unit not 5, off-PCB parts only have to cover one assembled demo unit and the
+case is off-PCB. five frames would be 64.5 g and $1.29 if anyone ever wants them
 
-**$0.26 (12.9 g PLA @ 20% infill, $19.99/kg)**
+$0.26 (12.9 g PLA @ 20% infill, $19.99/kg)
 
 how we got there:
 
@@ -179,36 +176,33 @@ how we got there:
 | filament price | **$19.99/kg** | median 1 kg spool across ten manufacturers' own stores, 11 jun 2026. Overture's own store agrees: $20.99-22.99 list, $13.99-14.99 on sale |
 | **cost** | **$0.2580, so $0.26** | |
 
-**the 20% infill assumption barely applies to this part, and saying so matters
-more than the number.** at the print settings in
+the 20% infill assumption barely applies to this part. at the print settings in
 [../case/README.md](../case/README.md), 0.4 mm nozzle, 0.2 mm layers, 3
-perimeters, three perimeters are 1.2 mm per side, so anything thinner than
-2.4 mm prints as solid perimeter with no infill region at all:
+perimeters, three perimeters are 1.2 mm per side, so anything thinner than 2.4 mm
+prints as solid perimeter with no infill region at all:
 
-- wall, 2.4 mm: exactly two perimeter stacks. 100% solid.
-- standoff posts, 5.0 mm OD with a 1.7 mm pilot hole: outer and pilot shells overlap. 100% solid.
-- floor, 2.0 mm: 4 top + 4 bottom solid layers are 1.6 mm of the 2.0, leaving 0.4 mm at 20%, so the floor is 84% dense. the 1,100.81 mm³ annulus right under the wall is solid too.
+- wall, 2.4 mm: exactly two perimeter stacks. 100% solid
+- standoff posts, 5.0 mm OD with a 1.7 mm pilot hole: outer and pilot shells overlap. 100% solid
+- floor, 2.0 mm: 4 top + 4 bottom solid layers are 1.6 mm of the 2.0, leaving 0.4 mm at 20%, so the floor is 84% dense. the 1,100.81 mm³ annulus right under the wall is solid too
 
 printed 100% solid the frame is 14.42 g and $0.29, three cents more. any infill
-between 0% and 100% lands in that band, so the case cost doesnt care about the
-assumption. the old "~15 g, negligible" estimate was close and its conclusion
-held.
+between 0% and 100% lands in that band so the case cost doesnt care about the
+assumption. the old "~15 g, negligible" estimate was close
 
-not counted: skirt, purge line, failed prints. usual rule of thumb adds about
-25%, which would push this line to $0.32.
+not counted, skirt, purge line, failed prints. usual rule of thumb adds abt 25%
+which would push this line to $0.32
 
 ## why the fixed fees hurt
 
 parts are $17.61/board but the fixed per-order fees are $110.09 across the whole
-run, so they cost more than the entire BOM. moving both regulators to Basic
-helped, and pinning the passives to Basic kept nine values off the feeder-fee
-list. whats left Extended is the fixed cost. building 10 instead of 5 barely
-moves those fees and roughly halves their per-unit share, worth considering if
-the budget allows.
+run, more than the entire BOM. moving both regulators to Basic helped, and
+pinning the passives to Basic kept nine values off the feeder-fee list. whats
+left Extended is the fixed cost. building 10 instead of 5 barely moves those fees
+and roughly halves their per-unit share, if the budget ever allows
 
 gerbers, BOM and CPL live in
 [../hardware/fab_output/](../hardware/fab_output/) and are what the $203.47 quote
-was generated from. re-quote if any of them change.
+was generated from. re-quote if any of them change
 
 ## sources
 

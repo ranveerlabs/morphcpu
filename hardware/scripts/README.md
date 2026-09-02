@@ -29,9 +29,9 @@ CLI="/c/Users/ranve/AppData/Local/Programs/KiCad/10.0/bin/kicad-cli.exe"
 "$CLI" sch export netlist --output morphcpu.net hardware/morphcpu.kicad_sch
 ```
 
-**regenerating the PCB blows away hand routing.** placement is generated, tracks
-are not. once you start routing, stop running `gen_pcb.py` or keep the routed
-file somewhere safe first.
+regenerating the PCB blows away hand routing. placement is generated, tracks
+arent. the board is routed now so dont run `gen_pcb.py` on it without a copy of
+the routed file somewhere safe
 
 ## fab output
 
@@ -45,42 +45,39 @@ plots. the loose plots arent tracked, the zip and the two CSVs are, and the
 loose files regenerate.
 
 the LCSC column comes from a table inside `gen_fab.py` transcribed out of
-[../../docs/BOM.md](../../docs/BOM.md). any row BOM.md hasnt pinned gets an
-**empty** LCSC field, never a guess, and the script lists them on stderr when it
-finishes. right now all 22 are pinned so it should print nothing
+[../../docs/BOM.md](../../docs/BOM.md). any row BOM.md hasnt pinned gets an empty
+LCSC field, never a guess, and the script lists them on stderr when it finishes.
+right now all 22 are pinned so it should print nothing
 
-gerbers, drill and CPL are all plotted in **absolute** coordinates. the board
-sets no aux axis origin, so the drill/place origin and the page origin are the
-same point and all three files share one coordinate system. if an aux origin
-ever gets added, all three exports have to switch to `--use-drill-file-origin`
-together, or the CPL ends up offset from the copper and you find out at
-assembly.
+gerbers, drill and CPL are all plotted in absolute coordinates. the board sets no
+aux axis origin so the drill/place origin and the page origin are the same point
+and all three files share one coordinate system. if an aux origin ever gets
+added, all three exports have to switch to `--use-drill-file-origin` together, or
+the CPL ends up offset from the copper and you find out at assembly
 
 ## why global labels instead of drawn wires
 
 connectivity is expressed with global labels, not wire segments. a global label
-joins nets **by name**, so every pin carrying the same net name is connected no
+joins nets by name, so every pin carrying the same net name is connected no
 matter where its symbol sits
 
 drawing wires programmatically means computing polylines between pin endpoints
-and trusting they land exactly on them. a wire that stops 0.01 mm short looks
-connected and isnt. labels delete that failure mode, and ERC plus the exported
-netlist confirm the result
+and trusting they land exactly on them, and a wire that stops 0.01 mm short looks
+connected and isnt. labels delete that, ERC plus the exported netlist confirm the
+result
 
 ## gotchas found the hard way
 
-- **derived symbols have to be embedded flattened.** `ME6211C12M5` only extends
-  `ME6211C33M5`. emitting the parent body under the child's name loads fine but
-  trips ERC `lib_symbol_mismatch`, because the properties still read as the
-  parent. the nested per-unit sub-symbols also have to be renamed to the child
-  or the file wont load at all. `kicad-cli` says "Failed to load schematic" and
-  nothing else, which is not much to go on.
-- **references need a trailing digit.** `C_EN` reads as unannotated, `C19`
-  doesnt.
-- **symbol origins belong on the 1.27 mm grid.** pin offsets are multiples of
-  1.27, so an off-grid origin puts every single pin off-grid.
-- **unit 0 pins apply to all units.** look pins up in the requested unit first,
-  then fall back to unit 0.
-- **`board.Add(fp)` before `fp.Flip()`.** pcbnew segfaults with no traceback if
-  you flip a footprint that isnt on the board yet. the bindings dont check
-  ownership.
+- derived symbols have to be embedded flattened. `ME6211C12M5` only extends
+  `ME6211C33M5`, and emitting the parent body under the child's name loads fine
+  but trips ERC `lib_symbol_mismatch` cuz the properties still read as the
+  parent. the nested per-unit sub-symbols have to be renamed to the child too or
+  the file wont load at all, `kicad-cli` says "Failed to load schematic" and
+  nothing else which is not much to go on
+- references need a trailing digit, `C_EN` reads as unannotated and `C19` doesnt
+- symbol origins belong on the 1.27 mm grid. pin offsets are multiples of 1.27 so
+  an off-grid origin puts every single pin off-grid
+- unit 0 pins apply to all units. look pins up in the requested unit first, then
+  fall back to unit 0
+- `board.Add(fp)` before `fp.Flip()`. pcbnew segfaults with no traceback if you
+  flip a footprint that isnt on the board yet, the bindings dont check ownership
