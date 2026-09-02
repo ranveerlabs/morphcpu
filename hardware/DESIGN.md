@@ -53,9 +53,9 @@ FPGA-DS-02008 §4.5 Power-up Supply Sequence (p.31) requires:
 §4.4 adds that only VCC, SPI_VCCIO1 and VPP_2V5 are monitored by the on-chip
 power-on-reset
 
-i had `5 V -> 3.3 V -> 1.2 V`, a cascade, and that brings 3.3 V up first and
-1.2 V last which is exactly backwards, SPI_VCCIO1 and VPP_2V5 both get applied
-before VCC ever reaches 0.5 V
+the original tree was `5 V -> 3.3 V -> 1.2 V`, a cascade. that brings 3.3 V up
+first and 1.2 V last, which is exactly backwards. SPI_VCCIO1 and VPP_2V5 would
+both be applied before VCC ever reached 0.5 V
 
 SPI_VCCIO1, VPP_2V5, VCCIO_0 and VCCIO_2 all sit on the same 3.3 V rail so the
 whole thing collapses to one rule:
@@ -505,8 +505,8 @@ regulator with its enable RC, south is the 1.2 V regulator
 the 4x4 grid sits on a 9 mm pitch, 27 mm across (four columns is three gaps),
 matching `led_pitch` in the case source. cell 0 top-left, row-major, so the
 physical grid reads the same way as the fabric map in
-[gateware/README.md](../gateware/README.md). get that backwards and the demo
-lies, i checked it twice
+[gateware/README.md](../gateware/README.md). getting this backwards would make
+the demo lie, so its worth checking twice
 
 silkscreen artwork space is the outer annulus past r=20, minus the four mounting
 holes on the diagonals and the two front-face parts (SW1 top, CDONE LED bottom)
