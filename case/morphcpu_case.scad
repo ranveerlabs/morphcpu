@@ -1,16 +1,8 @@
-// morphcpu_case.scad - slim open-face frame for the MorphCPU board
-// face is fully open on purpose so nothing sits between the LED grid and the
-// viewer. the frame just wraps the edge, lifts the board off the desk and takes
-// the USB-C strain.
-// !! DIMENSIONS ARE ASSUMPTIONS, NOT MEASUREMENTS !!
-// the PCB doesnt exist yet so every board-derived number below is a stated
-// assumption. once the layout is finished set pcb_dia, pcb_thickness,
-// mount_hole_r, mount_hole_count, mount_hole_angle_offset, usb_angle and
-// usb_z_centre from the actual board and re-export. nothing else should need
-// touching, thats what the parameters are for.
-// printing: no supports, the whole thing is a single extrusion with a flat
-// bottom. 0.2 mm layers, 3 perimeters. PETG or ABS if it'll sit somewhere
-// warm, PLA is fine otherwise.
+// morphcpu_case.scad - open-face frame, nothing over the led grid. it wraps the
+// edge, lifts the board off the desk and takes the usb-c strain.
+// every board-derived number in here is an assumption, the pcb doesnt exist
+// yet. set the seven board params off the real thing and re-export.
+// prints flat, no supports, 0.2 mm layers, 3 perimeters
 
 /* [Board - set these from the finished PCB] */
 

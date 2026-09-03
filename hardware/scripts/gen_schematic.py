@@ -1,13 +1,4 @@
-"""writes hardware/morphcpu.kicad_sch from netlist.py.
-
-connectivity is global labels, not drawn wires. a global label joins nets by
-NAME and not by position, so every pin carrying the same net name is connected
-no matter where its symbol sits on the sheet. kills the whole class of "wire
-looks connected but is 0.01 mm short" faults that make generated schematics
-untrustworthy, and its a legit schematic style for a dense board anyway.
-
-run:  <kicad>/bin/python.exe hardware/scripts/gen_schematic.py
-"""
+# run: <kicad>/bin/python.exe hardware/scripts/gen_schematic.py
 import os
 import sys
 import uuid
@@ -33,7 +24,6 @@ def q(s):
     return Q + str(s) + Q
 
 
-# Sheet layout. Positions are readability only - connectivity is by net name.
 PLACE = {
     ("U1", 1): (70, 55),
     ("U1", 2): (70, 150),
@@ -59,12 +49,6 @@ GRID = 1.27
 
 
 def snap(v):
-    """Round to the 1.27 mm connection grid.
-
-    Symbol pin offsets are multiples of 1.27, so origins on that grid put
-    every pin on it too. Off-grid pins are an ERC warning and, worse, make
-    the sheet painful to edit by hand afterwards.
-    """
     return round(v / GRID) * GRID
 
 
@@ -91,18 +75,11 @@ def resolve_positions():
     return {k: (snap(x), snap(y)) for k, (x, y) in pos.items()}
 
 
-# Library symbols
 def lib_path(lib):
     return KICAD + lib + ".kicad_sym"
 
 
 def base_of(lib, sym):
-    """Follow (extends "Parent") so derived symbols inherit their pins.
-
-    Some KiCad symbols (the ME6211 voltage variants, for one) carry no
-    geometry and only extend a sibling. Graphic and pinout are identical;
-    only the default Value differs, and the instance overrides that.
-    """
     s = ksym.load_lib(lib_path(lib))[sym]
     ext = ksym.find_one(s, "extends")
     if ext:
@@ -111,14 +88,6 @@ def base_of(lib, sym):
 
 
 def lib_symbol_node(lib, sym):
-    """Build the lib_symbols entry for one symbol.
-
-    A derived symbol has to be embedded FLATTENED: the parent's graphics
-    and pins, its own property overrides, and nested sub-symbols renamed
-    to the child. Emitting the parent body under the child name loads but
-    then trips ERC lib_symbol_mismatch, because the properties still say
-    the parent.
-    """
     lb = ksym.load_lib(lib_path(lib))
     s = lb[sym]
     ext = ksym.find_one(s, "extends")

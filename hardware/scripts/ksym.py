@@ -1,13 +1,3 @@
-"""minimal KiCad s-expression reader + symbol/pin extractor.
-
-used by gen_schematic.py. small on purpose, it only has to parse symbol
-libraries well enough to find pin positions and to lift a symbol definition
-verbatim into a schematic's lib_symbols block.
-
-regex-free and backslash-free on purpose so the source survives being piped
-thru shells and heredocs unharmed.
-"""
-
 BS = chr(92)
 QUOTE = chr(34)
 
@@ -98,7 +88,6 @@ def load_lib(path):
 
 
 def symbol_source(path, name):
-    """Raw text of one top-level (symbol "name" ...) block, for lib_symbols."""
     with open(path, 'r', encoding='utf-8') as f:
         text = f.read()
     needle = '\t(symbol ' + QUOTE + name + QUOTE + '\n'
@@ -139,7 +128,6 @@ def _unit_of(subname):
 
 
 def pins_of(sym):
-    """Every pin in a symbol, across its per-unit sub-symbols."""
     result = []
     for sub in find_all(sym, 'symbol'):
         unit = _unit_of(unquote(sub[1]))
@@ -162,9 +150,6 @@ def pins_of(sym):
 
 
 def dump(node, indent=0):
-    """Re-serialise a parsed tree. KiCad only cares about structure, not
-    whitespace, so this keeps atoms that follow the head on the head line and
-    puts each nested list on its own indented line."""
     pad = chr(9) * indent
     if not isinstance(node, list):
         return pad + str(node)

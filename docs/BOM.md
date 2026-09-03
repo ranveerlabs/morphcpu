@@ -16,29 +16,29 @@ is pinned to an LCSC part number and priced. rows 1-8 checked 20 aug 2026, rows
 
 | # | Part | MPN | LCSC | Pkg | Qty/unit | Qty for 5 | Unit price | Line total |
 |---|---|---|---|---|---|---|---|---|
-| 1 | FPGA | ICE40UP5K-SG48I | [C2678152](https://www.lcsc.com/product-detail/C2678152.html) | QFN-48-EP (7×7) | 1 | 5 | $8.564 | **$42.82** |
-| 2 | USB-UART bridge | FT231XS-R | [C132160](https://www.lcsc.com/product-detail/C132160.html) | SSOP-20-150mil | 1 | 5 | $5.9542 | **$29.77** |
-| 3 | SPI config flash, 32 Mbit | W25Q32JVSSIQ | [C179173](https://www.lcsc.com/product-detail/C179173.html) | SOIC-8-208mil | 1 | 5 | $1.6846 | **$8.42** |
-| 4 | USB-C receptacle, 16-pin | TYPE-C-31-M-12 | [C165948](https://www.lcsc.com/product-detail/C165948.html) | SMD right-angle | 1 | 5 | $0.1716 | **$0.86** |
-| 5 | 16 MHz oscillator (XO) | 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | SMD3225-4P | 1 | 5 | $0.3609 | **$1.80** |
-| 6 | 3.3 V LDO (with enable) | AP2112K-3.3TRG1 | [C51118](https://www.lcsc.com/product-detail/C51118.html) | SOT-23-5 | 1 | 5 | $0.0967 | **$0.48** |
-| 7 | 1.2 V LDO (with enable) | ME6211C12M5G-N | [C236672](https://www.lcsc.com/product-detail/C236672.html) | SOT-23-5 | 1 | 5 | $0.0606 | **$0.30** |
-| 8 | LED, red, 16 grid + 1 CDONE | KT-0603R | [C2286](https://www.lcsc.com/product-detail/C2286.html) | 0603 | 17 | 85 | $0.0075 | **$0.64** |
-| 9 | ESD array, USB D+/D- | USBLC6-2SC6 | [C7519](https://www.lcsc.com/product-detail/C7519.html) | SOT-23-6 | 1 | 5 | $0.1858 | **$0.93** |
-| 10 | Tactile switch, reset | TS-1187A-B-A-B | [C318884](https://www.lcsc.com/product-detail/C318884.html) | SMD-4P 5.1×5.1 | 1 | 5 | $0.0186 | **$0.09** |
-| 11 | Cap 100 nF 16 V X7R | CL05B104KO5NNNC | [C1525](https://www.lcsc.com/product-detail/C1525.html) | 0402 | 12 | 60 | $0.0055 | **$0.33** |
-| 12 | Cap 1 µF 25 V | CL05A105KA5NQNC | [C52923](https://www.lcsc.com/product-detail/C52923.html) | 0402 | 3 | 15 | $0.0122 | **$0.18** |
-| 13 | Cap 4.7 µF 10 V | CL05A475MP5NRNC | [C23733](https://www.lcsc.com/product-detail/C23733.html) | 0402 | 4 | 20 | $0.0234 | **$0.47** |
-| 14 | Cap 10 µF 6.3 V X5R | CL05A106MQ5NUNC | [C15525](https://www.lcsc.com/product-detail/C15525.html) | 0402 | 2 | 10 | $0.0258 | **$0.26** |
-| 15 | Res 100 Ω 1% | 0402WGF1000TCE | [C25076](https://www.lcsc.com/product-detail/C25076.html) | 0402 | 1 | 5 | $0.0079 | **$0.04** |
-| 16 | Res 270 Ω 1%, LED series | RC0402FR-07270RL | [C163474](https://www.lcsc.com/product-detail/C163474.html) | 0402 | 16 | 80 | $0.0041 | **$0.33** |
-| 17 | Res 1 kΩ 1%, CDONE LED | 0402WGF1001TCE | [C11702](https://www.lcsc.com/product-detail/C11702.html) | 0402 | 1 | 5 | $0.0067 | **$0.03** |
-| 18 | Res 5.1 kΩ 1%, CC pull-down | 0402WGF5101TCE | [C25905](https://www.lcsc.com/product-detail/C25905.html) | 0402 | 2 | 10 | $0.0044 | **$0.04** |
-| 19 | Res 10 kΩ 1% | 0402WGF1002TCE | [C25744](https://www.lcsc.com/product-detail/C25744.html) | 0402 | 8 | 40 | $0.0019 | **$0.08** |
-| 20 | Res 100 kΩ 1% | 0402WGF1003TCE | [C25741](https://www.lcsc.com/product-detail/C25741.html) | 0402 | 1 | 5 | $0.0054 | **$0.03** |
-| 21 | Res 1 MΩ 1%, EN_3V3 bleed | 0402WGF1004TCE | [C26083](https://www.lcsc.com/product-detail/C26083.html) | 0402 | 1 | 5 | $0.0016 | **$0.01** |
-| 22 | Polyfuse, 500 mA hold, 6 V | BSMD1206-050-6V | [C883122](https://www.lcsc.com/product-detail/C883122.html) | 1206 | 1 | 5 | $0.0466 | **$0.23** |
-| 23 | Ferrite bead, 600 Ω @ 100 MHz | MMZ1608Y601BTA00 | [C136491](https://www.lcsc.com/product-detail/Ferrite-Beads_TDK_C136491.html) | 0603 | 2 | 10 | $0.0126 | **$0.13** |
+| 1 | FPGA | ICE40UP5K-SG48I | [C2678152](https://www.lcsc.com/product-detail/C2678152.html) | QFN-48-EP (7×7) | 1 | 5 | $8.564 | $42.82 |
+| 2 | USB-UART bridge | FT231XS-R | [C132160](https://www.lcsc.com/product-detail/C132160.html) | SSOP-20-150mil | 1 | 5 | $5.9542 | $29.77 |
+| 3 | SPI config flash, 32 Mbit | W25Q32JVSSIQ | [C179173](https://www.lcsc.com/product-detail/C179173.html) | SOIC-8-208mil | 1 | 5 | $1.6846 | $8.42 |
+| 4 | USB-C receptacle, 16-pin | TYPE-C-31-M-12 | [C165948](https://www.lcsc.com/product-detail/C165948.html) | SMD right-angle | 1 | 5 | $0.1716 | $0.86 |
+| 5 | 16 MHz oscillator (XO) | 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | SMD3225-4P | 1 | 5 | $0.3609 | $1.80 |
+| 6 | 3.3 V LDO (with enable) | AP2112K-3.3TRG1 | [C51118](https://www.lcsc.com/product-detail/C51118.html) | SOT-23-5 | 1 | 5 | $0.0967 | $0.48 |
+| 7 | 1.2 V LDO (with enable) | ME6211C12M5G-N | [C236672](https://www.lcsc.com/product-detail/C236672.html) | SOT-23-5 | 1 | 5 | $0.0606 | $0.30 |
+| 8 | LED, red, 16 grid + 1 CDONE | KT-0603R | [C2286](https://www.lcsc.com/product-detail/C2286.html) | 0603 | 17 | 85 | $0.0075 | $0.64 |
+| 9 | ESD array, USB D+/D- | USBLC6-2SC6 | [C7519](https://www.lcsc.com/product-detail/C7519.html) | SOT-23-6 | 1 | 5 | $0.1858 | $0.93 |
+| 10 | Tactile switch, reset | TS-1187A-B-A-B | [C318884](https://www.lcsc.com/product-detail/C318884.html) | SMD-4P 5.1×5.1 | 1 | 5 | $0.0186 | $0.09 |
+| 11 | Cap 100 nF 16 V X7R | CL05B104KO5NNNC | [C1525](https://www.lcsc.com/product-detail/C1525.html) | 0402 | 12 | 60 | $0.0055 | $0.33 |
+| 12 | Cap 1 µF 25 V | CL05A105KA5NQNC | [C52923](https://www.lcsc.com/product-detail/C52923.html) | 0402 | 3 | 15 | $0.0122 | $0.18 |
+| 13 | Cap 4.7 µF 10 V | CL05A475MP5NRNC | [C23733](https://www.lcsc.com/product-detail/C23733.html) | 0402 | 4 | 20 | $0.0234 | $0.47 |
+| 14 | Cap 10 µF 6.3 V X5R | CL05A106MQ5NUNC | [C15525](https://www.lcsc.com/product-detail/C15525.html) | 0402 | 2 | 10 | $0.0258 | $0.26 |
+| 15 | Res 100 Ω 1% | 0402WGF1000TCE | [C25076](https://www.lcsc.com/product-detail/C25076.html) | 0402 | 1 | 5 | $0.0079 | $0.04 |
+| 16 | Res 270 Ω 1%, LED series | RC0402FR-07270RL | [C163474](https://www.lcsc.com/product-detail/C163474.html) | 0402 | 16 | 80 | $0.0041 | $0.33 |
+| 17 | Res 1 kΩ 1%, CDONE LED | 0402WGF1001TCE | [C11702](https://www.lcsc.com/product-detail/C11702.html) | 0402 | 1 | 5 | $0.0067 | $0.03 |
+| 18 | Res 5.1 kΩ 1%, CC pull-down | 0402WGF5101TCE | [C25905](https://www.lcsc.com/product-detail/C25905.html) | 0402 | 2 | 10 | $0.0044 | $0.04 |
+| 19 | Res 10 kΩ 1% | 0402WGF1002TCE | [C25744](https://www.lcsc.com/product-detail/C25744.html) | 0402 | 8 | 40 | $0.0019 | $0.08 |
+| 20 | Res 100 kΩ 1% | 0402WGF1003TCE | [C25741](https://www.lcsc.com/product-detail/C25741.html) | 0402 | 1 | 5 | $0.0054 | $0.03 |
+| 21 | Res 1 MΩ 1%, EN_3V3 bleed | 0402WGF1004TCE | [C26083](https://www.lcsc.com/product-detail/C26083.html) | 0402 | 1 | 5 | $0.0016 | $0.01 |
+| 22 | Polyfuse, 500 mA hold, 6 V | BSMD1206-050-6V | [C883122](https://www.lcsc.com/product-detail/C883122.html) | 1206 | 1 | 5 | $0.0466 | $0.23 |
+| 23 | Ferrite bead, 600 Ω @ 100 MHz | MMZ1608Y601BTA00 | [C136491](https://www.lcsc.com/product-detail/Ferrite-Beads_TDK_C136491.html) | 0603 | 2 | 10 | $0.0126 | $0.13 |
 | | | | | | **80** | **400** | **parts subtotal** | **$88.27** |
 
 $17.65 of parts per board. the line totals are rounded to the cent and sum to
@@ -93,7 +93,7 @@ and 16 LEDs instead of 17. schematic was right every time
 
 | Part | LCSC stock | Comment |
 |---|---|---|
-| ICE40UP5K-SG48I | 546 | **lowest-stock part in the design.** order early |
+| ICE40UP5K-SG48I | 546 | lowest-stock part in the design, order early |
 | FT231XS-R | 1,657 | fine for 5 |
 | W25Q32JVSSIQ | 39,664 | ample |
 | TYPE-C-31-M-12 | 407,730 | ample |
@@ -103,7 +103,7 @@ and 16 LEDs instead of 17. schematic was right every time
 | KT-0603R | 3,752,200 | ample |
 | USBLC6-2SC6 | 35,370 | ample |
 | TS-1187A-B-A-B | 792,020 | ample |
-| MMZ1608Y601BTA00 | 11,200 | **second thinnest.** fine for 10 pcs, not deep |
+| MMZ1608Y601BTA00 | 11,200 | second thinnest, fine for 10 pcs but not deep |
 | BSMD1206-050-6V | 36,710 | ample |
 | RC0402FR-07270RL | 281,900 | ample |
 | all other 0402 passives | 330 k to 8.5 M | ample |
@@ -135,12 +135,12 @@ change). neither trade is worth one feeder fee so we keep 270 Ω and pay for it
 
 | Was | Now | Why |
 |---|---|---|
-| FT231XS-U (C89607) | **FT231XS-R (C132160)** | C89607 is out of stock and `-U` is tube packaging. `-R` is tape-and-reel, which an assembly line wants. same SSOP-20-150mil footprint, no pin changes |
-| AMS1117-3.3 (C6186) | **ME6211C33M5G-N (C82942)** | power-up sequence needs 3.3 V held off until 1.2 V is up. AMS1117 is SOT-223 with **no enable pin**. ME6211 has CE, is Basic tier, cheaper, and shares a footprint with the 1.2 V part |
-| ME6211C33M5G-N (C82942) | **AP2112K-3.3TRG1 (C51118)** | C82942 went to 0 at JLC, 11 day lead and a 196 MOQ behind it. same SOT-23-5, same 1 VIN 2 GND 3 EN 4 NC 5 VOUT pinout, so nothing on the board moves. 600 mA instead of 500. tier didnt render on JLC's listing so thats unconfirmed |
-| 12 MHz crystal + 2 load caps | **16 MHz XO (C5383161)** + 1 × 100 nF | iCE40 has no crystal amp. 12 MHz active XOs at LCSC had 9 and 1 in stock, the 16 MHz part has 147. costs a gateware param change, and UART divisor error improves from 0.16% to 0.08% |
-| no ESD protection | **USBLC6-2SC6 (C7519)** | this doc listed an ESD array from day one and the schematic never had one. now U6, in the D+/D- path between J1 and U2, placed next to the connector |
-| reset switch on `SW_SPST_TL3342` | **TS-1187A-B-A-B (C318884)** on `SW_Push_1P1T_XKB_TS-1187A` | the part JLC stocks Basic is the XKB TS-1187A, pads at 6.0 × 3.75 mm. TL3342's are 6.3 × 3.8 mm. close enough to look fine on screen, not close enough to solder. footprint follows the part now |
+| FT231XS-U (C89607) | FT231XS-R (C132160) | C89607 is out of stock and `-U` is tube packaging. `-R` is tape-and-reel, which an assembly line wants. same SSOP-20-150mil footprint, no pin changes |
+| AMS1117-3.3 (C6186) | ME6211C33M5G-N (C82942) | power-up sequence needs 3.3 V held off until 1.2 V is up. AMS1117 is SOT-223 with no enable pin. ME6211 has CE, is Basic tier, cheaper, and shares a footprint with the 1.2 V part |
+| ME6211C33M5G-N (C82942) | AP2112K-3.3TRG1 (C51118) | C82942 went to 0 at JLC, 11 day lead and a 196 MOQ behind it. same SOT-23-5, same 1 VIN 2 GND 3 EN 4 NC 5 VOUT pinout, so nothing on the board moves. 600 mA instead of 500. tier didnt render on JLC's listing so thats unconfirmed |
+| 12 MHz crystal + 2 load caps | 16 MHz XO (C5383161) + 1 × 100 nF | iCE40 has no crystal amp. 12 MHz active XOs at LCSC had 9 and 1 in stock, the 16 MHz part has 147. costs a gateware param change, and UART divisor error improves from 0.16% to 0.08% |
+| no ESD protection | USBLC6-2SC6 (C7519) | this doc listed an ESD array from day one and the schematic never had one. now U6, in the D+/D- path between J1 and U2, placed next to the connector |
+| reset switch on `SW_SPST_TL3342` | TS-1187A-B-A-B (C318884) on `SW_Push_1P1T_XKB_TS-1187A` | the part JLC stocks Basic is the XKB TS-1187A, pads at 6.0 × 3.75 mm. TL3342's are 6.3 × 3.8 mm. close enough to look fine on screen, not close enough to solder. footprint follows the part now |
 
 ### osc stock note
 
@@ -174,7 +174,7 @@ how we got there:
 | extruded volume after infill | **10,410.40 mm³** | see the infill note |
 | filament mass | **12.91 g** | × 1.24 g/cm³, standard PLA density |
 | filament price | **$19.99/kg** | median 1 kg spool across ten manufacturers' own stores, 11 jun 2026. Overture's own store agrees: $20.99-22.99 list, $13.99-14.99 on sale |
-| **cost** | **$0.2580, so $0.26** | |
+| cost | $0.2580, so $0.26 | |
 
 the 20% infill assumption barely applies to this part. at the print settings in
 [../case/README.md](../case/README.md), 0.4 mm nozzle, 0.2 mm layers, 3

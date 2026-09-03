@@ -1,43 +1,26 @@
-// config_loader.v - command decoder + config shifter. 8N1, one command byte
-// then a fixed arg count. full protocol in ../README.md
-//
-//   0x01 CONFIG  8   topology. nibble per cell, byte i upper -> cell 2i,
-//                    lower -> cell 2i+1, nibble is {op[1:0], dir[1:0]}
-//   0x02 INJECT  2   [row, value], sits at the west edge til the next tick
-//   0x03 TICKDIV 3   24-bit BE divider. <=1 is full clock rate
-//   0x04 CLEAR   0   drops in-flight data, config survives
-//   0x05 STEP    0   one tick
-//
-// unknown bytes ignored, so resync from a half-sent command is send 0x04.
-
 `timescale 1ns / 1ps
 `default_nettype none
 
 module config_loader #(
     parameter DATA_W          = 8,
     parameter ROWS            = 4,
-    parameter DEFAULT_TICKDIV = 24'd4000000   // 16 MHz / 4e6 = 4 ticks/sec
+    parameter DEFAULT_TICKDIV = 24'd4000000
 ) (
     input  wire                   clk,
     input  wire                   rst,
 
-    // from uart_rx
     input  wire [7:0]             rx_data,
     input  wire                   rx_valid,
 
-    // to the grid configuration chain
     output wire                   cfg_shift,
     output wire                   cfg_bit,
 
-    // fabric control
     output wire                   tick,
     output reg                    clr,
 
-    // west edge injection
     output reg  [ROWS*DATA_W-1:0] west_in_data,
     output reg  [ROWS-1:0]        west_in_val,
 
-    // status
     output wire                   loading
 );
 
@@ -70,7 +53,6 @@ module config_loader #(
     assign loading = (state == S_SHIFT);
     assign tick    = tick_auto | tick_step;
 
-    // Command FSM
     always @(posedge clk) begin
         if (rst) begin
             state        <= S_IDLE;
@@ -89,7 +71,6 @@ module config_loader #(
             clr       <= 1'b0;
             tick_step <= 1'b0;
 
-            // An injected value stays presented until a tick consumes it.
             if (tick)
                 west_in_val <= {ROWS{1'b0}};
 
@@ -147,8 +128,6 @@ module config_loader #(
         end
     end
 
-    // Fabric tick generator. Paused while configuration is shifting in, so a
-    // half-loaded topology never gets to move data around.
     always @(posedge clk) begin
         if (rst) begin
             tickcnt   <= 24'd0;

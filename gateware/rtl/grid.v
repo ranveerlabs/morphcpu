@@ -1,11 +1,3 @@
-// grid.v - 4x4 fabric. a cell only receives from a neighbour thats routing at
-// it, so the interconnect is muxes off the neighbours' dir fields.
-//
-// config chain is wired highest-index-first, cfg_in -> cell15 -> ... -> cell0.
-// 4 shifts per cell, so after 64 the first bit sent has reached cell0's MSB.
-// that lets the host send cells in ascending order and never reverse anything.
-// costs one crossed wire down here, free in fabric.
-
 `timescale 1ns / 1ps
 `default_nettype none
 
@@ -16,7 +8,7 @@ module grid #(
 ) (
     input  wire                        clk,
     input  wire                        rst,
-    input  wire                        clr,          // clear fabric data, keep config
+    input  wire                        clr,
 
     input  wire                        cfg_shift,
     input  wire                        cfg_in,
@@ -30,7 +22,7 @@ module grid #(
     output wire [ROWS*DATA_W-1:0]      east_out_data,
     output wire [ROWS-1:0]             east_out_val,
 
-    output wire [ROWS*COLS-1:0]        active   // LED taps, cell 0 = bit 0
+    output wire [ROWS*COLS-1:0]        active
 );
 
     localparam [1:0] DIR_N = 2'd0;
@@ -40,7 +32,6 @@ module grid #(
 
     localparam N_CELLS = ROWS * COLS;
 
-    // flattened, no 2-D ports in Verilog-2001
     wire [N_CELLS*DATA_W-1:0] c_data;
     wire [N_CELLS-1:0]        c_val;
     wire [N_CELLS*2-1:0]      c_dir;
@@ -56,7 +47,6 @@ module grid #(
 
                 localparam integer IDX = gr * COLS + gc;
 
-                // clamped so edge part-selects stay in range
                 localparam integer NIDX = (gr > 0)        ? IDX - COLS : IDX;
                 localparam integer SIDX = (gr < ROWS - 1) ? IDX + COLS : IDX;
                 localparam integer EIDX = (gc < COLS - 1) ? IDX + 1    : IDX;

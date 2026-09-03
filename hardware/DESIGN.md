@@ -79,9 +79,9 @@ all priced and stock-checked 20 Aug 2026:
 
 | MPN | LCSC | Freq | Pkg | Price @1 | Stock |
 |---|---|---|---|---|---|
-| 1575H-12.000G33DTSTL | [C7503622](https://www.lcsc.com/product-detail/C7503622.html) | 12 MHz | SMD7050-4P | $0.87 | **9** |
-| 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | 16 MHz | SMD3225-4P | $0.36 | **147** |
-| ECS-TXO-3225-120-TR | [C2451123](https://www.lcsc.com/product-detail/C2451123.html) | 12 MHz TCXO | SMD3225-4P | $5.94 | **1** |
+| 1575H-12.000G33DTSTL | [C7503622](https://www.lcsc.com/product-detail/C7503622.html) | 12 MHz | SMD7050-4P | $0.87 | 9 |
+| 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | 16 MHz | SMD3225-4P | $0.36 | 147 |
+| ECS-TXO-3225-120-TR | [C2451123](https://www.lcsc.com/product-detail/C2451123.html) | 12 MHz TCXO | SMD3225-4P | $5.94 | 1 |
 
 the TCXO is out on stock alone, and 16x the price for ±2.5 ppm nobody needs. the
 12 MHz one would have left the design alone but 9 units in stock is how you end
@@ -207,14 +207,14 @@ against FPGA-DS-02008 §5.2 Pin Information Summary (2 × VCC, 3 × VCCIO,
 | 22 | SPI_VCCIO1 | +3V3 | Bank 1, powers the SPI config pins, POR-monitored |
 | 1 | VCCIO_2 | +3V3 | Bank 2 |
 | 24 | VPP_2V5 | +3V3 | Via ferrite |
-| 49 | GND (paddle) | GND | **The only ground connection, see below** |
+| 49 | GND (paddle) | GND | the only ground connection, see below |
 | 8 | CRESET_B | - | 10 kΩ to +3V3, test point |
 | 7 | CDONE | - | 10 kΩ to +3V3, plus an LED |
 | 14 | SPI_SO (IOB_32a) | FLASH_DO | Dedicated config |
 | 15 | SPI_SCK (IOB_34a) | FLASH_CLK | Dedicated config |
 | 16 | SPI_SS (IOB_35b) | FLASH_CS | Dedicated config, 10 kΩ pull-up |
 | 17 | SPI_SI (IOB_33b) | FLASH_DI | Dedicated config |
-| 39 | RGB0 | no connect | Constant-current LED driver, **not ordinary I/O** |
+| 39 | RGB0 | no connect | Constant-current LED driver, not ordinary I/O |
 | 40 | RGB1 | no connect | " |
 | 41 | RGB2 | no connect | " |
 
@@ -324,7 +324,7 @@ in this doc, nothing moved
 |---|---|---|
 | LCSC | [C89607](https://www.lcsc.com/product-detail/C89607.html) | [C132160](https://www.lcsc.com/product-detail/C132160.html) |
 | Package (per LCSC) | SSOP-20-150mil | SSOP-20-150mil |
-| Stock | **0, out of stock** | 1,657 |
+| Stock | 0, out of stock | 1,657 |
 | Price @1 | $4.47 | $5.9542 |
 
 `FT231XS` is the SSOP-20 die and package. the trailing `-U` / `-R` is FTDI's
@@ -357,8 +357,8 @@ direction is the classic trap, TXD on the bridge goes to the FPGA's RX
 | GND (A1/A12/B1/B12) | GND | Tie all four together |
 | D+ (A6/B6) | USB_DP | Tie both together, USB 2.0 device |
 | D- (A7/B7) | USB_DM | Tie both together |
-| CC1 (A5) | **5.1 kΩ to GND** | Required, advertises a sink |
-| CC2 (B5) | **5.1 kΩ to GND** | **Separate resistor**, not shared with CC1 |
+| CC1 (A5) | 5.1 kΩ to GND | Required, advertises a sink |
+| CC2 (B5) | 5.1 kΩ to GND | separate resistor, not shared with CC1 |
 | SBU1 / SBU2 | no connect | |
 
 two independent 5.1 kΩ resistors. share one, or use 10 kΩ, and some hosts and
@@ -397,7 +397,7 @@ further out
 
 | Flash pin | FPGA pin | Net |
 |---|---|---|
-| CS# | 16 (SPI_SS) | FLASH_CS, **10 kΩ pull-up to +3V3** |
+| CS# | 16 (SPI_SS) | FLASH_CS, 10 kΩ pull-up to +3V3 |
 | CLK | 15 (SPI_SCK) | FLASH_CLK |
 | DI (IO0) | 17 (SPI_SI) | FLASH_DI |
 | DO (IO1) | 14 (SPI_SO) | FLASH_DO |
@@ -412,7 +412,7 @@ further out
 |---|---|---|
 | 1 | OE / tri-state enable | Tie to +3V3 through 10 kΩ to keep the output enabled |
 | 2 | GND | |
-| 3 | OUT | To FPGA **pin 35** (IOT_46b_G0) |
+| 3 | OUT | To FPGA pin 35 (IOT_46b_G0) |
 | 4 | VDD | +3V3, 100 nF right at the pad |
 
 the 4-pad arrangement is standard across SMD XOs, this one is 3225
@@ -425,7 +425,7 @@ the output on, leaves the option of gating it later
 |---|---|
 | CRESET_B (pin 8) | 10 kΩ pull-up to +3V3, plus a test point |
 | CDONE (pin 7) | 10 kΩ pull-up to +3V3, plus an LED, lit means configured |
-| Reset button | To FPGA **pin 10**, a user I/O, not CRESET_B |
+| Reset button | To FPGA pin 10, a user I/O, not CRESET_B |
 
 the button is a logic reset and it keeps the loaded fabric topology. CRESET_B
 reloads the whole bitstream, much bigger hammer, so it gets a test point instead
@@ -463,7 +463,7 @@ alongside this one
 
 | Item | Value |
 |---|---|
-| Shape | Round, **70 mm** diameter (matches `pcb_dia` in [case/morphcpu_case.scad](../case/morphcpu_case.scad)) |
+| Shape | Round, 70 mm diameter (matches `pcb_dia` in [case/morphcpu_case.scad](../case/morphcpu_case.scad)) |
 | Layers | 4, 1.6 mm, 1 oz outer - JLCPCB 4 layer stackup |
 | Mounting | 4 x M2 on a 58 mm bolt circle (29 mm radius) at 45/135/225/315 deg |
 | Min track / clearance | 6 mil / 6 mil |
@@ -521,7 +521,7 @@ pour ground, stitch it, no isolated islands
 
 | Part | LCSC | Tier | Stock (20 Aug 2026) |
 |---|---|---|---|
-| ICE40UP5K-SG48I | C2678152 | Extended | 546, **lowest in the design, order early** |
+| ICE40UP5K-SG48I | C2678152 | Extended | 546, lowest in the design, order early |
 | FT231XS-R | C132160 | Extended | 1,657 |
 | W25Q32JVSSIQ | C179173 | Extended | 39,664 |
 | TYPE-C-31-M-12 | C165948 | Extended | 407,730 |
@@ -530,17 +530,17 @@ pour ground, stitch it, no isolated islands
 | KT-0603R | C2286 | Basic | 3,752,200 |
 | 1532H4-16000JWPDTSNL | C5383161 | Extended | 147 |
 | USBLC6-2SC6 | C7519 | Extended (inferred) | 35,370 |
-| TS-1187A-B-A-B | C318884 | **Basic** (confirmed) | 792,020 |
-| CL05B104KO5NNNC 100 nF | C1525 | **Basic** (confirmed) | 8,423,900 |
-| CL05A105KA5NQNC 1 µF | C52923 | **Basic** (confirmed) | 5,345,900 |
-| CL05A475MP5NRNC 4.7 µF | C23733 | **Basic** (confirmed) | 1,132,850 |
-| CL05A106MQ5NUNC 10 µF | C15525 | **Basic** (confirmed) | 5,949,500 |
-| 0402WGF1000TCE 100 Ω | C25076 | **Basic** (confirmed) | 329,500 |
+| TS-1187A-B-A-B | C318884 | Basic (confirmed) | 792,020 |
+| CL05B104KO5NNNC 100 nF | C1525 | Basic (confirmed) | 8,423,900 |
+| CL05A105KA5NQNC 1 µF | C52923 | Basic (confirmed) | 5,345,900 |
+| CL05A475MP5NRNC 4.7 µF | C23733 | Basic (confirmed) | 1,132,850 |
+| CL05A106MQ5NUNC 10 µF | C15525 | Basic (confirmed) | 5,949,500 |
+| 0402WGF1000TCE 100 Ω | C25076 | Basic (confirmed) | 329,500 |
 | RC0402FR-07270RL 270 Ω | C163474 | Extended (confirmed) | 281,900 |
-| 0402WGF1001TCE 1 kΩ | C11702 | **Basic** (confirmed) | 4,014,300 |
-| 0402WGF5101TCE 5.1 kΩ | C25905 | **Basic** (confirmed) | 6,365,200 |
-| 0402WGF1002TCE 10 kΩ | C25744 | **Basic** (confirmed) | 7,032,300 |
-| 0402WGF1003TCE 100 kΩ | C25741 | **Basic** (confirmed) | 8,524,800 |
+| 0402WGF1001TCE 1 kΩ | C11702 | Basic (confirmed) | 4,014,300 |
+| 0402WGF5101TCE 5.1 kΩ | C25905 | Basic (confirmed) | 6,365,200 |
+| 0402WGF1002TCE 10 kΩ | C25744 | Basic (confirmed) | 7,032,300 |
+| 0402WGF1003TCE 100 kΩ | C25741 | Basic (confirmed) | 8,524,800 |
 | BSMD1206-050-6V polyfuse | C883122 | Extended (confirmed) | 36,710 |
 | MMZ1608Y601BTA00 ferrite | C136491 | Extended (inferred) | 11,200 |
 

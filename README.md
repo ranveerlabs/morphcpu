@@ -1,15 +1,14 @@
 # MorphCPU
 
-70mm round board, iCE40UP5K on the back and 16 red leds on the front in a 4x4.
-send it 9 bytes over usb and the grid computes something else
+70mm round board with an iCE40UP5K on the back and 16 red leds on the front in
+a 4x4. you send it 9 bytes over usb and the grid turns into something else
 
-Its like a systolic array basically. no PC no fetch no decode, 16 cells
-each holding an op and a direction and data goes in the west side and gets
-mangled by whatever cell it lands on which sounds more complicated than
-it is. 4 cells from the exit is 4 ticks, thats the bit i like. runs at 4Hz
-cuz at 16MHz theres obviously nothing to look at
+if youve poked at a systolic array before its that, slowed down enough to watch.
+no PC no fetch no decode, just 16 cells each holding an op and a direction, data
+walks in the west side and gets mangled by whatever cell it lands on. 4 cells
+from the exit is 4 ticks. i run it at 4Hz cuz at 16MHz theres nothing to look at
 
-wanted one on a desk so i wrote the fabric. then it needed a testbench, then a
+i wanted one on a desk so i wrote the fabric. then it needed a testbench, then a
 board, then a schematic generator cuz i was not drawing 88 symbols by hand,
 then a placement generator, then a case, and then the case had to be parametric
 cuz the board diameter kept moving anyway still no traces on it
@@ -17,14 +16,15 @@ cuz the board diameter kept moving anyway still no traces on it
 ## state
 
 routed. 770 tracks 148 vias across 4 layers, DRC 0 violations, 2 nets still open
-and theyre both leds so 14 of the 16 light. leaving it there cuz deadline, the
-board powers and configures and boots and talks. why its two and what would close
-them is in [hardware/ROUTING.md](hardware/ROUTING.md). freerouting got two goes and
-both went in the bin, the first one ran 211 segments straight across the led face
+and theyre both leds so 14 of the 16 would light. i left it there cuz deadline,
+every power ground clock config flash usb and uart net is closed. why its two
+and what would finish them is in [hardware/ROUTING.md](hardware/ROUTING.md).
+freerouting got two goes and both went in the bin, the first one ran 211
+segments straight across the led face
 
-it needed 4 layers in the end. 2 couldnt do it, the resistor ring and the decap
-ring both sit inside the F.Cu keepout over the grid so every led escape was stuck
-on B.Cu alone
+4 layers in the end, 2 couldnt do it. the resistor ring and the decap ring both
+sit inside the F.Cu keepout over the grid so every led escape was stuck on B.Cu
+alone
 
 no bitstream either. OSS CAD Suite isnt installed on this machine so build.sh
 has literally never run so idk, salt on the timing numbers
@@ -40,7 +40,7 @@ sim 18/18, ERC 0/0, BOM $203.73 for 5
 | `2` ADD `a+b` | | `2` S |
 | `3` XOR `a^b` | | `3` W |
 
-4 bits a cell, 2 op 2 dir, the operand pick is like the only weird bit and
+4 bits a cell, 2 op 2 dir. the operand pick is like the only weird bit and
 [morph_cell.v](gateware/rtl/morph_cell.v) is short enough to just read
 
 ```
@@ -76,7 +76,7 @@ plus a worked example
 | clk | 1532H4-16000JWPDTSNL 16MHz | 3225 | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) |
 | leds | KT-0603R ×17 | 0603 | [C2286](https://www.lcsc.com/product-detail/C2286.html) |
 
-two regulators, and the 1v2 one has to be up before the 3v3, backwards from the
+two regulators, and the 1v2 has to be up before the 3v3, backwards from the
 cascade youd reach for first. i would not wing that bit,
 [hardware/DESIGN.md](hardware/DESIGN.md) has it with page numbers, money is in
 [docs/BOM.md](docs/BOM.md)
@@ -110,8 +110,9 @@ back. fpga in the middle, ring of decaps then the resistor ring, and everything
 fanning out of a QFN-48 on 0.5mm pitch. all the pain was in there
 
 board was 60mm at first and everything overlapped. the resistor ring also sat
-180 out from its own leds for ages, so every single anode trace ran straight
-under the QFN paddle, which took embarrassingly long to spot, rip. both sorted
+180 out from its own leds for ages so every single anode trace ran straight
+under the QFN paddle, took me embarrassingly long to spot that rip. both sorted
+now
 
 six leds also ended up on different fpga pins than they started on, cuz the east
 side of the package ran out of escape room. thats in ROUTING.md too
@@ -128,8 +129,8 @@ gerbers in `hardware/fab_output/` are off the routed board now, all four copper
 layers with copper actually in them, drill included. two nets are still open tho
 so D2 and D3 wont light, read that before you spend money
 
-- $203.73 is a real 4 layer quote, $6.27 of headroom under the $210 Complex cap
-  so dont add parts casually. re-quote if the BOM moves
+- $203.73 is a real 4 layer quote, $6.27 of headroom under the $210 Complex cap.
+  re-quote if the BOM moves
 - fpga stock was 546 when i looked. oscillator 147
 - C7519 and C136491 tiers are guesses, confirm in the quote
 - QFN paddle is the only ground to the die, SG48 has no GND pin at all. window

@@ -1,15 +1,3 @@
-// morph_cell.v - one cell. 4 bits of config:
-//     cfg[3:2] = op   what it does to data passing through
-//     cfg[1:0] = dir  which neighbour gets the result
-//
-// config comes in over the shift chain, see grid.v for the ordering. data
-// arrives from any neighbour routing at this cell, gets op'd, lands on
-// out_data/out_val for whoever dir names to pick up next tick.
-//
-// inputs scanned N E S W. first valid is a, second is b, and with only one
-// input b falls back to the held value. thats what turns ADD into an
-// accumulator on a single stream and a real adder on two.
-
 `timescale 1ns / 1ps
 `default_nettype none
 
@@ -18,17 +6,14 @@ module morph_cell #(
 ) (
     input  wire                 clk,
     input  wire                 rst,
-    input  wire                 clr,         // clear held data, keep config
+    input  wire                 clr,
 
-    // configuration shift chain
-    input  wire                 cfg_shift,   // 1 = advance the chain this clk
-    input  wire                 cfg_in,      // serial in  (from previous cell)
-    output wire                 cfg_out,     // serial out (to next cell)
+    input  wire                 cfg_shift,
+    input  wire                 cfg_in,
+    output wire                 cfg_out,
 
-    // grid advance
-    input  wire                 tick,        // 1 = advance the fabric one hop
+    input  wire                 tick,
 
-    // neighbour inputs
     input  wire [DATA_W-1:0]    in_n_data,
     input  wire                 in_n_val,
     input  wire [DATA_W-1:0]    in_e_data,
@@ -38,27 +23,22 @@ module morph_cell #(
     input  wire [DATA_W-1:0]    in_w_data,
     input  wire                 in_w_val,
 
-    // outputs
     output wire [DATA_W-1:0]    out_data,
     output wire                 out_val,
-    output wire [1:0]           out_dir,     // where out_data is headed
-    output wire                 active       // 1 = holding live data (LED tap)
+    output wire [1:0]           out_dir,
+    output wire                 active
 );
 
-    // opcode / direction encoding
-    localparam [1:0] OP_PASS = 2'd0;  // out = a          (pure routing)
-    localparam [1:0] OP_INV  = 2'd1;  // out = ~a
-    localparam [1:0] OP_ADD  = 2'd2;  // out = a + b      (wraps, no carry out)
-    localparam [1:0] OP_XOR  = 2'd3;  // out = a ^ b
+    localparam [1:0] OP_PASS = 2'd0;
+    localparam [1:0] OP_INV  = 2'd1;
+    localparam [1:0] OP_ADD  = 2'd2;
+    localparam [1:0] OP_XOR  = 2'd3;
 
     localparam [1:0] DIR_N   = 2'd0;
     localparam [1:0] DIR_E   = 2'd1;
     localparam [1:0] DIR_S   = 2'd2;
     localparam [1:0] DIR_W   = 2'd3;
 
-    // Configuration register / shift chain
-    // Shifts MSB-out, LSB-in: a bit entering cfg_in needs 4 shifts to cross
-    // one cell. grid.v relies on that to work out the whole-chain bit order.
     reg [3:0] cfg;
 
     always @(posedge clk) begin
@@ -73,7 +53,6 @@ module morph_cell #(
     wire [1:0] op  = cfg[3:2];
     wire [1:0] dir = cfg[1:0];
 
-    // Operand selection - first and second valid input, priority N,E,S,W
     wire [3:0]          vmask = {in_w_val, in_s_val, in_e_val, in_n_val};
     wire [4*DATA_W-1:0] idata = {in_w_data, in_s_data, in_e_data, in_n_data};
 
@@ -99,11 +78,9 @@ module morph_cell #(
         end
     end
 
-    // Held value + ALU
     reg [DATA_W-1:0] d_reg;
     reg              v_reg;
 
-    // secondary operand: a second arriving stream, else what we already hold
     wire [DATA_W-1:0] b = b_val ? b_in : d_reg;
 
     reg [DATA_W-1:0] alu;

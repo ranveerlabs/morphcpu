@@ -39,8 +39,8 @@ inputs get scanned in a fixed priority order, N then E then S then W. first
 valid one is `a`, second valid one is `b`. only one input showed up, `b` falls
 back to whatever the cell is already holding
 
-that fallback is what gives ADD and XOR meaning. two streams converging on a cell
-get combined, a lone stream walking thru an ADD cell accumulates against itself
+so two streams converging on a cell get combined and a lone stream walking thru
+an ADD cell accumulates against itself
 
 one `tick` moves data exactly one cell, so a value takes as many ticks as there
 are cells on its path
@@ -189,7 +189,7 @@ and unexercised, sim is the part thats actually been run
 
 `morphcpu.pcf` agrees with the
 [user I/O assignment](../hardware/DESIGN.md#user-io-assignment) in DESIGN.md,
-all 20 pins, checked. DESIGN.md is the source of truth they can drift.
+all 20 pins, i checked. they can drift, DESIGN.md wins
 
 ## demo notes
 

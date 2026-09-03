@@ -1,10 +1,3 @@
-// uart_rx.v - 8N1 UART receiver
-// plain oversampling receiver. find the start-bit falling edge, wait half a
-// bit time to land in the middle of the start bit, then sample every CLKS_PER
-// clocks. a frame whose stop bit isnt high gets dropped and flagged, which
-// catches a baud mismatch during bring-up instead of quietly corrupting the
-// config stream.
-
 `timescale 1ns / 1ps
 `default_nettype none
 
@@ -14,10 +7,10 @@ module uart_rx #(
 ) (
     input  wire       clk,
     input  wire       rst,
-    input  wire       rx,          // idles high
+    input  wire       rx,
     output reg  [7:0] data,
-    output reg        valid,       // 1-clock strobe, data is good
-    output reg        frame_err    // 1-clock strobe, bad stop bit
+    output reg        valid,
+    output reg        frame_err
 );
 
     localparam integer CLKS_PER = CLK_HZ / BAUD;
@@ -33,7 +26,6 @@ module uart_rx #(
     reg [2:0]  bitn;
     reg [7:0]  sh;
 
-    // Two-stage synchroniser: rx crosses from the FT231X's clock domain.
     reg rx_m, rx_s;
     always @(posedge clk) begin
         rx_m <= rx;
@@ -55,7 +47,7 @@ module uart_rx #(
 
             case (state)
                 S_IDLE: begin
-                    if (!rx_s) begin           // start bit edge
+                    if (!rx_s) begin
                         state <= S_START;
                         cnt   <= 16'd0;
                     end
@@ -63,12 +55,12 @@ module uart_rx #(
 
                 S_START: begin
                     if (cnt == HALF[15:0] - 1) begin
-                        if (!rx_s) begin       // still low: real start bit
+                        if (!rx_s) begin
                             state <= S_DATA;
                             cnt   <= 16'd0;
                             bitn  <= 3'd0;
                         end else begin
-                            state <= S_IDLE;   // glitch, not a frame
+                            state <= S_IDLE;
                         end
                     end else begin
                         cnt <= cnt + 16'd1;
@@ -78,7 +70,7 @@ module uart_rx #(
                 S_DATA: begin
                     if (cnt == CLKS_PER[15:0] - 1) begin
                         cnt        <= 16'd0;
-                        sh         <= {rx_s, sh[7:1]};   // LSB first on the wire
+                        sh         <= {rx_s, sh[7:1]};
                         if (bitn == 3'd7)
                             state <= S_STOP;
                         else

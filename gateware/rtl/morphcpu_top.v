@@ -1,20 +1,3 @@
-// morphcpu_top.v - top level, iCE40UP5K-SG48
-//   16 MHz osc  -> clk
-//   FT231X TXD  -> uart_rx_i
-//   FT231X RXD  <- uart_tx_o
-//   button      -> rst_n (active low, external pullup)
-//   16 LEDs     <- led[15:0], cell 0 = led[0]
-//
-// tick defaults to 4 Hz. 62.5 ns a hop is invisible. TICKDIV to speed it up or
-// STEP to walk it by hand.
-//
-// LEDs pulse stretched to ~150 ms, a cell is only active for one tick and
-// without it a fast tick is just a dim glow.
-//
-// east results latch at tick and drain to the UART a byte at a time. ~3M clocks
-// between ticks vs ~1042 for a byte so it keeps up. at full speed the fabric
-// outruns 115200 and results get dropped, hence STEP.
-
 `timescale 1ns / 1ps
 `default_nettype none
 
@@ -24,21 +7,15 @@ module morphcpu_top #(
     parameter DATA_W = 8,
     parameter ROWS   = 4,
     parameter COLS   = 4,
-    // 0 = LED anode on the FPGA pin, cathode to GND via a resistor (pin
-    //     sources current, a high lights it).
-    // 1 = cathode on the pin, anode to 3V3 via a resistor (pin sinks).
-    // The schematic decides this; flipping it here is cheaper than a respin.
     parameter LED_ACTIVE_LOW = 0
 ) (
-    input  wire        clk,          // 16 MHz oscillator (XO module)
-    input  wire        rst_n,        // reset button, active low
-    input  wire        uart_rx_i,    // from FT231X TXD
-    output wire        uart_tx_o,    // to   FT231X RXD
-    output wire [15:0] led           // 4x4 status grid
+    input  wire        clk,
+    input  wire        rst_n,
+    input  wire        uart_rx_i,
+    output wire        uart_tx_o,
+    output wire [15:0] led
 );
 
-    // Power-on reset + button. iCE40 flip-flops come out of configuration
-    // zeroed, so the counter starts at 0 and holds reset until it saturates.
     reg [7:0] por_cnt = 8'd0;
     wire      por_done = &por_cnt;
 
@@ -55,7 +32,6 @@ module morphcpu_top #(
 
     wire rst = !por_done || !btn_s;
 
-    // UART
     wire [7:0] rx_data;
     wire       rx_valid;
     wire       rx_frame_err;
@@ -88,7 +64,6 @@ module morphcpu_top #(
         .busy   (tx_busy)
     );
 
-    // Command decode / configuration
     wire                   cfg_shift;
     wire                   cfg_bit;
     wire                   tick;
@@ -114,7 +89,6 @@ module morphcpu_top #(
         .loading     (loading)
     );
 
-    // The fabric
     wire [ROWS*DATA_W-1:0] east_out_data;
     wire [ROWS-1:0]        east_out_val;
     wire [ROWS*COLS-1:0]   cell_active;
@@ -138,13 +112,9 @@ module morphcpu_top #(
         .active       (cell_active)
     );
 
-    // East-edge results -> UART, one row at a time, lowest row first
     reg [ROWS-1:0]        pend;
     reg [ROWS*DATA_W-1:0] pend_data;
 
-    // The fabric registers update on the tick edge, so east_out_* only shows
-    // the post-tick state on the following cycle. Sampling on tick itself
-    // captures the previous hop's result, one tick stale, every time.
     reg tick_d;
     always @(posedge clk) begin
         if (rst || clr) tick_d <= 1'b0;
@@ -174,10 +144,7 @@ module morphcpu_top #(
         end
     end
 
-    // LED pulse stretch. A shared ~5 ms strobe decrements a 4-bit counter per
-    // cell; a cell going active reloads its counter to full. 16 x 4 bits of
-    // state instead of 16 wide counters.
-    localparam integer STRETCH_DIV = CLK_HZ / 200;   // ~5 ms
+    localparam integer STRETCH_DIV = CLK_HZ / 200;
 
     reg [16:0] str_cnt = 17'd0;
     wire       str_tick = (str_cnt == STRETCH_DIV[16:0] - 1);

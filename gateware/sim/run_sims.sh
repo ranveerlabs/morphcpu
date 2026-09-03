@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# run every MorphCPU testbench under Icarus Verilog.
-# exits non-zero if any testbench fails, so it works as a pre-commit check.
 set -u
 
 cd "$(dirname "$0")"
@@ -22,7 +20,6 @@ for tb in $TBS; do
         continue
     fi
 
-    # waveforms land next to the .vvp, both gitignored
     if ( cd "$OUT" && vvp "$tb.vvp" ); then
         echo "  $tb OK"
     else

@@ -1,19 +1,5 @@
-"""writes hardware/morphcpu.kicad_pcb: board outline + placement.
-
-PLACEMENT ONLY. no tracks get routed here and none should be added, routing is
-a spatial judgment call you make looking at the board, and guessing trace paths
-gets you a file that looks finished and isnt.
-
-all of it goes thru the pcbnew API instead of writing board s-expressions, so
-footprint geometry, flipping to the back, and net assignment use KiCad's own
-code. the netlist gets read from the schematic's exported netlist, which makes
-this the same operation as "Update PCB from Schematic".
-
-run:
-  <kicad>/bin/kicad-cli.exe sch export netlist --output hardware/morphcpu.net \
-      hardware/morphcpu.kicad_sch
-  <kicad>/bin/python.exe hardware/scripts/gen_pcb.py
-"""
+# run: <kicad>/bin/kicad-cli.exe sch export netlist --output hardware/morphcpu.net hardware/morphcpu.kicad_sch
+#      <kicad>/bin/python.exe hardware/scripts/gen_pcb.py
 import collections
 import io
 import json
@@ -33,12 +19,11 @@ OUT = os.path.join(HW, "morphcpu.kicad_pcb")
 PRO = os.path.join(HW, "morphcpu.kicad_pro")
 FPDIR = r"C:/Users/ranve/AppData/Local/Programs/KiCad/10.0/share/kicad/footprints"
 
-# Board geometry, shared with case/morphcpu_case.scad
-CX, CY = 150.0, 100.0      # board centre in KiCad page coordinates
-BOARD_R = 35.0             # 70 mm diameter
-MOUNT_R = 29.0             # bolt circle radius
+CX, CY = 150.0, 100.0
+BOARD_R = 35.0
+MOUNT_R = 29.0
 MOUNT_ANGLES = [45, 135, 225, 315]
-LED_PITCH = 9.0            # matches led_pitch in the case source
+LED_PITCH = 9.0
 
 FRONT, BACK = "F", "B"
 
@@ -49,10 +34,8 @@ def pt(x, y):
     return pcbnew.VECTOR2I(mm(x), mm(y))
 
 def board_pt(dx, dy):
-    """Offset in mm from board centre -> absolute board point."""
     return pt(CX + dx, CY + dy)
 
-# Netlist
 def read_netlist(path):
     tree = ksym.parse(open(path, encoding="utf-8").read())
     root = tree[0]
@@ -78,32 +61,22 @@ def read_netlist(path):
             pinnet[(ref, pin)] = name
     return comps, pinnet, netnames
 
-# Placement table.  (dx, dy) are mm from board centre; rot in degrees.
-# The LED grid is the product, so it owns the centre of the front face and
-# everything else works around it on the back.
 def led_xy(i):
     row, col = divmod(i, 4)
     return (col - 1.5) * LED_PITCH, (row - 1.5) * LED_PITCH
 
 PLACEMENT = {}
 
-# Front face: the 4x4 grid owns the centre, cell 0 top-left, row-major - the
-# same order as the fabric map, so the ripple reads correctly.
 for i in range(16):
     x, y = led_xy(i)
     PLACEMENT["D%d" % (i + 1)] = (x, y, 0, FRONT)
 
-# Front: the two things a person touches or watches, clear of the grid.
 PLACEMENT["SW1"] = (0, -21.0, 0, FRONT)
 PLACEMENT["D17"] = (0, 21.0, 0, FRONT)
 
-# rings on the back. QFN courtyard hits r=4.2, an 0402 is ~0.75 either side,
-# mounting holes own r=22..26 on the diagonals.
-#   6.5 decoupling  9.0 bulk+filters  11.5/14.5 led resistors  17+ real bodies
 PLACEMENT["U1"] = (0, 0, 0, BACK)
 
 def ring(refs, radius, start_deg=0.0, rotate=True):
-    """Space refs evenly around a circle on the back."""
     n = len(refs)
     for k, ref in enumerate(refs):
         ang = start_deg + k * (360.0 / n)
@@ -111,44 +84,27 @@ def ring(refs, radius, start_deg=0.0, rotate=True):
         PLACEMENT[ref] = (radius * math.cos(r), radius * math.sin(r),
                           ang if rotate else 0, BACK)
 
-# One 100 nF per supply pin - seven of them (DESIGN.md decoupling table).
 ring(["C1", "C2", "C3", "C4", "C5", "C20", "C21"], 6.5, 10.0)
 
-# The VCCPLL filter and the VPP ferrite sit just outboard of their own caps.
 PLACEMENT["R27"] = (9.0 * math.cos(math.radians(267.1)),
                     9.0 * math.sin(math.radians(267.1)), 267.1, BACK)
 PLACEMENT["FB1"] = (9.0 * math.cos(math.radians(318.6)),
                     9.0 * math.sin(math.radians(318.6)), 318.6, BACK)
 
-# each resistor sits on the ray thru its own LED.
-# was a uniform 16-slot ring handing out k*22.5 from 0, but the sorted list
-# starts at -161.6 so every R landed ~180 from its own LED and all 16 anodes ran
-# under the paddle. 405mm of ratsnest.
-# rotating it doesnt fix it either, the inner 4 and corner 4 share diagonals so
-# 8 parts want 4 rays. corners go one ring out.
-RES_R = 11.5          # inner and middle LEDs
-RES_R_CORNER = 14.5   # the four corners, r=19.09, sharing a ray with the inners
+RES_R = 11.5
+RES_R_CORNER = 14.5
 for i in range(16):
     x, y = led_xy(i)
     ang = math.degrees(math.atan2(y, x))
     radius = RES_R_CORNER if math.hypot(x, y) > 17.0 else RES_R
     r = math.radians(ang)
-    # pad 1 is the FPGA side, pad 2 the LED side. Point pad 2 at the LED, which
-    # for the four inner LEDs means facing back inward.
     rot = ang + 180.0 if math.hypot(x, y) < radius else ang
     PLACEMENT["R%d" % (i + 1)] = (radius * math.cos(r), radius * math.sin(r),
                                   rot, BACK)
 
-# Outer region. Cardinal directions only, so the diagonals stay clear for the
-# mounting holes at r=29. Bulk caps and pull-ups live beside their loads rather
-# than in a ring, which keeps the middle of the board open for routing.
 
-# East - USB-C at the edge, bridge directly behind it.
 PLACEMENT["J1"] = (30.0, 0, 90, BACK)
 PLACEMENT["U2"] = (20.0, 0, 0, BACK)
-# straight line U2->J1 is a 1.2mm gap, too narrow for SOT-23-6, and the front is
-# the LED face. so it tucks beside the connector, ~5mm of stub. if thats too long
-# shift U2 west, dont move the clamp out.
 PLACEMENT["U6"] = (29.5, 8.0, 0, BACK)
 PLACEMENT["C8"] = (20.0, -7.0, 0, BACK)
 PLACEMENT["R20"] = (20.0, 7.0, 0, BACK)
@@ -160,7 +116,6 @@ PLACEMENT["R24"] = (25.5, 14.0, 0, BACK)
 PLACEMENT["C12"] = (16.0, -10.5, 0, BACK)
 PLACEMENT["R28"] = (16.0, 10.5, 0, BACK)
 
-# West - configuration flash and oscillator, both close to the FPGA.
 PLACEMENT["U3"] = (-20.0, 0, 0, BACK)
 PLACEMENT["C6"] = (-20.0, -6.5, 0, BACK)
 PLACEMENT["R19"] = (-20.0, 6.5, 0, BACK)
@@ -174,7 +129,6 @@ PLACEMENT["R22"] = (-16.0, 10.5, 0, BACK)
 PLACEMENT["R17"] = (-13.0, 14.5, 0, BACK)
 PLACEMENT["R18"] = (-16.5, 14.5, 0, BACK)
 
-# North - 3V3 regulator and the enable delay that sequences it after 1V2.
 PLACEMENT["U4"] = (0, -20.0, 0, BACK)
 PLACEMENT["R25"] = (6.0, -18.5, 0, BACK)
 PLACEMENT["R26"] = (6.0, -21.5, 0, BACK)
@@ -184,16 +138,11 @@ PLACEMENT["C16"] = (-6.0, -21.5, 0, BACK)
 PLACEMENT["C11"] = (-6.0, -24.5, 0, BACK)
 PLACEMENT["F1"] = (0, -25.5, 90, BACK)
 
-# South - 1V2 regulator, always on, feeding the core.
 PLACEMENT["U5"] = (0, 20.0, 0, BACK)
 PLACEMENT["C17"] = (-6.0, 18.5, 0, BACK)
 PLACEMENT["C10"] = (6.0, 18.5, 0, BACK)
 PLACEMENT["C18"] = (6.0, 21.5, 0, BACK)
 
-# Build
-# SaveBoard rewrites morphcpu.kicad_pro from the board defaults and wipes every
-# net class and DRC minimum. one regen ate the whole lot. so pull those two
-# blocks out before saving and put them back after.
 KEEP_KEYS = ("design_settings",)
 
 def read_project_settings():
@@ -248,16 +197,12 @@ def main():
     comps, pinnet, netnames = read_netlist(NET_FILE)
     board = pcbnew.CreateEmptyBoard()
 
-    # Board stackup / rules
-    # 4 layers. 2 could not route it, the resistor ring and the decap ring both
-    # sit inside the F.Cu keepout so every LED escape was stuck on B.Cu alone
     board.SetCopperLayerCount(4)
     board.SetLayerType(pcbnew.In1_Cu, pcbnew.LT_SIGNAL)
     board.SetLayerType(pcbnew.In2_Cu, pcbnew.LT_SIGNAL)
     settings = board.GetDesignSettings()
     settings.SetBoardThickness(mm(1.6))
 
-    # Nets first - pads reference them by name.
     nets = {}
     for name in netnames:
         if not name:
@@ -272,7 +217,7 @@ def main():
         info = comps[ref]
         fpid = info["fp"]
         if not fpid or ":" not in fpid:
-            continue                      # power flags and the like
+            continue
         lib, name = fpid.split(":", 1)
         fp = pcbnew.FootprintLoad(FPDIR + "/" + lib + ".pretty", name)
         if fp is None:
@@ -283,7 +228,7 @@ def main():
             dx, dy, rot, side = PLACEMENT[ref]
         else:
             missing_place.append(ref)
-            dx, dy, rot, side = 0, 34, 0, BACK   # park outside the outline
+            dx, dy, rot, side = 0, 34, 0, BACK
 
         fp.SetReference(ref)
         fp.SetValue(info["value"])
@@ -291,11 +236,9 @@ def main():
         fp.SetPosition(board_pt(dx, dy))
         if rot:
             fp.SetOrientationDegrees(float(rot))
-        # The footprint must belong to the board before Flip() is called;
-        # flipping an unowned footprint segfaults the pcbnew bindings.
         board.Add(fp)
         if side == BACK:
-            # KiCad own flip: mirrors geometry and swaps every F.* layer.
+            # Flip on a footprint the board doesnt own yet segfaults pcbnew
             fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
 
         for pad in fp.Pads():
@@ -309,6 +252,8 @@ def main():
     add_mounting_holes(board)
 
     board.BuildListOfNets()
+    # SaveBoard rewrites morphcpu.kicad_pro from the board defaults and wipes
+    # every net class and DRC minimum, so lift them out and put them back
     keep = read_project_settings()
     pcbnew.SaveBoard(OUT, board)
     restore_project_settings(keep)

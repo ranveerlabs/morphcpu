@@ -1,32 +1,27 @@
-// vcd -> png. renders the 16 activity taps as a grid-over-time raster so you can
-// see a value actually walk across the fabric. no deps, node only.
-// usage: node vcd_png.js out/tb_grid.vcd ../../docs/img/foo.png
+// node vcd_png.js out/tb_grid.vcd ../../docs/img/foo.png
 const fs = require('fs'), zlib = require('zlib');
 
 const [vcdPath, outPath] = process.argv.slice(2);
 if (!vcdPath || !outPath) { console.error('need <in.vcd> <out.png>'); process.exit(1); }
 
-// --- parse vcd ---
 const txt = fs.readFileSync(vcdPath, 'utf8');
-const ids = {};                       // id -> name
+const ids = {};
 for (const m of txt.matchAll(/\$var\s+\S+\s+(\d+)\s+(\S+)\s+([^\s$]+)/g)) {
   if (!ids[m[2]]) ids[m[2]] = m[3];
 }
 const idOf = n => Object.keys(ids).find(k => ids[k] === n);
-// fabric tb dumps `active` + `tick`. top level tb only dumps `led` and has no
-// tick in scope, so there we just sample every time the leds change.
 const idActive = idOf('active') || idOf('led');
 const idTick = idOf('tick');
 if (!idActive) { console.error('no active/led in this vcd'); process.exit(1); }
 
 const body = txt.slice(txt.indexOf('$enddefinitions'));
 let active = 0, tick = 0, prevTick = 0;
-const frames = [];                    // active value sampled just after each tick rise
+const frames = [];
 
 for (const line of body.split('\n')) {
   const s = line.trim();
   if (!s || s[0] === '$') continue;
-  if (s[0] === '#') continue;         // timestamp, we only care about ordering
+  if (s[0] === '#') continue;
   if (s[0] === 'b' || s[0] === 'B') {
     const sp = s.indexOf(' ');
     const bits = s.slice(1, sp), id = s.slice(sp + 1).trim();
@@ -34,7 +29,6 @@ for (const line of body.split('\n')) {
       const v = parseInt(bits.replace(/[xzXZ]/g, '0'), 2) || 0;
       const changed = v !== active;
       active = v;
-      // no tick to trigger on, so a change in the leds is the event
       if (!idTick && changed) frames.push(active);
     }
   } else {
@@ -46,14 +40,12 @@ for (const line of body.split('\n')) {
     }
   }
 }
-// keep it readable if a run is long
 const MAXF = 40;
 if (frames.length > MAXF) frames.length = MAXF;
 if (!frames.length) { console.error('no tick edges found'); process.exit(1); }
 
-// --- layout ---
-const CELLS = 16, SC = 2;             // 3x5 font scaled
-const cw = 18, ch = 18, gap = 2;      // per cell box
+const CELLS = 16, SC = 2;
+const cw = 18, ch = 18, gap = 2;
 const padL = 34, padT = 26, padB = 14, padR = 10;
 const W = padL + frames.length * (cw + gap) + padR;
 const H = padT + CELLS * (ch + gap) + padB;
@@ -81,15 +73,12 @@ const glyph = (ch_, x, y, c) => {
 };
 const text = (s, x, y, c) => { let cx = x; for (const k of s) { glyph(k, cx, y, c); cx += 3*SC + SC; } };
 
-// tick index labels along the top, every 5th
 for (let f = 0; f < frames.length; f++) {
   if (f % 5) continue;
   text(String(f), padL + f*(cw+gap) + 1, 8, TXT);
 }
-// cell number labels down the left
 for (let c = 0; c < CELLS; c++) text(String(c), 4, padT + c*(ch+gap) + 4, TXT);
 
-// the raster
 for (let f = 0; f < frames.length; f++) {
   for (let c = 0; c < CELLS; c++) {
     const on = (frames[f] >> c) & 1;
@@ -100,7 +89,6 @@ for (let f = 0; f < frames.length; f++) {
   }
 }
 
-// --- png encode ---
 const raw = Buffer.alloc((W * 3 + 1) * H);
 for (let y = 0; y < H; y++) {
   raw[y * (W*3+1)] = 0;

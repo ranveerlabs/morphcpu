@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
-# MorphCPU bitstream build: yosys -> nextpnr-ice40 -> icepack
-# target: Lattice iCE40UP5K, SG48 package, 16 MHz external oscillator.
-#   ./build.sh          synthesise, place and route, pack a bitstream
-#   ./build.sh prog     ...then flash it to the SPI config flash via iceprog
-#   ./build.sh clean    remove build/
-# needs the OSS CAD Suite (yosys, nextpnr-ice40, icepack, iceprog):
-#   https://github.com/YosysHQ/oss-cad-suite-build/releases
+# ./build.sh   ./build.sh prog   ./build.sh clean
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -39,7 +33,6 @@ yosys -p "read_verilog rtl/*.v; synth_ice40 -top $TOP -json $BUILD/$TOP.json" \
       -l "$BUILD/yosys.log"
 
 echo "=== 2/3  place and route (nextpnr-ice40) ==="
-# --freq sets the timing target, nextpnr reports achieved Fmax against it.
 nextpnr-ice40 \
     --"$DEVICE" \
     --package "$PACKAGE" \
@@ -57,7 +50,6 @@ echo
 echo "bitstream: $BUILD/$TOP.bin"
 ls -l "$BUILD/$TOP.bin"
 
-# numbers worth pasting into JOURNAL.md
 echo
 echo "=== utilisation ==="
 grep -E "^Info: +(ICESTORM_LC|ICESTORM_RAM|SB_IO|ICESTORM_PLL|SB_GB)" \

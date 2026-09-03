@@ -1,20 +1,4 @@
-"""writes hardware/fab_output/: gerbers, drill, JLCPCB BOM and CPL.
-
-everything a JLC quote needs, all of it out of the KiCad sources so it can be
-regenerated after any board change. nothing here is hand-edited.
-
-coordinate origin is absolute, the KiCad page origin. the board has no aux axis
-origin set so the drill-file origin and the absolute origin are the same point,
-which means gerbers, drill and CPL all share one coordinate system. thats the
-thing JLC's uploader actually cares about.
-
-the LCSC column comes from LCSC_BY_VALUE below, transcribed from
-../../docs/BOM.md. parts BOM.md hasnt pinned to an LCSC number get an empty
-LCSC field rather than a guess, and get listed on stderr at the end.
-
-Run:
-  <kicad>/bin/python.exe hardware/scripts/gen_fab.py
-"""
+# run: <kicad>/bin/python.exe hardware/scripts/gen_fab.py
 import csv
 import os
 import shutil
@@ -33,16 +17,9 @@ CLI = r"C:/Users/ranve/AppData/Local/Programs/KiCad/10.0/bin/kicad-cli.exe"
 
 PROJECT = "morphcpu"
 
-# Layers JLC needs. Silkscreen and mask both sides, copper both sides, outline.
-# 4 layers since routing. In1/In2 are signal, missing them off here plots a
-# board that quotes fine and arrives dead
 GERBER_LAYERS = "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts"
 
-# Value -> LCSC part number, transcribed from docs/BOM.md. Every row the
-# schematic produces is pinned; if this map ever goes stale the run reports the
-# gap on stderr rather than shipping a blank field.
 LCSC_BY_VALUE = {
-    # Actives
     "ICE40UP5K-SG48I": "C2678152",
     "FT231XS-R": "C132160",
     "W25Q32JVSSIQ": "C179173",
@@ -52,7 +29,6 @@ LCSC_BY_VALUE = {
     "ME6211C12M5G-N": "C236672",
     "KT-0603R": "C2286",
     "USBLC6-2SC6": "C7519",
-    # Passives and electromechanical
     "TS-1187A-B-A-B": "C318884",
     "100n": "C1525",
     "1u": "C52923",
@@ -78,13 +54,12 @@ def run(*args):
     return r.stdout
 
 
-# Gerbers + drill
 def export_gerbers():
     os.makedirs(GERBERDIR, exist_ok=True)
     run(CLI, "pcb", "export", "gerbers",
         "--output", GERBERDIR + os.sep,
         "--layers", GERBER_LAYERS,
-        "--no-x2",              # JLC reads plain RS-274X most reliably
+        "--no-x2",
         "--subtract-soldermask",
         PCB)
     run(CLI, "pcb", "export", "drill",
@@ -93,7 +68,7 @@ def export_gerbers():
         "--drill-origin", "absolute",
         "--excellon-units", "mm",
         "--excellon-zeros-format", "decimal",
-        "--excellon-separate-th",   # separate PTH / NPTH files
+        "--excellon-separate-th",
         "--generate-map",
         PCB)
 
@@ -108,7 +83,6 @@ def zip_gerbers():
     return zpath, names
 
 
-# BOM
 def export_bom():
     raw = os.path.join(OUTDIR, "_raw_bom.csv")
     run(CLI, "sch", "export", "bom",
@@ -116,7 +90,7 @@ def export_bom():
         "--fields", "Reference,Value,Footprint,${QUANTITY}",
         "--labels", "Designator,Comment,Footprint,Qty",
         "--group-by", "Value,Footprint",
-        "--ref-range-delimiter", "",   # JLC wants every refdes listed
+        "--ref-range-delimiter", "",
         "--exclude-dnp",
         SCH)
 
@@ -137,7 +111,6 @@ def export_bom():
     return out, len(rows), missing
 
 
-# CPL
 def export_cpl():
     raw = os.path.join(OUTDIR, "_raw_pos.csv")
     run(CLI, "pcb", "export", "pos",

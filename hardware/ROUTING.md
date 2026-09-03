@@ -71,7 +71,7 @@ cross-check, schemalyzer's published table says 5 mil -> 0.5 A and 10 mil -> 1 A
 the arithmetic tracks
 
 run it backwards against [DESIGN.md's power tree](DESIGN.md#power-tree) and
-**nothing on this board is current-limited**:
+nothing on this board is current-limited:
 
 | Rail | Current | Width IPC-2221 actually demands |
 |---|---|---|
