@@ -1,9 +1,9 @@
 # morphcpu build journal
 
-**Total time: 131h**
+**Total time: 140h**
 
 build log. spatially-reconfigurable processor on a small low power fpga.
-twelve sessions 131h of actual keyboard time
+thirteen sessions 140h of actual keyboard time
 
 most of it went on two things and neither was the fun part. reading the power up
 sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
@@ -15,7 +15,7 @@ the hours. template is in [docs/journal-template.txt](docs/journal-template.txt)
 
 ![board back, copper down round the fpga](docs/img/pcb-routed-back.png)
 
-where its at rn. 770 tracks 148 vias, 0 DRC violations, 2 nets still open and
+where its at rn. 769 tracks 188 vias, 0 DRC violations, 2 nets still open and
 both of them are leds
 
 | # | date | time | focus |
@@ -32,6 +32,112 @@ both of them are leds
 | 010 | 2026-08-30 | 1h | ldo went out of stock, en divider was wrong |
 | 011 | 2026-08-30 | 1h | silkscreen, the board had none |
 | 012 | 2026-09-06 | 2h | seeed instead of jlc, bom had no qty column |
+| 013 | 2026-09-06 | 9h | decoupling was spread out, six of seven pins fixed |
+
+---
+
+## session 013 - 2026-09-06
+
+**Time spent:** 9h
+**Running total:** 140h
+
+review came back on the layout, two things. decoupling caps too far from the
+power pins, and inner layer signal with no clean ground return under it. the
+first one turned out worse than the note said
+
+the number that matters isnt straight line distance to the nearest cap, its the
+copper path, and nobody had measured that. wrote a little dijkstra over the
+tracks and pads to get it. pin 22 SPI_VCCIO1 was being decoupled by C12, which
+sits under the FT231X on the far side of the board, 49.31mm away. pin 33 was
+49.73mm to the same cap. pin 5 was 13.77mm. C4 and C5 were both dead end spurs
+hanging off the west +3V3 trunk with an FPGA supply pin nowhere near either
+
+cause is one line, gen_pcb.py had `ring(["C1","C2","C3","C4","C5","C20","C21"],
+6.5, 10.0)` which drops seven caps evenly round a 6.5mm circle in refdes order.
+so which cap ended up near which pin was whatever the alphabet decided. it looks
+tidy in the 3d render and it means nothing electrically
+
+| pin | rail | was | now |
+|---|---|---|---|
+| 1 | +3V3 VCCIO_2 | 3.23 mm | 1.16 mm |
+| 5 | +1V2 VCC | 13.77 mm | 1.12 mm |
+| 22 | +3V3 SPI_VCCIO1 | 49.31 mm | 1.98 mm |
+| 24 | +3V3 VPP_2V5 | 1.99 mm | 1.13 mm |
+| 29 | VCCPLL | 7.06 mm | 7.06 mm |
+| 30 | +1V2 VCC | 3.24 mm | 1.47 mm |
+| 33 | +3V3 VCCIO_0 | 49.73 mm | 1.62 mm |
+
+the east face is where the actual work was. pins 29 30 and 33 all escape east
+and the fanout at x 154-157 is full, LED3 LED11 LED15 UART_TX_O and CLK all
+diving to inner layers in the same 3mm of board. first few attempts put the caps
+hard against the pad row at x=155.04 and every single one of them collided with
+something. what fixed it was giving up 0.5mm and going to x=155.5375, at which
+point LED11 clears C20 by 0.59mm, LED15's existing via sits 0.279mm off C1, and
+UART clears C4 by 0.464mm. so three of the five nets i was fully prepared to
+rip up didnt need touching at all. left them exactly as hand routed
+
+C4 crossed the whole board to get to pin 33 and took its 11.2mm west dead end
+spur with it, which turned out to be the thing that had C2 stuck. C2's ground
+pad was sitting on a 1.58mm2 scrap of B.Cu pour walled off by that spur, with no
+room for a via anywhere inside it. i checked every 0.05mm position in the island,
+zero fit. spur gone, C2 has 251 valid placements and lands 1.12mm off pin 5
+
+pin 29 is the one that didnt happen. VCCPLL still sits 7.06mm out and thats
+staying. LED3's only layer transition pocket is x 154.6-155.3, y 98.2-98.8,
+which is exactly where C20's pad has to go, and LED3 cant go up either, a via
+between LED10 at 97.25 and LED3 at 98.25 needs 0.6mm clear of both centres and
+theres 0.5mm of room. searched 582 positions where C20 physically fits with a
+clear courtyard, none of them have a routable stub. its VCCPLL or LED3, pick one
+
+second half of the review, the return paths. all four layers here are ground
+pours with signal on them rather than dedicated planes, so In1 references F.Cu at
+0.21mm and In2 references B.Cu at 0.21mm across the 1.065mm core. F.Cu is one
+solid 3572mm2 island. B.Cu is in seven pieces. thats the whole problem in one
+sentence, In1 sits at 88.1% covered and In2 at 60.0%
+
+28 stitching vias at the island crossings, one either side, so the return has a
+short hop through F.Cu instead of a detour. CRESET_B at 132.13,107.32 was going
+16.27mm out of its way and FLASH_HOLD 15.11mm, both under 2mm now
+
+| metric | value | notes |
+|---|---|---|
+| tracks / vias | 769 / 188 | was 770 / 148 |
+| copper | 1473.5 mm | was 1492.3, the dead spurs were longer than the fixes |
+| supply pins under 2mm | 6 of 7 | pin 29 is the one |
+| cap gnd pad to nearest via | 0.50 mm | all seven, was 0.25 to 3.69 |
+| In2 over unbroken pour | 62.1% | 60.0% before |
+| DRC | 0 / 2 | 2 unrouted are the same LED nets as ever |
+
+worth writing down that the coverage number barely moved, 70.4 to 72.0 overall.
+i half expected the stitching to show up there and it cant, stitching vias dont
+fill the voids, they shorten the detour round them. the metric that actually
+moved is the crossing distances and thats not a percentage
+
+also had the stitching loop happily placing vias *further* from a crossing than
+the existing nearest ground anchor, which made about half of the first pass pure
+decoration. it picks the first legal spot on an expanding radius search and i
+never checked the result against what was already there. one line, only accept
+if it beats the current anchor by 0.2mm. found it by reading the log and noticing
+a via 2.4mm from a crossing that already had one at 1.95mm
+
+last thing, regenerating fab_output dropped the Quantity and MPN columns off the
+bom. gen_fab.py only asks kicad for Reference,Value,Footprint and the qty doesnt
+even survive that, so the two columns added last session for seeed are hand work
+that the generator doesnt know about. restored the committed csv and left it,
+gerbers and cpl are regenerated off the current board
+
+![the fpga and its decoupling, bottom view](docs/img/session-013-decoupling-close.png)
+bottom view so its mirrored, C1 and C4 on the left of the package are the east
+side pins 30 and 33. C2 and C3 on the right are the west, pins 5 and 1. the one
+to look at is C20 up at the top, still out at the old 6.5mm radius while every
+other cap is tight on the package. thats the VCCPLL one that lost the argument
+with LED3
+
+next:
+- [ ] re-quote the whole thing at seeed, 5 boards assembled, replace the JLC
+      table in docs/BOM.md
+- [ ] VCCPLL only gets a local cap if LED3 moves, and LED3 only moves if the
+      north east corner gets rethought. worth a pass before ordering
 
 ---
 

@@ -17,6 +17,7 @@ renders, screenshots and build photos
 | `pcb-3d-back.png` | 3d render, bottom |
 | `sim-002-grid-activity.png` | activity taps over 28 ticks, from the fabric sim |
 | `sim-003-uart-activity.png` | led states through the end to end run |
+| `session-013-decoupling-close.png` | the fpga and its decoupling caps, bottom view |
 
 case renders come out of `case/export.sh`. board renders out of
 `kicad-cli pcb render`. the two sim rasters out of
