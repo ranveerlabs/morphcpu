@@ -76,22 +76,20 @@ PLACEMENT["D17"] = (0, 21.0, 0, FRONT)
 
 PLACEMENT["U1"] = (0, 0, 0, BACK)
 
-def ring(refs, radius, start_deg=0.0, rotate=True, order=None, n=None):
-    n = n or len(order or refs)
-    for k, ref in zip(order or range(len(refs)), refs):
-        ang = start_deg + k * (360.0 / n)
-        r = math.radians(ang)
-        PLACEMENT[ref] = (radius * math.cos(r), radius * math.sin(r),
-                          ang if rotate else 0, BACK)
-
-ring(["C1", "C2", "C4", "C20"], 6.5, 10.0, order=[0, 1, 3, 5], n=7)
-
+PLACEMENT["C1"] = (5.5375, -0.10, 0, BACK)
+PLACEMENT["C2"] = (-5.0375, 0.75, 180, BACK)
 PLACEMENT["C3"] = (-4.74, 3.65, 180, BACK)
+PLACEMENT["C4"] = (5.5375, 1.25, 0, BACK)
 PLACEMENT["C5"] = (3.05, -5.34, 0, BACK)
+PLACEMENT["C20"] = (6.5 * math.cos(math.radians(267.142857)),
+                    6.5 * math.sin(math.radians(267.142857)), 267.142857, BACK)
 PLACEMENT["C21"] = (4.05, -4.24, 0, BACK)
 
 REF_AT = {
+    "C1": (7.787, -0.10),
+    "C2": (-5.426, -0.699),
     "C3": (-4.74, 6.15),
+    "C4": (7.711, 1.832),
     "C5": (4.425, -7.722),
     "C20": (-2.014, -6.039),
     "C21": (5.995, -2.295),
