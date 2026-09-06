@@ -51,6 +51,16 @@ quantity is column 2 now, counted off the designator field per row. 23 rows, 80
 parts a board, same 80 thats already in docs/BOM.md so the two agree. no part
 number footprint or LCSC code moved, still CRLF
 
+second bounce off the same file, "The column of MPN is empty". seeed wants real
+manufacturer part numbers, an LCSC code on its own isnt enough for them the way
+it is for JLC. every MPN was already sitting in docs/BOM.md against its C number
+so that was a lookup, not a decision. MPN is column 3 now, all 23 rows filled,
+CL05B104KO5NNNC for the 100n and 0402WGF1002TCE for the 10k and so on
+
+no manufacturer column. i can guess most of them off the part numbers and a
+guessed manufacturer on a real order is how you get the wrong part, seeed hasnt
+asked for it yet either
+
 ![the board the bom belongs to](docs/img/pcb-routed-front.png)
 theres nothing to screenshot in a csv so heres the front copper again. the bom
 rows are exactly this, 23 lines standing in for 80 parts, and the count is only
@@ -66,7 +76,6 @@ own commit, logging it here rather than pretending the hours went somewhere else
 next:
 - [ ] re-quote the whole thing at seeed, 5 boards assembled, replace the JLC
       table in docs/BOM.md
-- [ ] check seeed takes LCSC codes as is or whether that column wants MPNs
 
 ---
 
