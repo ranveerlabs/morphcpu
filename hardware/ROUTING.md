@@ -1,6 +1,6 @@
 # routing prep
 
-routed now. 4 layers, 770 tracks 148 vias 1492.3 mm of copper, four GND pours and
+routed now. 4 layers, 769 tracks 188 vias 1473.5 mm of copper, four GND pours and
 the one F.Cu rule area. rest of this file is Board Setup, ten net classes, JLC
 shaped DRC minimums, a `morphcpu.kicad_dru` for the rules the dialog cant express,
 and the order to route in

@@ -577,7 +577,7 @@ netclass pass added. tick boxes there
 ## state of the board file
 
 `morphcpu.kicad_pcb`: 80 components plus the 4 mounting holes, so 84 footprints
-in the file. 92 nets, 770 track segments and 148 vias over F.Cu, In1.Cu, In2.Cu
+in the file. 92 nets, 769 track segments and 188 vias over F.Cu, In1.Cu, In2.Cu
 and B.Cu
 
 `kicad-cli 10.0.5 pcb drc --severity-all`:
