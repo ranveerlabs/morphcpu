@@ -76,15 +76,26 @@ PLACEMENT["D17"] = (0, 21.0, 0, FRONT)
 
 PLACEMENT["U1"] = (0, 0, 0, BACK)
 
-def ring(refs, radius, start_deg=0.0, rotate=True):
-    n = len(refs)
-    for k, ref in enumerate(refs):
+def ring(refs, radius, start_deg=0.0, rotate=True, order=None, n=None):
+    n = n or len(order or refs)
+    for k, ref in zip(order or range(len(refs)), refs):
         ang = start_deg + k * (360.0 / n)
         r = math.radians(ang)
         PLACEMENT[ref] = (radius * math.cos(r), radius * math.sin(r),
                           ang if rotate else 0, BACK)
 
-ring(["C1", "C2", "C3", "C4", "C5", "C20", "C21"], 6.5, 10.0)
+ring(["C1", "C2", "C4", "C20"], 6.5, 10.0, order=[0, 1, 3, 5], n=7)
+
+PLACEMENT["C3"] = (-4.74, 3.65, 180, BACK)
+PLACEMENT["C5"] = (3.05, -5.34, 0, BACK)
+PLACEMENT["C21"] = (4.05, -4.24, 0, BACK)
+
+REF_AT = {
+    "C3": (-4.74, 6.15),
+    "C5": (4.425, -7.722),
+    "C20": (-2.014, -6.039),
+    "C21": (5.995, -2.295),
+}
 
 PLACEMENT["R27"] = (9.0 * math.cos(math.radians(267.1)),
                     9.0 * math.sin(math.radians(267.1)), 267.1, BACK)
@@ -240,6 +251,10 @@ def main():
         if side == BACK:
             # Flip on a footprint the board doesnt own yet segfaults pcbnew
             fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
+
+        if ref in REF_AT:
+            rx, ry = REF_AT[ref]
+            fp.Reference().SetPosition(board_pt(rx, ry))
 
         for pad in fp.Pads():
             key = (ref, pad.GetNumber())
