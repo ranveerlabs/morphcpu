@@ -1,9 +1,9 @@
 # morphcpu build journal
 
-**Total time: 129h**
+**Total time: 131h**
 
 build log. spatially-reconfigurable processor on a small low power fpga.
-eleven sessions 129h of actual keyboard time
+twelve sessions 131h of actual keyboard time
 
 most of it went on two things and neither was the fun part. reading the power up
 sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
@@ -31,6 +31,42 @@ both of them are leds
 | 009 | 2026-08-30 | 24h | fanout was full, six pins moved |
 | 010 | 2026-08-30 | 1h | ldo went out of stock, en divider was wrong |
 | 011 | 2026-08-30 | 1h | silkscreen, the board had none |
+| 012 | 2026-09-06 | 2h | seeed instead of jlc, bom had no qty column |
+
+---
+
+## session 012 - 2026-09-06
+
+**Time spent:** 2h
+**Running total:** 131h
+
+fab is seeed now instead of JLC. their uploader threw a quantity parse error on
+hardware/fab_output/morphcpu-bom.csv and the cause was dumber than anything i was
+looking for, the file has four columns, Designator Comment Footprint and LCSC
+Part #, and no quantity column at all. kicad's grouped export leaves the count
+inside the designator list and nowhere else. i went thru units and floats and
+merged cells first before actually reading the header row
+
+quantity is column 2 now, counted off the designator field per row. 23 rows, 80
+parts a board, same 80 thats already in docs/BOM.md so the two agree. no part
+number footprint or LCSC code moved, still CRLF
+
+![the board the bom belongs to](docs/img/pcb-routed-front.png)
+theres nothing to screenshot in a csv so heres the front copper again. the bom
+rows are exactly this, 23 lines standing in for 80 parts, and the count is only
+checkable at all bcuz the designator lists are complete
+
+docs/BOM.md is still written round JLC end to end, the $203.73 4 layer quote, the
+$115.20 fab plus assembly gap, the stock and tier columns. all JLC numbers for a
+board going to seeed and i havent re-quoted, so treat that table as stale
+
+the 2h is catch up. the seeed move plus a pile of small stuff that never got its
+own commit, logging it here rather than pretending the hours went somewhere else
+
+next:
+- [ ] re-quote the whole thing at seeed, 5 boards assembled, replace the JLC
+      table in docs/BOM.md
+- [ ] check seeed takes LCSC codes as is or whether that column wants MPNs
 
 ---
 
