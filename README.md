@@ -146,4 +146,4 @@ case prints flat, no supports, 0.2mm layers, 3 perimeters
 
 ## licence
 
-apache 2.0
+[AGPL-3.0-only](LICENSE)
