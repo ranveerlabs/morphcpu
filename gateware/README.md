@@ -161,10 +161,13 @@ needs the [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build/release
 
 ```sh
 cd gateware
-./build.sh          # synth, place and route, pack
-./build.sh prog     # ...and flash it with iceprog
+./build.sh
+./build.sh prog
 ./build.sh clean
 ```
+
+plain `build.sh` synthesises, routes and packs. `prog` also flashes the board
+with `iceprog`, run that locally with the board connected
 
 what it actually runs:
 
@@ -184,8 +187,31 @@ iceprog build/morphcpu_top.bin
 
 greps the nextpnr log for utilisation and Fmax at the end
 
-this has never run, OSS CAD Suite isnt installed here. the flow above is written
-and unexercised, sim is the part thats actually been run
+[Actions](https://github.com/ranveerlabs/morphcpu/actions/workflows/gateware.yml)
+runs both testbenches and this build on gateware pushes and pull requests.
+theres a manual run button too. Ubuntu 24.04, OSS CAD Suite pinned to 2026-09-12,
+all 20 I/O pins must be constrained
+
+first [passing build](https://github.com/ranveerlabs/morphcpu/actions/runs/34678840307):
+
+```text
+PASS: 13/13 checks
+PASS: 5/5 checks
+RESULT: all testbenches passed
+```
+
+```text
+Info: 	         ICESTORM_LC:    2020/   5280    38%
+Info: 	        ICESTORM_RAM:       0/     30     0%
+Info: 	               SB_IO:      20/     39    51%
+Info: 	               SB_GB:       6/      8    75%
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 37.33 MHz (PASS at 16.00 MHz)
+```
+
+thats the final routed timing estimate, no hardware measurement yet.
+`morphcpu_top.bin` is 104090 bytes. download the `gateware-<commit>` artifact
+from a passing run, it includes the bitstream, netlist and logs. artifacts stay
+for 30 days, failed runs keep whatever logs were written
 
 `morphcpu.pcf` agrees with the
 [user I/O assignment](../hardware/DESIGN.md#user-io-assignment) in DESIGN.md,

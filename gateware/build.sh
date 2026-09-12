@@ -51,7 +51,7 @@ ls -l "$BUILD/$TOP.bin"
 
 echo
 echo "=== utilisation ==="
-grep -E "^Info: +(ICESTORM_LC|ICESTORM_RAM|SB_IO|ICESTORM_PLL|SB_GB)" \
+grep -E "^Info:[[:space:]]+(ICESTORM_LC|ICESTORM_RAM|SB_IO|ICESTORM_PLL|SB_GB)" \
      "$BUILD/nextpnr.log" || true
 echo "=== timing ==="
 grep -E "Max frequency|Max delay" "$BUILD/nextpnr.log" || true

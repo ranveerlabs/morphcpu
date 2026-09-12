@@ -26,8 +26,9 @@ segments straight across the led face
 sit inside the F.Cu keepout over the grid so every led escape was stuck on B.Cu
 alone
 
-no bitstream either. OSS CAD Suite isnt installed on this machine so build.sh
-has literally never run so idk, salt on the timing numbers
+bitstream builds on GitHub Actions now. 2020/5280 logic cells, routed timing
+37.33 MHz against the 16 MHz clock. [build and logs](https://github.com/ranveerlabs/morphcpu/actions/runs/34678840307),
+still hasnt been flashed onto a board
 
 sim 18/18, ERC 0/0, BOM $203.73 for 5
 
@@ -84,10 +85,15 @@ cascade youd reach for first. i would not wing that bit,
 ## run
 
 ```sh
-cd gateware/sim && ./run_sims.sh    # iverilog only
-cd gateware && ./build.sh           # needs OSS CAD Suite. never run.
-cd case && ./export.sh
+bash gateware/sim/run_sims.sh
+bash gateware/build.sh
+bash case/export.sh
 ```
+
+sim needs Icarus Verilog, the bitstream needs OSS CAD Suite, case needs OpenSCAD.
+[Actions](https://github.com/ranveerlabs/morphcpu/actions/workflows/gateware.yml)
+runs sim and the bitstream build on gateware changes. open a passing run and
+download its `gateware-<commit>` artifact for the `.bin` and logs, kept for 30 days
 
 ## pics
 
