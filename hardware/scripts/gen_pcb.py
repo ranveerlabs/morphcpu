@@ -1,5 +1,3 @@
-# run: <kicad>/bin/kicad-cli.exe sch export netlist --output hardware/morphcpu.net hardware/morphcpu.kicad_sch
-#      <kicad>/bin/python.exe hardware/scripts/gen_pcb.py
 import collections
 import io
 import json
@@ -110,7 +108,6 @@ for i in range(16):
     rot = ang + 180.0 if math.hypot(x, y) < radius else ang
     PLACEMENT["R%d" % (i + 1)] = (radius * math.cos(r), radius * math.sin(r),
                                   rot, BACK)
-
 
 PLACEMENT["J1"] = (30.0, 0, 90, BACK)
 PLACEMENT["U2"] = (20.0, 0, 0, BACK)
@@ -247,7 +244,6 @@ def main():
             fp.SetOrientationDegrees(float(rot))
         board.Add(fp)
         if side == BACK:
-            # Flip on a footprint the board doesnt own yet segfaults pcbnew
             fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
 
         if ref in REF_AT:
@@ -265,8 +261,6 @@ def main():
     add_mounting_holes(board)
 
     board.BuildListOfNets()
-    # SaveBoard rewrites morphcpu.kicad_pro from the board defaults and wipes
-    # every net class and DRC minimum, so lift them out and put them back
     keep = read_project_settings()
     pcbnew.SaveBoard(OUT, board)
     restore_project_settings(keep)

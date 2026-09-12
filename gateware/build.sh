@@ -9,7 +9,7 @@ PCF=morphcpu.pcf
 BUILD=build
 DEVICE=up5k
 PACKAGE=sg48
-FREQ=16          # MHz, must match the XO and the CLK_HZ parameter
+FREQ=16
 
 if [ "${1:-}" = "clean" ]; then
     rm -rf "$BUILD"
@@ -40,7 +40,6 @@ nextpnr-ice40 \
     --pcf "$PCF" \
     --asc "$BUILD/$TOP.asc" \
     --freq "$FREQ" \
-    --pcf-allow-unconstrained \
     --log "$BUILD/nextpnr.log"
 
 echo "=== 3/3  bitstream (icepack) ==="

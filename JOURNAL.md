@@ -494,7 +494,7 @@ next:
 **Time spent:** 3h
 **Running total:** 56h
 
-ripped the ai written project description + the how it works section out of the
+ripped the project description + the how it works section out of the
 readme and left marked placeholders. kept the generated stuff the rules do
 allow, status table parts table grid diagram commands repo layout image embeds
 

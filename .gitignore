@@ -1,8 +1,3 @@
-# ---------------------------------------------------------------------------
-# MorphCPU — build artifacts and tool cruft
-# ---------------------------------------------------------------------------
-
-# --- FPGA toolchain: yosys / nextpnr / icestorm -----------------------------
 build/
 gateware/build/
 *.blif
@@ -11,15 +6,12 @@ gateware/build/
 *.bit
 *.rpt
 *.log
-# yosys JSON netlists (scoped so KiCad JSON project files are unaffected)
 gateware/**/*.json
 gateware/**/*.edif
-# nextpnr / timing outputs
 *.timing
 *.place
 *.route
 
-# --- Simulation: Icarus Verilog / Verilator / GTKWave -----------------------
 *.vcd
 *.fst
 *.fst.hier
@@ -33,8 +25,6 @@ obj_dir/
 gateware/sim/work/
 *.gtkw.bak
 
-# --- KiCad ------------------------------------------------------------------
-# Backups and autosaves
 *.bak
 *-bak
 *.kicad_pcb-bak
@@ -42,19 +32,16 @@ gateware/sim/work/
 *.kicad_prl
 _autosave-*
 *~
-# Project-local cache / lock files
 fp-info-cache
 *.lck
 ~*.lck
 *.kicad_pro.lck
-# Generated netlists and reports
 *.net
 *.xml
 *.dsn
 *.ses
 *.drc
 *.erc
-# Fabrication + assembly outputs (regenerate these; zip the release instead)
 hardware/gerbers/
 hardware/production/
 hardware/fab/
@@ -69,17 +56,13 @@ hardware/fab/
 *.gts
 *.drl
 *.gm1
-# 3D viewer / raytrace exports
 *.wrl.bak
 
-# --- CAD / case -------------------------------------------------------------
-# Keep source CAD and exported STLs tracked; ignore solver + backup cruft.
 *.FCStd1
 *.FCBak
 *.f3d.bak
 case/export/tmp/
 
-# --- Editors / OS -----------------------------------------------------------
 .vscode/
 .idea/
 *.swp
@@ -88,19 +71,14 @@ case/export/tmp/
 Thumbs.db
 desktop.ini
 
-# --- Python helper scripts --------------------------------------------------
 __pycache__/
 *.py[cod]
 .venv/
 venv/
 
-# Exported netlist is regenerated from the schematic
 hardware/morphcpu.net
 
-# gen_fab.py working directory — loose plots, drill maps and the job file are
-# all regenerable; hardware/fab_output/*.zip and *.csv stay tracked.
 hardware/fab_output/gerbers/
 
-# vscode local history
 hardware/.history/
 .history/

@@ -1,0 +1,43 @@
+name: gateware
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'gateware/**'
+      - '.github/workflows/gateware.yml'
+  pull_request:
+    paths:
+      - 'gateware/**'
+      - '.github/workflows/gateware.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: YosysHQ/setup-oss-cad-suite@c7845bc0d335c8076aa22047e85972caa8a916df
+        with:
+          version: '2026-09-12'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: sim
+        run: |
+          mkdir -p gateware/build
+          bash gateware/sim/run_sims.sh 2>&1 | tee gateware/build/sim.log
+      - name: bitstream
+        run: bash gateware/build.sh 2>&1 | tee gateware/build/build.log
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: gateware-${{ github.sha }}
+          path: gateware/build/
+          if-no-files-found: warn
+          retention-days: 30

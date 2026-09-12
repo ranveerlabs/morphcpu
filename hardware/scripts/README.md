@@ -81,3 +81,5 @@ result
   fall back to unit 0
 - `board.Add(fp)` before `fp.Flip()`. pcbnew segfaults with no traceback if you
   flip a footprint that isnt on the board yet, the bindings dont check ownership
+- `SaveBoard` rewrites `morphcpu.kicad_pro` from the board defaults and wipes
+  every net class and DRC minimum. `gen_pcb.py` saves them first and puts them back
