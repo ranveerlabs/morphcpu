@@ -1,9 +1,9 @@
 # morphcpu build journal
 
-**Total time: 140h**
+**Total time: 143h, including 3h estimated**
 
 build log. spatially-reconfigurable processor on a small low power fpga.
-thirteen sessions 140h of actual keyboard time
+fourteen sessions. the first thirteen record 140h, session 014 adds an estimated 3h
 
 most of it went on two things and neither was the fun part. reading the power up
 sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
@@ -33,6 +33,34 @@ both of them are leds
 | 011 | 2026-08-30 | 1h | silkscreen, the board had none |
 | 012 | 2026-09-06 | 2h | seeed instead of jlc, bom had no qty column |
 | 013 | 2026-09-06 | 9h | decoupling was spread out, six of seven pins fixed |
+| 014 | 2026-09-12 | 3h estimated | build workflow, bitstream results, licence and docs |
+
+---
+
+## session 014 - 2026-09-12
+
+Time spent: 3h estimated, backfilled without a timer
+Running total: 143h, including this estimate
+
+added a GitHub Actions build with OSS CAD Suite pinned to 2026-09-12 on Ubuntu
+24.04. it runs both testbenches, builds the bitstream and keeps the output and
+logs for 30 days. removed --pcf-allow-unconstrained from the build, all 20 I/O
+pins have to be assigned now. also fixed the utilisation grep for nextpnr's
+whitespace
+
+the [passing run](https://github.com/ranveerlabs/morphcpu/actions/runs/34678840307)
+has 13/13 and 5/5 checks passing. the build used 2020/5280 logic cells and
+routed at 37.33 MHz against the 16 MHz clock. morphcpu_top.bin is 104090 bytes.
+those are build results, i still havent flashed a board
+
+changed the licence to AGPL-3.0-only. removed explanatory comments from the
+case, constraints and generator files, and documented the SaveBoard trap in
+hardware/scripts/README.md: it can overwrite the project net classes and DRC
+minimums, so gen_pcb.py saves those and restores them afterwards
+
+updated the readmes and caught the old 770 tracks / 148 vias count still in
+the root README. the board file has 769 tracks and 188 vias, already recorded
+in session 013. no copper changed in this session. D2 and D3 are still open
 
 ---
 

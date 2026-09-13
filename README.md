@@ -8,19 +8,20 @@ no PC no fetch no decode, just 16 cells each holding an op and a direction, data
 walks in the west side and gets mangled by whatever cell it lands on. 4 cells
 from the exit is 4 ticks. i run it at 4Hz cuz at 16MHz theres nothing to look at
 
-i wanted one on a desk so i wrote the fabric. then it needed a testbench, then a
-board, then a schematic generator cuz i was not drawing 88 symbols by hand,
-then a placement generator, then a case, and then the case had to be parametric
-cuz the board diameter kept moving anyway still no traces on it
+i wanted one on a desk so i wrote the fabric and a testbench. the board needed
+88 symbols, so i wrote a schematic generator rather than draw them by hand,
+then a placement generator. the case ended up parametric because the board
+diameter kept changing. at that point i still hadnt routed it
 
 ## state
 
-routed. 770 tracks 148 vias across 4 layers, DRC 0 violations, 2 nets still open
-and theyre both leds so 14 of the 16 would light. i left it there cuz deadline,
-every power ground clock config flash usb and uart net is closed. why its two
-and what would finish them is in [hardware/ROUTING.md](hardware/ROUTING.md).
-freerouting got two goes and both went in the bin, the first one ran 211
-segments straight across the led face
+routed. 769 tracks 188 vias across 4 layers, DRC 0 violations, 2 nets still open.
+D2 and D3 wont light, the other 14 would. every power ground clock config flash
+usb and uart net is closed. i stopped at the deadline,
+[hardware/ROUTING.md](hardware/ROUTING.md) has whats left
+
+freerouting got two goes, the first ran 211 segments across the led face. both
+went in the bin
 
 4 layers in the end, 2 couldnt do it. the resistor ring and the decap ring both
 sit inside the F.Cu keepout over the grid so every led escape was stuck on B.Cu
@@ -41,8 +42,8 @@ sim 18/18, ERC 0/0, BOM $203.73 for 5
 | `2` ADD `a+b` | | `2` S |
 | `3` XOR `a^b` | | `3` W |
 
-4 bits a cell, 2 op 2 dir. the operand pick is like the only weird bit and
-[morph_cell.v](gateware/rtl/morph_cell.v) is short enough to just read
+4 bits a cell, 2 op 2 dir. the operand selection is in
+[morph_cell.v](gateware/rtl/morph_cell.v), its a short file
 
 ```
         c0    c1    c2    c3
@@ -117,8 +118,7 @@ fanning out of a QFN-48 on 0.5mm pitch. all the pain was in there
 
 board was 60mm at first and everything overlapped. the resistor ring also sat
 180 out from its own leds for ages so every single anode trace ran straight
-under the QFN paddle, took me embarrassingly long to spot that rip. both sorted
-now
+under the QFN paddle. took me a while to spot that. both sorted now
 
 six leds also ended up on different fpga pins than they started on, cuz the east
 side of the package ran out of escape room. thats in ROUTING.md too
@@ -131,9 +131,8 @@ side of the package ran out of escape room. thats in ROUTING.md too
 
 ## if you order it
 
-gerbers in `hardware/fab_output/` are off the routed board now, all four copper
-layers with copper actually in them, drill included. two nets are still open tho
-so D2 and D3 wont light, read that before you spend money
+gerbers and drill in `hardware/fab_output/`, all four routed copper layers.
+read the open-net details above before ordering
 
 - $203.73 is a real 4 layer quote, $6.27 of headroom under the $210 Complex cap.
   re-quote if the BOM moves
