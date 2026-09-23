@@ -196,6 +196,8 @@ def add_mounting_holes(board):
         r = math.radians(ang)
         fp.SetPosition(board_pt(MOUNT_R * math.cos(r), MOUNT_R * math.sin(r)))
         fp.SetReference("H%d" % (i + 1))
+        fp.SetFPID(pcbnew.LIB_ID("MountingHole", "MountingHole_2.2mm_M2"))
+        fp.SetAttributes(fp.GetAttributes() | pcbnew.FP_BOARD_ONLY)
         fp.SetValue("M2")
         board.Add(fp)
 
@@ -237,6 +239,7 @@ def main():
             dx, dy, rot, side = 0, 34, 0, BACK
 
         fp.SetReference(ref)
+        fp.SetFPID(pcbnew.LIB_ID(lib, name))
         fp.SetValue(info["value"])
         fp.Value().SetVisible(False)
         fp.SetPosition(board_pt(dx, dy))

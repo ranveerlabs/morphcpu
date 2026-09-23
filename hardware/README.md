@@ -7,15 +7,16 @@ KiCad project. placed and routed, 4 layers
 | | |
 |---|---|
 | `morphcpu.kicad_sch` | generated. ERC 0/0 |
-| `morphcpu.kicad_pcb` | 80 components + 4 mounting holes, 92 nets, 770 tracks 148 vias |
+| `morphcpu.kicad_pcb` | 80 components + 4 mounting holes, 546 tracks, 193 vias |
 | `morphcpu.kicad_dru` | JLC rules Board Setup cant express |
 | [scripts/](scripts/) | generators |
 | `fab_output/` | gerbers drill BOM CPL zip |
 
-DRC 0 violations, 2 unconnected. both are led drive nets, D2 and D3 dont light
+DRC 0 violations, 0 unconnected, 0 schematic mismatches. LED1 uses FPGA pin 45
+and LED2 uses pin 42. the schematic, source netlist and PCF agree
 
 `fab_output/` is off the routed board, all four copper layers with copper in
-them. two open nets tho, read [ROUTING.md](ROUTING.md) before you spend money
+them. the updated pin map still needs a bitstream build, see [ROUTING.md](ROUTING.md)
 
 ## board
 

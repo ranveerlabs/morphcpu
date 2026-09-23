@@ -46,6 +46,33 @@ LCSC_BY_VALUE = {
 }
 
 
+MPN_BY_VALUE = {
+    '100n': 'CL05B104KO5NNNC',
+    '10u': 'CL05A106MQ5NUNC',
+    '4u7': 'CL05A475MP5NRNC',
+    '1u': 'CL05A105KA5NQNC',
+    'KT-0603R': 'KT-0603R',
+    '500mA': 'BSMD1206-050-6V',
+    '600R@100M': 'MMZ1608Y601BTA00',
+    'TYPE-C-31-M-12': 'TYPE-C-31-M-12',
+    '270': 'RC0402FR-07270RL',
+    '10k': '0402WGF1002TCE',
+    '1k': '0402WGF1001TCE',
+    '5k1': '0402WGF5101TCE',
+    '100k': '0402WGF1003TCE',
+    '1M': '0402WGF1004TCE',
+    '100': '0402WGF1000TCE',
+    'TS-1187A-B-A-B': 'TS-1187A-B-A-B',
+    'ICE40UP5K-SG48I': 'ICE40UP5K-SG48I',
+    'FT231XS-R': 'FT231XS-R',
+    'W25Q32JVSSIQ': 'W25Q32JVSSIQ',
+    'AP2112K-3.3TRG1': 'AP2112K-3.3TRG1',
+    'ME6211C12M5G-N': 'ME6211C12M5G-N',
+    'USBLC6-2SC6': 'USBLC6-2SC6',
+    '1532H4-16000JWPDTSNL': '1532H4-16000JWPDTSNL',
+}
+
+
 def run(*args):
     print("+ " + " ".join(args[1:]), file=sys.stderr)
     r = subprocess.run(args, capture_output=True, text=True)
@@ -100,13 +127,13 @@ def export_bom():
         rows = list(csv.DictReader(f))
     with open(out, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["Designator", "Comment", "Footprint", "LCSC Part #"])
+        w.writerow(["Designator", "Quantity", "MPN", "Comment", "Footprint", "LCSC Part #"])
         for r in rows:
             value = r["Comment"]
             lcsc = LCSC_BY_VALUE.get(value, "")
             if not lcsc:
                 missing.append((r["Designator"], value, r["Qty"]))
-            w.writerow([r["Designator"], value, r["Footprint"], lcsc])
+            w.writerow([r["Designator"], r["Qty"], MPN_BY_VALUE.get(value, ""), value, r["Footprint"], lcsc])
     os.remove(raw)
     return out, len(rows), missing
 

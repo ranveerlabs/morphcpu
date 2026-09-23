@@ -15,10 +15,11 @@ diameter kept changing. at that point i still hadnt routed it
 
 ## state
 
-routed. 769 tracks 188 vias across 4 layers, DRC 0 violations, 2 nets still open.
-D2 and D3 wont light, the other 14 would. every power ground clock config flash
-usb and uart net is closed. i stopped at the deadline,
-[hardware/ROUTING.md](hardware/ROUTING.md) has whats left
+routed. 546 tracks and 193 vias across 4 layers. KiCad reports 0 violations,
+0 unconnected items and 0 schematic mismatches. all sixteen LED nets are closed.
+LED1 now uses pin 45 and LED2 uses pin 42. the short hooks and overlapping track
+ends have been cleaned up, including the connection around C20.
+[hardware/ROUTING.md](hardware/ROUTING.md) has the checks and pin changes
 
 freerouting got two goes, the first ran 211 segments across the led face. both
 went in the bin
@@ -27,9 +28,11 @@ went in the bin
 sit inside the F.Cu keepout over the grid so every led escape was stuck on B.Cu
 alone
 
-bitstream builds on GitHub Actions now. 2020/5280 logic cells, routed timing
+the previous bitstream built on GitHub Actions. 2020/5280 logic cells, routed timing
 37.33 MHz against the 16 MHz clock. [build and logs](https://github.com/ranveerlabs/morphcpu/actions/runs/34678840307),
-still hasnt been flashed onto a board
+still hasnt been flashed onto a board. those numbers predate the two latest pin
+changes. a new build is still needed, Windows blocked `yosys-abc.exe` and the
+`libpcre2-8-0.dll` dependency of nextpnr during local verification
 
 sim 18/18, ERC 0/0, BOM $203.73 for 5
 
@@ -120,8 +123,8 @@ board was 60mm at first and everything overlapped. the resistor ring also sat
 180 out from its own leds for ages so every single anode trace ran straight
 under the QFN paddle. took me a while to spot that. both sorted now
 
-six leds also ended up on different fpga pins than they started on, cuz the east
-side of the package ran out of escape room. thats in ROUTING.md too
+eight leds ended up on different fpga pins than they started on because the
+package fanout ran out of escape room. thats in ROUTING.md too
 
 ![3d top](docs/img/routed-3d-top.png)
 
@@ -132,7 +135,7 @@ side of the package ran out of escape room. thats in ROUTING.md too
 ## if you order it
 
 gerbers and drill in `hardware/fab_output/`, all four routed copper layers.
-read the open-net details above before ordering
+the board checks pass, but the updated pin map still needs a bitstream build
 
 - $203.73 is a real 4 layer quote, $6.27 of headroom under the $210 Complex cap.
   re-quote if the BOM moves

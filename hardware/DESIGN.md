@@ -1,7 +1,6 @@
 # MorphCPU board, electrical design spec
 
-schematic is captured and ERC clean, board is placed and routed on 4 layers,
-two led nets still open
+schematic is captured and ERC clean, board is placed and fully connected on 4 layers
 
 datasheet references are all to FPGA-DS-02008-2.0, iCE40 UltraPlus Family Data
 Sheet (Lattice, 2018-2021). prices and stock checked 20 Aug 2026, passive rows
@@ -10,9 +9,9 @@ added 23 Aug 2026
 none of this has been on a bench. every number below is out of a datasheet or
 arithmetic on top of one, the 28 C rise is calculated, the ~200 us rail-up is
 inferred and not scoped, LED brightness is extrapolated off a curve at a
-different current, and the RC sequencing delay has never been watched. no
-bitstream either so theres no real Fmax anywhere in here. i think its all right,
-none of it is verified
+different current, and the RC sequencing delay has never been watched. the
+previous pin map built at 37.33 MHz, but the latest LED1/LED2 assignment still
+needs a build. none of the hardware has been bench tested
 
 ---
 
@@ -248,8 +247,8 @@ of a global buffer makes timing closure harder than it has to be
 | 34 | IOT_44b | UART_TX_O (to FT231X RXD) |
 | 36 | IOT_48b | UART_RX_I (from FT231X TXD) |
 | 2 | IOB_6a | LED0 |
-| 3 | IOB_9b | LED1 |
-| 23 | IOT_37a | LED2 |
+| 45 | IOB_5b | LED1 |
+| 42 | IOT_51a | LED2 |
 | 27 | IOT_38b | LED3 |
 | 12 | IOB_22a | LED4 |
 | 13 | IOB_24a | LED5 |
@@ -271,9 +270,12 @@ checks this assignment passes:
 - clock is on a GBIN pin (35)
 - pin 20 (G3) left free instead of spent on an LED, so theres a second global
   clock if it ever matters
-- LEDs split across banks, 2, 3, 46, 48 on VCCIO_2 (pin 1), 9, 12, 13, 18, 19, 21
-  on VCCIO_1 (pin 22) and 23, 25, 26, 27, 32, 38 on VCCIO_0 (pin 33), so 80 mA
-  isnt pulled thru one VCCIO pin, 25 / 25 / 30 mA. all three VCCIO pins are +3V3
+- LEDs split across banks, 2, 45, 46, 48 on VCCIO_2 (pin 1), 9, 12, 13, 18, 19, 21
+  on VCCIO_1 (pin 22) and 25, 26, 27, 32, 38, 42 on VCCIO_0 (pin 33), so 80 mA
+  isnt pulled thru one VCCIO pin, 20 / 30 / 30 mA. all three VCCIO pins are +3V3
+- LED1 moved from 3 to 45 and LED2 from 23 to 42 in the final routing cleanup.
+  both stay in their original banks and use ordinary I/O pins. the south escapes
+  close the last two connections without moving the resistor ring
 - six LEDs moved off their first-pass pins during routing, LED12 -> 48,
   LED13 -> 46, LED14 -> 38 and LED9 -> 9, LED2 -> 23, LED3 -> 27. all six were
   crossing the package to reach a resistor on the far side, and U1's east column
@@ -576,30 +578,21 @@ netclass pass added. tick boxes there
 
 ## state of the board file
 
-`morphcpu.kicad_pcb`: 80 components plus the 4 mounting holes, so 84 footprints
-in the file. 92 nets, 769 track segments and 188 vias over F.Cu, In1.Cu, In2.Cu
-and B.Cu
+`morphcpu.kicad_pcb`: 80 components plus 4 mounting holes, 546 track segments
+and 193 vias. the 70 mm outline, 1.6 mm thickness, 9 mm LED pitch and mounting
+positions are unchanged
 
-`kicad-cli 10.0.5 pcb drc --severity-all`:
+18 Sep 2026, `kicad-cli 10.0.5 pcb drc --refill-zones --schematic-parity --severity-all`:
 
 ```
-** Found 0 DRC violations **
-
-** Found 2 unconnected pads **
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(146.5247 mm, 89.5739 mm): Pad 1 [LED1] of R2 on B.Cu
-    @(146.5625 mm, 101.7500 mm): Pad 3 [LED1] of U1 on B.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(152.2500 mm, 96.5625 mm): Pad 23 [LED2] of U1 on B.Cu
-    @(153.4753 mm, 89.5739 mm): Pad 1 [LED2] of R3 on B.Cu
+Found 0 violations
+Found 0 unconnected items
+Found 0 schematic parity issues
 ```
 
-both leftovers are LED drive nets so D2 and D3 dont light and the other fourteen
-do. the C20/R27 silk overlap that used to be in here is gone, C20's reference
-field moved 1.3 mm in X. why the two wont close is in
-[ROUTING.md](ROUTING.md#what-is-left-unrouted)
+LED1 and LED2 now escape from the south edge of the FPGA on pins 45 and 42.
+[ROUTING.md](ROUTING.md#routing-cleanup) records the routing cleanup and the
+remaining bitstream build check
 
 two things to look at if you open it:
 

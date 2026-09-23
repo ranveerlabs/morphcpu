@@ -7,8 +7,6 @@
 	(title_block
 		(title "MorphCPU")
 		(rev "A")
-		(comment 1 "Generated from hardware/scripts/netlist.py")
-		(comment 2 "Connectivity is by global label name")
 	)
 	(lib_symbols
 		(symbol "Connector:USB_C_Receptacle_USB2.0_16P"
@@ -6537,12 +6535,6 @@
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "86b4e3bc-92df-5e3e-946e-8c5bfb758082")
 	)
-	(global_label "LED2"
-		(shape bidirectional)
-		(at 59.69 41.91 180)
-		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "b747f5e7-fb93-57fb-b308-31d609390775")
-	)
 	(global_label "LED10"
 		(shape bidirectional)
 		(at 59.69 39.37 180)
@@ -6572,6 +6564,12 @@
 		(at 59.69 69.85 180)
 		(effects (font (size 1.27 1.27)) (justify right))
 		(uuid "3ab74039-cae7-5aac-9d8d-2fc9dcf58ab3")
+	)
+	(global_label "LED2"
+		(shape bidirectional)
+		(at 59.69 72.39 180)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "b0fe821c-7d05-5d96-91f2-c65b04d7114e")
 	)
 	(global_label "CDONE"
 		(shape bidirectional)
@@ -6671,9 +6669,9 @@
 	)
 	(global_label "LED1"
 		(shape bidirectional)
-		(at 59.69 257.81 180)
+		(at 59.69 250.19 180)
 		(effects (font (size 1.27 1.27)) (justify right))
-		(uuid "7e5c3b98-efb7-5d66-8cd4-29d761dc5c60")
+		(uuid "e972ad15-a887-50f4-9979-085368aef4c2")
 	)
 	(global_label "LED13"
 		(shape bidirectional)
@@ -7917,20 +7915,20 @@
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "5239e24e-f033-5f2c-b1cd-e71acd0b13d6")
 	)
+	(no_connect (at 59.69 41.91) (uuid "6d061901-e17d-55bf-9e88-b3f4ab05fd3a"))
 	(no_connect (at 59.69 49.53) (uuid "c7a362d9-aa6f-52b3-ae92-f3419d4710cc"))
 	(no_connect (at 59.69 52.07) (uuid "9cc763be-86a7-563e-93ec-1cfc5b9e3adc"))
 	(no_connect (at 59.69 59.69) (uuid "3360e204-c47e-500a-8bed-c88e55d086c0"))
 	(no_connect (at 59.69 74.93) (uuid "37779e87-bfb4-58d2-99e9-4688ca197bf5"))
 	(no_connect (at 59.69 77.47) (uuid "b9ff9ddf-06cc-5371-bd36-75c7e18e59f2"))
 	(no_connect (at 59.69 80.01) (uuid "d341e091-29f5-57ce-a651-644b9ad22132"))
-	(no_connect (at 59.69 72.39) (uuid "157cac3c-5ce3-54a2-9f8b-51a3d2ef595a"))
 	(no_connect (at 59.69 67.31) (uuid "e6d83a95-e8f7-5fe0-a70e-c136b50ea8ee"))
 	(no_connect (at 57.15 139.7) (uuid "3491c4fc-1b27-501b-b223-83df69f2437a"))
 	(no_connect (at 57.15 147.32) (uuid "593e9f7c-2fa3-541b-8c48-4cf489b61817"))
 	(no_connect (at 57.15 157.48) (uuid "5c0d0154-88cd-552c-adf8-d756b559ad95"))
+	(no_connect (at 59.69 257.81) (uuid "e0480ce9-b257-5d7d-8667-69975ef0c459"))
 	(no_connect (at 59.69 255.27) (uuid "e090edcb-0cd3-5113-b997-3931132a2057"))
 	(no_connect (at 59.69 245.11) (uuid "391d6bad-5721-5d63-9cc9-58db2761dca8"))
-	(no_connect (at 59.69 250.19) (uuid "03c16340-ea3a-5121-970b-88a06c88f385"))
 	(no_connect (at 59.69 242.57) (uuid "81e45f50-6166-5330-b2ef-faa4cb484b32"))
 	(no_connect (at 302.26 54.61) (uuid "9920a55b-a745-502a-932c-53230142c601"))
 	(no_connect (at 302.26 49.53) (uuid "1e09cb15-7e47-52a9-a079-aa7b18703c0b"))

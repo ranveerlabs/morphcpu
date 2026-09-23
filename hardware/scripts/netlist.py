@@ -11,7 +11,7 @@ FT_VCC = "FT_VCC"
 LED_NETS = ["LED%d" % i for i in range(16)]
 
 LED_PIN_MAP = {
-    2: 0,  3: 1,  23: 2, 27: 3, 12: 4, 13: 5, 18: 6, 19: 7,
+    2: 0, 45: 1,  42: 2, 27: 3, 12: 4, 13: 5, 18: 6, 19: 7,
     21: 8,  9: 9, 25: 10, 26: 11, 48: 12, 46: 13, 38: 14, 32: 15,
 }
 
@@ -32,8 +32,8 @@ FPGA = ("FPGA_Lattice", "ICE40UP5K-SG48ITR", "ICE40UP5K-SG48I",
         "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm")
 
 u1_nets = {33: P3V3, 35: "CLK", 34: "UART_TX_O", 36: "UART_RX_I"}
-u1_nc = [28, 31, 37, 39, 40, 41, 42, 43]
-for pin in (23, 25, 26, 27, 32, 38):
+u1_nc = [23, 28, 31, 37, 39, 40, 41, 43]
+for pin in (25, 26, 27, 32, 38, 42):
     u1_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u1_nets, unit=1, nc=u1_nc)
 
@@ -48,10 +48,10 @@ u2_nets[9] = LED_NETS[9]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u2_nets, unit=2, nc=[6, 11, 20])
 
 u3_nets = {1: P3V3}
-for pin in (2, 3, 46, 48):
+for pin in (2, 45, 46, 48):
     u3_nets[pin] = LED_NETS[LED_PIN_MAP[pin]]
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3], u3_nets, unit=3,
-    nc=[4, 44, 45, 47])
+    nc=[3, 4, 44, 47])
 
 add("U1", FPGA[0], FPGA[1], FPGA[2], FPGA[3],
     {5: P1V2, 24: VPP, 29: VCCPLL, 30: P1V2, 49: GND}, unit=4)

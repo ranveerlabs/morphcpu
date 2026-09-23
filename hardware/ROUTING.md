@@ -1,14 +1,46 @@
-# routing prep
+# routing
 
-routed now. 4 layers, 769 tracks 188 vias 1473.5 mm of copper, four GND pours and
-the one F.Cu rule area. rest of this file is Board Setup, ten net classes, JLC
-shaped DRC minimums, a `morphcpu.kicad_dru` for the rules the dialog cant express,
-and the order to route in
+routed and connected. 4 layers, 546 tracks, 193 vias and 1504.7 mm of tracks,
+four GND pours and the one F.Cu rule area. Board Setup has ten net classes and
+the additional manufacturing constraints are in `morphcpu.kicad_dru`
 
-0 violations, 2 unrouted. both leftovers are LED drive nets so every power,
-ground, clock, config, flash, USB and UART net is done. was 0 / 7 going in and
-closing those seven took six FPGA pins moved, not more copper, [what is left
-unrouted](#what-is-left-unrouted) at the bottom has it
+18 Sep 2026, KiCad 10.0.5 with zones refilled and schematic parity checked:
+0 violations, 0 unconnected items, 0 schematic mismatches. ERC is also clear
+
+## routing cleanup
+
+LED1 moved from FPGA pin 3 to 45, IOB_5b in bank 2. LED2 moved from pin 23 to
+42, IOT_51a in bank 0. both banks already run at 3.3 V, and neither pin is a
+configuration pin, RGB output or global clock input. the assignments match
+[Lattice's SG48 schematic](https://www.latticesemi.com/-/media/LatticeSemi/Documents/SchematicSymbols/ICE40_Single_Wire_Aggregation_Board_Schematic_RevA_200909.ashx?document_id=53011).
+the source netlist, schematic, board and PCF changed together
+
+the two new routes escape south and reach the resistor ring on the inner
+layers. the LED grid and component placement stayed where they were. removing
+short steps, overlapping track ends and the loop around C20 reduced the total
+from 769 to 546 segments, including the new LED routes. five vias were added
+
+Board Setup had a 0.127 mm track minimum despite the 6 mil requirement below.
+it is now 0.1524 mm. the remaining 0.15 mm and 0.1874 mm tracks were widened
+to 0.20 mm. the copper passes with the stricter minimum and unchanged clearance
+and via rules
+
+footprint library identifiers are now complete, mounting holes are marked
+board-only, and the five altered capacitor footprints match their library copies
+without moving their pads. U4 and R26 now carry the schematic values,
+AP2112K-3.3TRG1 and 1M. the old PCB values were ME6211C33M5G-N and 10k
+
+both simulations pass, 13/13 grid checks and 5/5 UART/top-level checks. a fresh
+bitstream build is still pending. Windows Smart App Control blocked
+`yosys-abc.exe` and then `libpcre2-8-0.dll` when nextpnr was tried with the previous
+synthesized design. the earlier 37.33 MHz result does not validate this pin map
+
+the fab ZIP, BOM, CPL and current board previews were regenerated from this board
+
+## earlier routing passes
+
+the notes below record the earlier passes, including the two LED connections
+that were still open on 30 Aug 2026
 
 the old "10 unrouted" number was just wrong. `kicad-cli pcb drc` refills zones
 before it checks and on a refill two of the three GND items and LED5_A close by
@@ -139,7 +171,7 @@ after, i havent re-read them against the 4 layer tier:
 - copper to routed board edge only needs 0.2 mm. were at 0.5 mm so the round outline
   has room even where J1 overhangs
 
-current DRC, `kicad-cli 10.0.5 --severity-all`, 0 violations and 2 unconnected items,
+30 Aug DRC, `kicad-cli 10.0.5 --severity-all`, 0 violations and 2 unconnected items,
 was 167 unconnected pads before any copper went down. the C20/R27 silk overlap is
 gone, C20s reference field moved 1.3 mm in X, both run vertically and were stacked in
 Y. zero courtyard overlaps, zero shorting pads, zero clearance errors
@@ -432,6 +464,9 @@ new since this pass:
       `restored Board Setup: 10 net classes + DRC rules` when it worked
 
 ## what is left unrouted
+
+none after the 18 Sep cleanup. the report below is from 30 Aug and is kept with
+the trials that led to it
 
 ```
 $ kicad-cli pcb drc --severity-all hardware/morphcpu.kicad_pcb

@@ -237,8 +237,6 @@ def main():
     out.append("\t(title_block")
     out.append("\t\t(title \"MorphCPU\")")
     out.append("\t\t(rev \"A\")")
-    out.append("\t\t(comment 1 \"Generated from hardware/scripts/netlist.py\")")
-    out.append("\t\t(comment 2 \"Connectivity is by global label name\")")
     out.append("\t)")
     out.append("\t(lib_symbols")
     out.append(build_lib_symbols(used))
