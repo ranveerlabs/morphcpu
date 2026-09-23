@@ -1,9 +1,10 @@
 # morphcpu build journal
 
-**Total time: 143h, including 3h estimated**
+**Total time: 151h, including 11h estimated**
 
 build log. spatially-reconfigurable processor on a small low power fpga.
-fourteen sessions. the first thirteen record 140h, session 014 adds an estimated 3h
+fifteen sessions. the first thirteen record 140h, sessions 014 and 015 add an
+estimated 3h and 8h
 
 most of it went on two things and neither was the fun part. reading the power up
 sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
@@ -15,8 +16,8 @@ the hours. template is in [docs/journal-template.txt](docs/journal-template.txt)
 
 ![board back, copper down round the fpga](docs/img/pcb-routed-back.png)
 
-where its at rn. 769 tracks 188 vias, 0 DRC violations, 2 nets still open and
-both of them are leds
+where its at rn. 546 tracks, 193 vias. the 18 Sep KiCad check reported 0 DRC
+violations, 0 unconnected items and 0 schematic mismatches
 
 | # | date | time | focus |
 |---|---|---|---|
@@ -34,6 +35,37 @@ both of them are leds
 | 012 | 2026-09-06 | 2h | seeed instead of jlc, bom had no qty column |
 | 013 | 2026-09-06 | 9h | decoupling was spread out, six of seven pins fixed |
 | 014 | 2026-09-12 | 3h estimated | build workflow, bitstream results, licence and docs |
+| 015 | 2026-09-22 | 8h estimated | closed the last two LED nets, cleaned routing and regenerated fab files |
+
+---
+
+## session 015 - 2026-09-22
+
+**Time spent:** 8h
+**Running total:** 151h
+
+the 8h is an estimate, backfilled without a timer
+
+LED1 moved from U1 pin 3 to pin 45, and LED2 from pin 23 to pin 42. the source
+netlist, schematic, board and PCF now use the same assignments. both new routes
+escape south from the FPGA and reach the resistor ring on the inner layers.
+this closed the two LED connections left open in session 014
+
+cleaned up short steps, overlapping track ends and the loop around C20. the
+board went from 769 tracks and 188 vias to 546 tracks and 193 vias. widened
+the remaining 0.15 mm and 0.1874 mm tracks to 0.20 mm, and raised the Board
+Setup minimum track width from 0.127 mm to 0.1524 mm for the 6 mil requirement.
+the 18 Sep KiCad 10.0.5 check, with zones refilled, reported 0 violations,
+0 unconnected items and 0 schematic mismatches. ERC was clear too
+
+regenerated the gerber ZIP, BOM, CPL and board previews from the routed board.
+the pin map still needs a fresh bitstream build. Windows Smart App Control
+blocked `yosys-abc.exe` and then `libpcre2-8-0.dll` during the local attempt,
+so the earlier 37.33 MHz result does not cover these pin changes
+
+![routed copper after the LED connections and cleanup](docs/img/routed-copper-both.svg)
+the two LED nets are closed in this board. the copper preview also shows the
+shorter fanout and the routes into the resistor ring
 
 ---
 
