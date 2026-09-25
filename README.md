@@ -109,12 +109,12 @@ download its `gateware-<commit>` artifact for the `.bin` and logs, kept for 30 d
 
 75.4mm, 12.9g, like 26c of PLA
 
-![front](docs/img/pcb-routed-front.png)
+![front](docs/img/pcb-top.svg)
 
 front. 4x4 on 9mm pitch plus the reset button and the CDONE led. no tracks on
 this face on purpose, theres an F.Cu keepout over the whole grid
 
-![back](docs/img/pcb-routed-back.png)
+![back](docs/img/routed-bcu.svg)
 
 back. fpga in the middle, ring of decaps then the resistor ring, and everything
 fanning out of a QFN-48 on 0.5mm pitch. all the pain was in there
@@ -125,10 +125,6 @@ under the QFN paddle. took me a while to spot that. both sorted now
 
 eight leds ended up on different fpga pins than they started on because the
 package fanout ran out of escape room. thats in ROUTING.md too
-
-![3d top](docs/img/routed-3d-top.png)
-
-![top copper and silk](docs/img/pcb-top.svg)
 
 ![schematic](docs/img/schematic.svg)
 
