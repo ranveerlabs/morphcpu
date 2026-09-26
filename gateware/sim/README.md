@@ -1,6 +1,6 @@
 # gateware/sim/
 
-iverilog only, no vendor tools
+These simulations only need Icarus Verilog, not the FPGA vendor tools.
 
 ```sh
 ./run_sims.sh
@@ -38,10 +38,11 @@ tb_morphcpu_top.v:228: $finish called at 7044773750 (1ps)
 RESULT: all testbenches passed
 ```
 
-13 + 5. [tb_grid.v](tb_grid.v) drives the config chain directly so it only tests
-the fabric. [tb_morphcpu_top.v](tb_morphcpu_top.v) goes in thru the UART and
-never reaches into the hierarchy so it covers the wire protocol and the config
-bit ordering too. second one breaking on its own points at the protocol
+There are 13 fabric checks and 5 top-level checks. [tb_grid.v](tb_grid.v) drives
+the config chain directly, so it only tests the fabric.
+[tb_morphcpu_top.v](tb_morphcpu_top.v) sends data through the UART without
+reaching into the design hierarchy. That also checks the wire protocol and bit
+ordering, so if only this testbench breaks, the UART path is a good place to look.
 
 run one by hand:
 
@@ -57,8 +58,8 @@ cd out
 gtkwave tb_grid.vcd
 ```
 
-`out/` and any `*.vcd` / `*.fst` are gitignored. commit the testbench, not the
-dump
+`out/` and `*.vcd` / `*.fst` files are gitignored. Commit the testbench, not the
+waveform dump.
 
 ## pictures out of the dump
 
@@ -69,7 +70,7 @@ per cell, one column per tick. no deps, node only
 node vcd_png.js out/tb_grid.vcd ../../docs/img/sim-002-grid-activity.png
 ```
 
-a value moving across the fabric shows up as a diagonal streak, one cell per
-tick, so a routing bug slopes the wrong way and you see it instantly. the top
-level dump has no `tick` in scope so there it samples on led changes instead and
-you get a filled triangle instead of a diagonal, the leds are pulse stretched
+As a value moves across the fabric, it leaves a diagonal streak, one cell per
+tick. A routing bug changes the slope. The top-level dump has no `tick` in scope,
+so it samples on LED changes instead. Since the LEDs are pulse-stretched, that
+plot looks like a filled triangle rather than a diagonal.

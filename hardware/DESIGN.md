@@ -1,28 +1,27 @@
-# MorphCPU board, electrical design spec
+# MorphCPU board design
 
-schematic is captured and ERC clean, board is placed and fully connected on 4 layers
+The schematic passes ERC. The board is placed and routed on four layers.
 
-datasheet references are all to FPGA-DS-02008-2.0, iCE40 UltraPlus Family Data
-Sheet (Lattice, 2018-2021). prices and stock checked 20 Aug 2026, passive rows
-added 23 Aug 2026
+The datasheet references are to FPGA-DS-02008-2.0, the iCE40 UltraPlus Family
+Data Sheet (Lattice, 2018-2021). I checked most prices and stock on 20 Aug 2026,
+then added the passive parts on 23 Aug.
 
-none of this has been on a bench. every number below is out of a datasheet or
-arithmetic on top of one, the 28 C rise is calculated, the ~200 us rail-up is
-inferred and not scoped, LED brightness is extrapolated off a curve at a
-different current, and the RC sequencing delay has never been watched. the
-previous pin map built at 37.33 MHz, but the latest LED1/LED2 assignment still
-needs a build. none of the hardware has been bench tested
+The board hasnt been tested on a bench. The 28 °C rise is calculated, the ~200 µs
+rail-up time is inferred rather than measured, and the LED brightness comes from
+a curve at a different current. I havent scoped the RC delay either. The earlier
+pin map built at 37.33 MHz, but the latest LED1/LED2 assignments still need a
+fresh build.
 
 ---
 
-## what the parts list was missing
+## power and clock
 
-### no power supply
+### regulator voltages
 
 USB-C gives you 5 V. the iCE40UP5K needs 1.2 V core (VCC, pins 5 and 30) and
 3.3 V I/O (VCCIO_0/1/2) and runs on neither, so two regulators
 
-### a bare crystal will not work on an iCE40
+### clock source
 
 a passive crystal needs an amplifier to start it and the iCE40 doesnt have one.
 the family gives you `SB_HFOSC` (48 MHz, ÷1/2/4/8) and `SB_LFOSC` (10 kHz) and
@@ -35,10 +34,10 @@ tolerates abt ±2-3% total
 so its an active oscillator module. the pin table in the
 [FPGA pinout](#fpga-pinout-ice40up5k-sg48i) section has it
 
-### the power-up sequence was backwards
+### supply order
 
-only turned up while i was chasing the VCCPLL rail voltage, and it changes the
-3.3 V regulator part
+I caught the supply-order problem while checking the VCCPLL voltage. It meant
+changing the 3.3 V regulator too.
 
 FPGA-DS-02008 §4.5 Power-up Supply Sequence (p.31) requires:
 
@@ -52,29 +51,28 @@ FPGA-DS-02008 §4.5 Power-up Supply Sequence (p.31) requires:
 §4.4 adds that only VCC, SPI_VCCIO1 and VPP_2V5 are monitored by the on-chip
 power-on-reset
 
-the original tree was `5 V -> 3.3 V -> 1.2 V`, a cascade. that brings 3.3 V up
-first and 1.2 V last, which is exactly backwards. SPI_VCCIO1 and VPP_2V5 would
-both be applied before VCC ever reached 0.5 V
+The original tree was `5 V -> 3.3 V -> 1.2 V`. That brings 3.3 V up first and
+1.2 V last, so SPI_VCCIO1 and VPP_2V5 would be applied before VCC reached 0.5 V.
 
-SPI_VCCIO1, VPP_2V5, VCCIO_0 and VCCIO_2 all sit on the same 3.3 V rail so the
-whole thing collapses to one rule:
+SPI_VCCIO1, VPP_2V5, VCCIO_0 and VCCIO_2 all use the same 3.3 V rail. The rule
+for this board is:
 
 > 1.2 V must reach 0.5 V before 3.3 V is applied.
 
-so both regulators feed off 5 V in parallel and the 3.3 V one gets held off by an
-RC delay on its enable until 1.2 V is up. it needs an enable pin then, and
-AMS1117-3.3 is SOT-223 with none, so AP2112K-3.3TRG1 took its place
+Both regulators now feed from 5 V in parallel. An RC delay on the 3.3 V
+regulator's enable holds that rail off until 1.2 V is up. That needs an enable
+pin, which the SOT-223 AMS1117-3.3 doesnt have, so I changed it to AP2112K-3.3TRG1.
 
-running 1.2 V straight off 5 V costs (5 - 1.2) × 30 mA ~ 114 mW in a SOT-23-5,
-abt a 28 °C rise. fine
+Running 1.2 V straight from 5 V costs about 114 mW at 30 mA, or a calculated
+28 °C rise in the SOT-23-5 regulator.
 
 ---
 
-## the oscillator
+## oscillator choice
 
-went with 1532H4-16000JWPDTSNL, C5383161, a 16 MHz part, cuz the 12 MHz
-active-XO supply at LCSC is thin enough to be a real risk. three parts checked,
-all priced and stock-checked 20 Aug 2026:
+I picked the 16 MHz 1532H4-16000JWPDTSNL (C5383161) because LCSC only had nine
+of the 12 MHz active oscillator in stock. I compared three parts and checked
+their prices and stock on 20 Aug 2026:
 
 | MPN | LCSC | Freq | Pkg | Price @1 | Stock |
 |---|---|---|---|---|---|
@@ -82,10 +80,10 @@ all priced and stock-checked 20 Aug 2026:
 | 1532H4-16000JWPDTSNL | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) | 16 MHz | SMD3225-4P | $0.36 | 147 |
 | ECS-TXO-3225-120-TR | [C2451123](https://www.lcsc.com/product-detail/C2451123.html) | 12 MHz TCXO | SMD3225-4P | $5.94 | 1 |
 
-the TCXO is out on stock alone, and 16x the price for ±2.5 ppm nobody needs. the
-12 MHz one would have left the design alone but 9 units in stock is how you end
-up redesigning partway thru. the 16 MHz part is cheaper and smaller and it cost
-me a clock change
+The TCXO had one in stock and cost 16 times as much for ±2.5 ppm accuracy this
+board doesnt need. The 12 MHz part would have avoided a clock change, but nine
+in stock felt like a supply risk. The 16 MHz part was cheaper and smaller, so I
+changed the clock instead.
 
 the first two are both confirmed active oscillators, not crystals. each one
 specifies a supply voltage (A: 2.5-3.3 V, B: 1.8-3.3 V), a supply current, an
@@ -94,13 +92,13 @@ those. plenty of 4-pad 3225 parts at 12 MHz are crystals and got thrown out.
 `X322512MSB4SI` (C9002) quotes a 20 pF load capacitance and only a passive
 resonator has one of those, so check the load capacitance field
 
-nothing depended on 12 MHz specifically. the change is `CLK_HZ = 16_000_000` in
+Nothing depended on 12 MHz specifically. I changed `CLK_HZ = 16_000_000` in
 `morphcpu_top.v`, `--freq 16` in `build.sh`, `DEFAULT_TICKDIV` 3,000,000 ->
 4,000,000 to hold the tick at 4 Hz, and a comment in the pcf. all applied, both
 testbenches still pass 18/18
 
-UART divisor goes 16e6 / 115200 = 138.89 -> 139, so error drops from 0.16% at
-12 MHz to 0.08%, which i did not plan and only noticed afterwards
+The UART divisor is 16e6 / 115200 = 138.89 -> 139. That drops the error from
+0.16% at 12 MHz to 0.08%, a side effect I only noticed afterwards.
 
 ---
 
@@ -148,52 +146,50 @@ both regulators are SOT-23-5 out of the same family so they share a footprint
 
 ### sequencing RC
 
-the 3.3 V regulator's EN is pulled to VBUS thru 100 kΩ with 100 nF to GND and a
-1 MΩ bleed. EN settles at 5 × 1M/1.1M = 4.55 V and τ is (100 kΩ || 1 MΩ) ×
-100 nF = 9.1 ms. the 1.2 V regulator starts the moment VBUS rises (hundreds of
-microseconds) so VCC is well past 0.5 V long before 3.3 V is enabled
+The 3.3 V regulator's EN has 100 kΩ to VBUS, 100 nF to GND and a 1 MΩ bleed.
+It settles at 5 × 1M/1.1M = 4.55 V. The time constant is (100 kΩ || 1 MΩ) ×
+100 nF = 9.1 ms. The 1.2 V regulator starts within hundreds of microseconds of
+VBUS, so VCC is past 0.5 V before the 3.3 V regulator turns on.
 
-the bleed to GND is not optional, without it EN doesnt discharge on power-down
-and a fast power cycle skips the sequence. §4.5 wants the sequence re-followed
-every time supplies are re-powered
+The bleed matters on power-down too. Without it, EN doesnt discharge and a fast
+power cycle can skip the sequence. Section 4.5 requires the sequence each time
+the supplies turn on.
 
-the bleed was 10 kΩ until recently, which is a divider against the 100 kΩ feed,
-EN sat at 0.45 V and the 3.3 V rail would never have come up at all. τ was
-0.9 ms too. the 10 ms this section used to claim was 100 kΩ × 100 nF with the
-bleed left out of the sum, and nothing here has been on a bench so it took a
-re-read to catch
+I had 10 kΩ there before. Against the 100 kΩ feed, that held EN at 0.45 V, so
+the 3.3 V rail wouldnt come up. The time constant was 0.9 ms too. I had also
+written 10 ms by multiplying 100 kΩ by 100 nF and leaving the bleed out. I
+caught both errors on another datasheet read. This still needs a bench check.
 
 ### VPP_2V5
 
-Table 4.2 gives VPP_2V5 as 2.30-3.46 V for Master SPI configuration, which is the
-mode this board uses (external SPI flash). tying it to 3.3 V sits inside that
-window with margin both ends
+Table 4.2 gives VPP_2V5 as 2.30-3.46 V in Master SPI mode, which is what this
+board uses with its external flash. The 3.3 V rail sits inside that range.
 
-note 4 of the same table allows 1.8 V only in Slave SPI mode and only if
-HFOSC/LFOSC and the RGB driver are unused, neither applies here
+Note 4 allows 1.8 V only in Slave SPI mode, with HFOSC/LFOSC and the RGB driver
+unused. That doesnt apply here.
 
-goes thru a ferrite with its own 100 nF so it can be lifted during bring-up if
-configuration starts misbehaving
+I put it through a ferrite with its own 100 nF cap. That rail can be lifted
+during bring-up if configuration starts acting up.
 
 ### VCCPLL
 
-an earlier revision of this doc had VCCPLL sitting on the 3.3 V rail and that was
-wrong, Table 4.2 gives VCCPLL as 1.14-1.26 V, its a core-voltage rail. note 1
-says VCC and VCCPLL want the same supply thru an RC noise filter
+I had VCCPLL on the 3.3 V rail in an earlier revision. That was wrong: Table 4.2
+puts it at 1.14-1.26 V, the core-voltage range. Note 1 says VCC and VCCPLL use
+the same supply, with an RC filter on VCCPLL.
 
-so 100 Ω series from +1V2 into pin 29, 100 nF to GND at the pin, τ = 10 µs.
-theres no PLL instantiated anywhere in the design but the pin still has to be
-powered, §4.2 wants every supply pin connected for normal operation including
-configuration
+I run +1V2 through 100 Ω to pin 29, then put 100 nF to GND at the pin. That gives
+a 10 µs time constant. There isnt a PLL in this design, but the pin still needs
+power. Section 4.2 says every supply pin must be connected, including during
+configuration.
 
 ---
 
 ## FPGA pinout (iCE40UP5K-SG48I)
 
-complete SG48 pin assignment. pin numbers are out of the KiCad 10 symbol
-`ICE40UP5K-SG48ITR` in `FPGA_Lattice.kicad_sym`, and the counts cross-check exact
-against FPGA-DS-02008 §5.2 Pin Information Summary (2 × VCC, 3 × VCCIO,
-1 × VCCPLL, 1 × VPP_2V5, 2 dedicated config, 39 GPIO, 0 dedicated GND = 48)
+This is the complete SG48 pin assignment. Pin numbers come from the KiCad 10
+symbol `ICE40UP5K-SG48ITR` in `FPGA_Lattice.kicad_sym`. The counts match
+FPGA-DS-02008 §5.2 (2 × VCC, 3 × VCCIO, 1 × VCCPLL, 1 × VPP_2V5, 2 dedicated
+config, 39 GPIO and no dedicated GND pin, 48 total).
 
 ### supply and configuration pins
 
@@ -235,8 +231,8 @@ differently
 | 20 | IOB_25b_G3 | GBUF3 |
 | 44 | IOB_3b_G6 | GBUF6 |
 
-oscillator output goes to pin 35. a 12/16 MHz clock thru general fabric instead
-of a global buffer makes timing closure harder than it has to be
+The oscillator goes to pin 35. Sending a 12 or 16 MHz clock through general
+fabric instead of a global buffer would make timing closure harder.
 
 ### user I/O assignment
 
@@ -263,7 +259,7 @@ of a global buffer makes timing closure harder than it has to be
 | 38 | IOT_50b | LED14 |
 | 32 | IOT_43a | LED15 |
 
-checks this assignment passes:
+I checked the assignment for a few things:
 
 - no LED on a dedicated config pin (14-17), on CRESET_B (8) or CDONE (7)
 - no LED on an RGB driver pin (39-41)
@@ -288,13 +284,13 @@ checks this assignment passes:
   that looks at the FT231X instead of the face opposite it.
   [ROUTING.md](ROUTING.md#10-uart_tx_o-and-uart_rx_i) has the measurement
 
-`gateware/morphcpu.pcf` matches this table pin for pin. if you change one,
-change the other, this one wins.
+`gateware/morphcpu.pcf` matches this table pin for pin. Update both if you move
+one.
 
 ### decoupling, exact count
 
-seven supply pins so seven 100 nF, one per pin, same side as the pin, vias
-straight to the plane:
+There are seven supply pins, so each gets a 100 nF cap on the same side, with a
+via straight to the plane:
 
 | Pin | Rail | Ceramic | Bulk |
 |---|---|---|---|
@@ -306,12 +302,12 @@ straight to the plane:
 | 1 | +3V3 VCCIO_2 | 100 nF | share 4.7 µF |
 | 24 | +3V3 VPP_2V5 | 100 nF | behind ferrite |
 
-then off the FPGA: 100 nF at the flash, 100 nF at the XO, 100 nF + 4.7 µF at
-FT231X VCC, 100 nF + 4.7 µF at FT231X 3V3OUT, 1 µF in / 1 µF out on each ME6211
-(datasheet minimum, and 10 µF on the 1.2 V output is comfortable).
+The other caps are 100 nF at the flash and XO, 100 nF + 4.7 µF at both FT231X
+VCC and 3V3OUT, plus 1 µF on each ME6211 input and output. That's the datasheet
+minimum. I also put 10 µF on the 1.2 V output.
 
-total 100 nF count is 11. the old "roughly 10-14" guess is an actual number now
-and the BOM matches it
+That makes eleven 100 nF caps total. The BOM now matches the count instead of
+the old rough estimate of 10-14.
 
 ---
 
@@ -319,8 +315,8 @@ and the BOM matches it
 
 ### FT231XS-R, no pinout change
 
-the swap from FT231XS-U to FT231XS-R got checked against every pin already used
-in this doc, nothing moved
+I checked the FT231XS-U to FT231XS-R swap against every assigned pin. The
+pinout stays the same.
 
 | | FT231XS-U | FT231XS-R |
 |---|---|---|
@@ -363,8 +359,8 @@ direction is the classic trap, TXD on the bridge goes to the FPGA's RX
 | CC2 (B5) | 5.1 kΩ to GND | separate resistor, not shared with CC1 |
 | SBU1 / SBU2 | no connect | |
 
-two independent 5.1 kΩ resistors. share one, or use 10 kΩ, and some hosts and
-chargers just wont give you power at all
+CC1 and CC2 each need their own 5.1 kΩ resistor. If you share one or use 10 kΩ,
+some hosts and chargers wont power the board.
 
 ### ESD protection, USBLC6-2SC6 ([C7519](https://www.lcsc.com/product-detail/C7519.html)), SOT-23-6
 
@@ -429,9 +425,8 @@ the output on, leaves the option of gating it later
 | CDONE (pin 7) | 10 kΩ pull-up to +3V3, plus an LED, lit means configured |
 | Reset button | To FPGA pin 10, a user I/O, not CRESET_B |
 
-the button is a logic reset and it keeps the loaded fabric topology. CRESET_B
-reloads the whole bitstream, much bigger hammer, so it gets a test point instead
-of a button
+The button resets the logic but keeps the loaded fabric topology. CRESET_B reloads
+the whole bitstream, so I gave it a test point instead of a button.
 
 ### LED grid
 
@@ -442,10 +437,10 @@ Vf 1.8-2.4 V, laid out as a physical 4×4 matching the fabric map.
 R = (3.3 V - 2.0 V) / 5 mA = 260 Ω  ->  270 Ω (E24)
 ```
 
-5 mA against the 8 mA IOL/IOH ceiling from Table 4.13 leaves decent margin, gives
-abt 75 mcd out of a 300 mcd @ 20 mA part, and keeps the whole grid at 80 mA
-instead of 320 mA. sinking arrangement instead, subtract the 0.4 V max VOL and
-use 200 Ω for the same current
+At 5 mA, the LEDs stay under the 8 mA IOL/IOH limit in Table 4.13. That's about
+75 mcd from a part rated 300 mcd at 20 mA, and keeps the grid at 80 mA instead
+of 320 mA. If the pins sink current instead, subtract the 0.4 V max VOL and use
+200 Ω for the same current.
 
 polarity is a schematic choice and the gateware follows it via `LED_ACTIVE_LOW`
 on `morphcpu_top`, so it costs nothing to flip:
@@ -459,9 +454,8 @@ on `morphcpu_top`, so it costs nothing to flip:
 
 ## PCB brief
 
-board is placed and routed. net classes, JLC DRC rules, the order it got routed
-in and what came out of it are all in [ROUTING.md](ROUTING.md), read that
-alongside this one
+The board is routed. Net classes, JLC DRC rules and the routing order are in
+[ROUTING.md](ROUTING.md), so read that alongside this spec.
 
 | Item | Value |
 |---|---|
@@ -471,22 +465,22 @@ alongside this one
 | Min track / clearance | 6 mil / 6 mil |
 | Min via | 0.3 mm hole / 0.6 mm pad |
 
-### the board grew to 70 mm
+### board size
 
-first placement pass went at 60 mm and just didnt fit. 79 footprints including a
-QFN-48, an SSOP-20, a SOIC-8 and an edge-mounted USB-C left nothing between the
-LED resistor ring and the outer parts. DRC came back with courtyard overlaps and
-shorting pads that only cleared if you stacked parts over the mounting holes,
-which isnt clearing them
+My first placement pass used a 60 mm board, but 79 footprints wouldnt fit. The
+QFN-48, SSOP-20, SOIC-8 and edge-mounted USB-C left no room between the LED
+resistor ring and the outer parts. DRC found courtyard overlaps and shorting pads.
+The only way to clear them was to put parts over the mounting holes, which isnt
+really clearing them.
 
-70 mm clears with margin, zero courtyard overlaps, zero shorting pads, zero
-clearance violations. case is parametric so following the change was two numbers
-(`pcb_dia`, `mount_hole_r`) and a re-export
+At 70 mm, there are no courtyard overlaps, shorting pads or clearance violations.
+The case is parametric, so I changed `pcb_dia` and `mount_hole_r` and exported it
+again.
 
 ### placement scheme
 
-the LED grid owns the centre of the front. everything else is on the back in
-concentric rings around the FPGA:
+The LED grid takes the centre of the front. I put everything else on the back,
+in rings around the FPGA:
 
 | Radius | What |
 |---|---|
@@ -497,27 +491,26 @@ concentric rings around the FPGA:
 | 14.5 mm | The other 4, for the corner LEDs, which share a diagonal with the inner four |
 | >= 17 mm | Everything with a real body, on the four cardinal directions |
 
-diagonals stay clear from r=22 to r=26 for the mounting holes.
+The diagonals stay clear from r=22 to r=26 for the mounting holes.
 
-outer parts group by function. east is USB-C with the FT231X directly behind it
-and the USBLC6 tucked beside the connector, west is the config flash and the
-oscillator, both close in cuz the SPI and clock nets care. north is the 3.3 V
-regulator with its enable RC, south is the 1.2 V regulator
+The outer parts are grouped by function. USB-C is on the east, with the FT231X
+behind it and the USBLC6 beside the connector. The flash and oscillator are on
+the west, close to the FPGA to keep SPI and clock runs short. The 3.3 V regulator
+and its enable RC are north, the 1.2 V regulator is south.
 
-the 4x4 grid sits on a 9 mm pitch, 27 mm across (four columns is three gaps),
-matching `led_pitch` in the case source. cell 0 top-left, row-major, so the
-physical grid reads the same way as the fabric map in
-[gateware/README.md](../gateware/README.md). getting this backwards would make
-the demo lie, so its worth checking twice
+The 4x4 grid uses a 9 mm pitch and is 27 mm across, matching `led_pitch` in the
+case source. Cell 0 is top-left and the order is row-major, same as the fabric
+map in [gateware/README.md](../gateware/README.md), so the board matches the demo.
 
-silkscreen artwork space is the outer annulus past r=20, minus the four mounting
-holes on the diagonals and the two front-face parts (SW1 top, CDONE LED bottom)
+Silkscreen artwork fits in the outer ring past r=20, except around the four
+mounting holes and the two front-side parts, SW1 at the top and the CDONE LED at
+the bottom.
 
-the paddle is the only ground path to the die. give it a 3x3 or 4x4 field of
-0.3 mm vias into the ground pour, and window the paste stencil into four or five
-squares instead of one big aperture so the part doesnt float during reflow
+The paddle is the die's only ground path. It needs a 3x3 or 4x4 group of 0.3 mm
+vias into the ground pour. The paste stencil is split into four or five squares
+so the FPGA doesnt float during reflow.
 
-pour ground, stitch it, no isolated islands
+The ground pour should be stitched, with no isolated islands.
 
 ## JLCPCB assembly notes
 
@@ -546,26 +539,23 @@ pour ground, stitch it, no isolated islands
 | BSMD1206-050-6V polyfuse | C883122 | Extended (confirmed) | 36,710 |
 | MMZ1608Y601BTA00 ferrite | C136491 | Extended (inferred) | 11,200 |
 
-rows below the oscillator were pinned on 23 Aug 2026 and stock figures for them
-are from that date. "inferred" means the part shows up in neither JLC's Basic
-category listings nor a published Basic-parts export, so probably Extended, but
-not quoted. confirm in the PCBA quote
+I pinned the rows below the oscillator on 23 Aug 2026, and their stock counts
+are from that date. "Inferred" means the part isnt in JLC's Basic listing or
+published Basic-parts export, so it may be Extended. Confirm it in the PCBA quote.
 
-the 1V2 part is Basic. the 3V3 one is an AP2112K since C82942 went to 0 stock and
-JLC's category listing wont render a tier for it, so that one stays unknown until
-the quote comes back. it might land Extended, one more setup fee than this doc
-used to assume. both are still SOT-23-5 and still share a footprint
+The 1.2 V regulator is Basic. I switched the 3.3 V regulator to an AP2112K after
+C82942 went out of stock. JLC's listing doesnt show its tier, so I wont know if
+it adds another setup fee until the quote comes back. Both parts are still
+SOT-23-5 and share a footprint.
 
-1. extended parts carry a per-part setup fee, charged once per distinct extended
-   part per order. between 7 and 9 parts here are Extended depending on how C7519
-   and C136491 resolve, and on a 5 unit run thats the dominant cost, bigger than
-   the whole BOM. nine of the ten passive values got pinned to Basic parts to
-   keep them off the list, 270 Ω 0402 has no Basic option at JLC at any tolerance
-   so its the one that couldnt be
-2. check every footprint against JLCPCB's own land pattern, not the generic KiCad
-   library. the USB-C receptacle and the QFN-48 paddle are where mismatches
-   actually bite
-3. confirm stock the day you order, 546 FPGAs is not many
+1. Extended parts have a setup fee for each distinct part. Between 7 and 9
+   parts may be Extended, depending on C7519 and C136491. For five boards, those
+   fees cost more than the BOM. I got nine of the ten passive values into JLC's
+   Basic tier. The 270 Ω 0402 resistor has no Basic option at any tolerance.
+2. Check each footprint against JLCPCB's land pattern, not the generic KiCad
+   library. The USB-C receptacle and QFN-48 paddle are the ones most likely to
+   cause trouble.
+3. Check stock when ordering. There were 546 FPGAs in stock when I last checked.
 
 ---
 
@@ -578,9 +568,9 @@ netclass pass added. tick boxes there
 
 ## state of the board file
 
-`morphcpu.kicad_pcb`: 80 components plus 4 mounting holes, 546 track segments
-and 193 vias. the 70 mm outline, 1.6 mm thickness, 9 mm LED pitch and mounting
-positions are unchanged
+The current `morphcpu.kicad_pcb` has 80 components, four mounting holes, 546
+track segments and 193 vias. The 70 mm outline, 1.6 mm thickness, 9 mm LED pitch
+and mounting positions are unchanged.
 
 18 Sep 2026, `kicad-cli 10.0.5 pcb drc --refill-zones --schematic-parity --severity-all`:
 
@@ -590,15 +580,14 @@ Found 0 unconnected items
 Found 0 schematic parity issues
 ```
 
-LED1 and LED2 now escape from the south edge of the FPGA on pins 45 and 42.
-[ROUTING.md](ROUTING.md#routing-cleanup) records the routing cleanup and the
-remaining bitstream build check
+LED1 and LED2 now leave the south edge of the FPGA from pins 45 and 42.
+[ROUTING.md](ROUTING.md#routing-cleanup) has the cleanup details and the pending
+bitstream build check.
 
-two things to look at if you open it:
+If you open the board file, check these two things by hand:
 
-- J1 overhang. the USB-C receptacle sits at the +X edge so a plug can seat.
-  confirm the shell position against the board outline and against `usb_angle`
-  and the cutout in the case source, its the one dimension the render cant settle
-  for you
-- front/back. the 16 LEDs, SW1 and the CDONE LED are front, everything else is
-  back
+- J1 overhang. The USB-C receptacle sits at the +X edge so a plug can seat. Check
+  the shell against the board outline, `usb_angle` and the case cutout. A render
+  cant tell you if that clearance is right.
+- Which parts are on each side. The 16 LEDs, SW1 and the CDONE LED are on the
+  front. Everything else is on the back.

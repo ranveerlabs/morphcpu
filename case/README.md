@@ -1,13 +1,13 @@
 # case/
 
-Open-face frame, parametric OpenSCAD. board drops onto four posts and screws
-down. no lid, nothing over the leds
+An open-face frame in parametric OpenSCAD. The board sits on four posts and
+screws down. There is no lid or cover over the LEDs.
 
 ![case with a mock board in it](../docs/img/case-assembly-preview.png)
 
-75.4mm OD, 7.8mm tall, 2.4mm wall, 3mm under the board for back-side parts. the
-75.4 falls out of 70 board + 2×0.3 fit clearance + 2×2.4 wall so it moves if any
-of those do
+It is 75.4 mm across, 7.8 mm tall, with 2.4 mm walls and 3 mm under the board
+for back-side parts. The 75.4 mm comes from a 70 mm board, 0.3 mm fit clearance
+on each side and the two walls, so it changes if any of those dimensions do.
 
 ```sh
 ./export.sh
@@ -22,9 +22,9 @@ openscad -D 'part="frame"'    morphcpu_case.scad
 openscad -D 'part="pcb"'      morphcpu_case.scad
 ```
 
-## every board number in here is a guess
+## board dimensions
 
-the PCB doesnt exist yet so
+The PCB hasnt been made yet, so these are assumptions, not measurements.
 
 | param | assumed | comes from |
 |---|---|---|
@@ -36,7 +36,7 @@ the PCB doesnt exist yet so
 | `usb_angle` | 0 deg (+X edge) | where the connector ends up |
 | `usb_z_centre` | 1.2 mm above board top | connector datasheet + placement |
 
-update those seven after routing and re-run export.sh
+Update those seven values after routing, then run `export.sh` again.
 
 ## STEP
 

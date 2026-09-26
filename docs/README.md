@@ -1,11 +1,11 @@
 # docs/
 
-[BOM.md](BOM.md) is the costed BOM, 23 rows all pinned to LCSC, $203.73 for 5.
-[img/](img/) is renders and screenshots
+[BOM.md](BOM.md) lists the parts and cost for five boards. All 23 rows have an
+LCSC part number. [img/](img/) has the renders and screenshots.
 
-the machine-readable BOM and CPL live in
-[../hardware/fab_output/](../hardware/fab_output/) instead. `gen_fab.py` spits
-them out with the gerbers and they have to match the board
+The machine-readable BOM and CPL are in
+[../hardware/fab_output/](../hardware/fab_output/). `gen_fab.py` exports those
+along with the Gerbers, all from the board file.
 
 ## datasheets
 

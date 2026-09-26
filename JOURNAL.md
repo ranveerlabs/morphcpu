@@ -2,22 +2,21 @@
 
 **Total time: 151h, including 11h estimated**
 
-build log. spatially-reconfigurable processor on a small low power fpga.
-fifteen sessions. the first thirteen record 140h, sessions 014 and 015 add an
-estimated 3h and 8h
+It's a spatially reconfigurable processor on a small, low-power FPGA. The first
+13 sessions took 140h. Sessions 014 and 015 add another 11h, estimated after the
+fact.
 
-most of it went on two things and neither was the fun part. reading the power up
-sequence properly, and routing a QFN-48 on 0.5 mm pitch out through a fanout that
-turned out to have less room in it than it needed
+I spent most of that time getting the power-up sequence right and routing a QFN-48
+on 0.5 mm pitch. The fanout turned out to have less room than it needed.
 
-the date on a session is the day its commits landed, thats all it is. six of them
-landed the same evening, the work behind them didnt. dont divide the dates into
-the hours. template is in [docs/journal-template.txt](docs/journal-template.txt)
+Session dates are when the commits landed, not when I did the work. Six landed on
+the same evening, but the work didnt, so dont use those dates to divide up the
+hours. The entry template is in [docs/journal-template.txt](docs/journal-template.txt).
 
 ![board back, copper down round the fpga](docs/img/pcb-routed-back.png)
 
-where its at rn. 546 tracks, 193 vias. the 18 Sep KiCad check reported 0 DRC
-violations, 0 unconnected items and 0 schematic mismatches
+As of the 18 Sep KiCad check, the board had 546 tracks and 193 vias, with 0 DRC
+violations, 0 unconnected items and 0 schematic mismatches.
 
 | # | date | time | focus |
 |---|---|---|---|
@@ -44,24 +43,24 @@ violations, 0 unconnected items and 0 schematic mismatches
 **Time spent:** 8h
 **Running total:** 151h
 
-the 8h is an estimate, backfilled without a timer
+The 8h is an estimate. I backfilled it without a timer.
 
-LED1 moved from U1 pin 3 to pin 45, and LED2 from pin 23 to pin 42. the source
-netlist, schematic, board and PCF now use the same assignments. both new routes
-escape south from the FPGA and reach the resistor ring on the inner layers.
-this closed the two LED connections left open in session 014
+I moved LED1 from U1 pin 3 to pin 45 and LED2 from pin 23 to pin 42. The source
+netlist, schematic, board and PCF now agree. Both routes leave the FPGA to the
+south, then reach the resistor ring on the inner layers. That closes the two LED
+connections left open in session 014.
 
-cleaned up short steps, overlapping track ends and the loop around C20. the
-board went from 769 tracks and 188 vias to 546 tracks and 193 vias. widened
-the remaining 0.15 mm and 0.1874 mm tracks to 0.20 mm, and raised the Board
-Setup minimum track width from 0.127 mm to 0.1524 mm for the 6 mil requirement.
-the 18 Sep KiCad 10.0.5 check, with zones refilled, reported 0 violations,
-0 unconnected items and 0 schematic mismatches. ERC was clear too
+I cleaned up short steps, overlapping track ends and the loop around C20. That
+took the board from 769 tracks and 188 vias to 546 tracks and 193 vias. I widened
+the remaining 0.15 mm and 0.1874 mm tracks to 0.20 mm, then raised the Board
+Setup minimum track width from 0.127 mm to 0.1524 mm to meet the 6 mil requirement.
+With zones refilled, KiCad 10.0.5 reported 0 violations, 0 unconnected items and
+0 schematic mismatches on 18 Sep. ERC was clear too.
 
-regenerated the gerber ZIP, BOM, CPL and board previews from the routed board.
-the pin map still needs a fresh bitstream build. Windows Smart App Control
-blocked `yosys-abc.exe` and then `libpcre2-8-0.dll` during the local attempt,
-so the earlier 37.33 MHz result does not cover these pin changes
+I regenerated the Gerber ZIP, BOM, CPL and board previews from the routed board.
+The new pin map still needs a bitstream build. Windows Smart App Control blocked
+`yosys-abc.exe`, then `libpcre2-8-0.dll`, during my local attempt, so the earlier
+37.33 MHz result says nothing about these pin changes.
 
 ![routed copper after the LED connections and cleanup](docs/img/routed-copper-both.svg)
 the two LED nets are closed in this board. the copper preview also shows the
@@ -554,13 +553,12 @@ next:
 **Time spent:** 3h
 **Running total:** 56h
 
-ripped the project description + the how it works section out of the
-readme and left marked placeholders. kept the generated stuff the rules do
-allow, status table parts table grid diagram commands repo layout image embeds
+ripped the project description and how-it-works section out of the readme, then
+left notes to put them back. kept the tables, grid, commands, repo layout and
+images because the submission rules allow those
 
-tiny session and mostly bookkeeping but giving it its own entry cuz it changes
-what the readme is allowed to contain from here on. thats exactly the kind of
-thing you forget three sessions later and then undo by accident
+mostly bookkeeping, but the rules change what can go in the readme. writing that
+down now seemed easier than rediscovering it later
 
 ![the image the readme leads with](docs/img/pcb-placement-front.png)
 this session only edited text so theres no artifact of its own. this is the
@@ -569,8 +567,8 @@ numbers are exactly the stuff the rules do allow. the prose around it is what
 had to come out
 
 next:
-- [ ] write the readme prose by hand
-- [ ] figure out if the rule covers the other docs too
+- [ ] put the project description and how it works back in the readme
+- [ ] check whether the same rule applies to the other docs
 
 ---
 
