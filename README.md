@@ -1,14 +1,14 @@
 # MorphCPU
 
-A processor that changes its hardware topology to match the computation.
+70mm round board with an iCE40UP5K on the back and 16 red LEDs in a 4×4 on the front. Send it 9 bytes over USB and the grid turns into something else.
 
-Instead of sending every operation through a fixed datapath, MorphCPU uses 16 small reconfigurable cells. Each cell holds an operation and a direction, so the same 4×4 grid can become different data paths. Values enter from the west, move one cell per tick, and leave at the east edge over UART.
+If you've poked at a systolic array before, it's close to that. 16 cells, each with an op and a direction. Data walks in from the west and leaves at the east edge over UART. One tick moves it one cell.
 
-It's written in Verilog for an iCE40UP5K FPGA. Python tooling generates the schematic and board layout; the gateware build runs synthesis and place-and-route with Yosys and nextpnr.
+It's Verilog for the iCE40UP5K. Python tooling generates the schematic and board layout. Yosys and nextpnr do synthesis and place-and-route.
 
 ## Why
 
-Conventional processors move data through mostly fixed hardware. MorphCPU asks what happens if the hardware itself can be rearranged around the computation—and makes that movement visible on a grid of LEDs.
+On a conventional processor, most of the datapath is fixed. Here I can configure 16 cells with an op and a direction, so the values take different routes. I run it at 4 Hz. Four cells takes about a second. At 16 MHz there's nothing to look at.
 
 ## The grid
 
@@ -31,11 +31,9 @@ Each cell has a 4-bit configuration: a 2-bit operation and a 2-bit output direct
       data in
 ```
 
-At 4 Hz, a value crossing four cells takes about a second. The slow clock is deliberate: you can watch the computation move.
-
 ## A tiny example
 
-Set cell 0 to pass south, cell 4 to add and point east, then cells 5–7 to pass east. Inject 200 on row 0 and 100 on row 1. After stepping through the grid, the UART returns `0x2C`: 300 truncated to 8 bits. The full byte sequence and timing are in the [gateware guide](gateware/README.md#worked-example-add-two-numbers-while-they-travel).
+Set cell 0 to pass south, cell 4 to add and point east, then cells 5-7 to pass east. Inject 200 on row 0 and 100 on row 1. After stepping through the grid, the UART returns `0x2C`: 300 truncated to 8 bits. The full byte sequence and timing are in the [gateware guide](gateware/README.md#worked-example-add-two-numbers-while-they-travel).
 
 ## Build and test
 
