@@ -1,54 +1,22 @@
 # MorphCPU
 
-70mm round board with an iCE40UP5K on the back and 16 red leds on the front in
-a 4x4. you send it 9 bytes over usb and the grid turns into something else
+A processor that changes its hardware topology to match the computation.
 
-if youve poked at a systolic array before its that, slowed down enough to watch.
-no PC no fetch no decode, just 16 cells each holding an op and a direction, data
-walks in the west side and gets mangled by whatever cell it lands on. 4 cells
-from the exit is 4 ticks. i run it at 4Hz cuz at 16MHz theres nothing to look at
+Instead of sending every operation through a fixed datapath, MorphCPU uses 16 small reconfigurable cells. Each cell holds an operation and a direction, so the same 4×4 grid can become different data paths. Values enter from the west, move one cell per tick, and leave at the east edge over UART.
 
-i wanted one on a desk so i wrote the fabric and a testbench. the board needed
-88 symbols, so i wrote a schematic generator rather than draw them by hand,
-then a placement generator. the case ended up parametric because the board
-diameter kept changing. at that point i still hadnt routed it
+It's written in Verilog for an iCE40UP5K FPGA. Python tooling generates the schematic and board layout; the gateware build runs synthesis and place-and-route with Yosys and nextpnr.
 
-## state
+## Why
 
-routed. 546 tracks and 193 vias across 4 layers. KiCad reports 0 violations,
-0 unconnected items and 0 schematic mismatches. all sixteen LED nets are closed.
-LED1 now uses pin 45 and LED2 uses pin 42. the short hooks and overlapping track
-ends have been cleaned up, including the connection around C20.
-[hardware/ROUTING.md](hardware/ROUTING.md) has the checks and pin changes
+Conventional processors move data through mostly fixed hardware. MorphCPU asks what happens if the hardware itself can be rearranged around the computation—and makes that movement visible on a grid of LEDs.
 
-freerouting got two goes, the first ran 211 segments across the led face. both
-went in the bin
+## The grid
 
-4 layers in the end, 2 couldnt do it. the resistor ring and the decap ring both
-sit inside the F.Cu keepout over the grid so every led escape was stuck on B.Cu
-alone
+![MorphCPU board front](docs/img/pcb-top.svg)
 
-the previous bitstream built on GitHub Actions. 2020/5280 logic cells, routed timing
-37.33 MHz against the 16 MHz clock. [build and logs](https://github.com/ranveerlabs/morphcpu/actions/runs/34678840307),
-still hasnt been flashed onto a board. those numbers predate the two latest pin
-changes. a new build is still needed, Windows blocked `yosys-abc.exe` and the
-`libpcre2-8-0.dll` dependency of nextpnr during local verification
+Each cell has a 4-bit configuration: a 2-bit operation and a 2-bit output direction. The four operations are pass, invert, 8-bit add, and XOR. Cells can route north, east, south, or west; inputs that meet at a cell can be combined.
 
-sim 18/18, ERC 0/0, BOM $203.73 for 5
-
-## ops
-
-| op | | dir |
-|---|---|---|
-| `0` PASS `a` | | `0` N |
-| `1` INV `~a` | | `1` E |
-| `2` ADD `a+b` | | `2` S |
-| `3` XOR `a^b` | | `3` W |
-
-4 bits a cell, 2 op 2 dir. the operand selection is in
-[morph_cell.v](gateware/rtl/morph_cell.v), its a short file
-
-```
+```text
         c0    c1    c2    c3
       +-----+-----+-----+-----+
   r0  |  0  |  1  |  2  |  3  |  -> out
@@ -63,30 +31,15 @@ sim 18/18, ERC 0/0, BOM $203.73 for 5
       data in
 ```
 
-east edge comes back over uart. everything else just falls off the board. five
-commands total and [gateware/README.md](gateware/README.md) has the actual bytes
-plus a worked example
+At 4 Hz, a value crossing four cells takes about a second. The slow clock is deliberate: you can watch the computation move.
 
-## parts
+## A tiny example
 
-| | part | pkg | LCSC |
-|---|---|---|---|
-| FPGA | ICE40UP5K-SG48I | QFN-48-EP 7×7 | [C2678152](https://www.lcsc.com/product-detail/C2678152.html) |
-| usb-uart | FT231XS-R | SSOP-20 | [C132160](https://www.lcsc.com/product-detail/C132160.html) |
-| flash | W25Q32JVSSIQ | SOIC-8 | [C179173](https://www.lcsc.com/product-detail/C179173.html) |
-| usb-c | TYPE-C-31-M-12 | 16pin | [C165948](https://www.lcsc.com/product-detail/C165948.html) |
-| esd | USBLC6-2SC6 | SOT-23-6 | [C7519](https://www.lcsc.com/product-detail/C7519.html) |
-| 3v3 | AP2112K-3.3TRG1 | SOT-23-5 | [C51118](https://www.lcsc.com/product-detail/C51118.html) |
-| 1v2 | ME6211C12M5G-N | SOT-23-5 | [C236672](https://www.lcsc.com/product-detail/C236672.html) |
-| clk | 1532H4-16000JWPDTSNL 16MHz | 3225 | [C5383161](https://www.lcsc.com/product-detail/C5383161.html) |
-| leds | KT-0603R ×17 | 0603 | [C2286](https://www.lcsc.com/product-detail/C2286.html) |
+Set cell 0 to pass south, cell 4 to add and point east, then cells 5–7 to pass east. Inject 200 on row 0 and 100 on row 1. After stepping through the grid, the UART returns `0x2C`: 300 truncated to 8 bits. The full byte sequence and timing are in the [gateware guide](gateware/README.md#worked-example-add-two-numbers-while-they-travel).
 
-two regulators, and the 1v2 has to be up before the 3v3, backwards from the
-cascade youd reach for first. i would not wing that bit,
-[hardware/DESIGN.md](hardware/DESIGN.md) has it with page numbers, money is in
-[docs/BOM.md](docs/BOM.md)
+## Build and test
 
-## run
+You need Icarus Verilog for simulation and OSS CAD Suite for the FPGA bitstream.
 
 ```sh
 bash gateware/sim/run_sims.sh
@@ -94,54 +47,16 @@ bash gateware/build.sh
 bash case/export.sh
 ```
 
-sim needs Icarus Verilog, the bitstream needs OSS CAD Suite, case needs OpenSCAD.
-[Actions](https://github.com/ranveerlabs/morphcpu/actions/workflows/gateware.yml)
-runs sim and the bitstream build on gateware changes. open a passing run and
-download its `gateware-<commit>` artifact for the `.bin` and logs, kept for 30 days
+The simulation has 18 passing checks. GitHub Actions also runs the simulations and gateware build on changes; see the [workflow](https://github.com/ranveerlabs/morphcpu/actions/workflows/gateware.yml).
 
-## pics
+## Status
 
-![case with a board in it](docs/img/case-assembly-preview.png)
+The 4-layer PCB is routed: KiCad reports no violations or unconnected items. The latest recorded bitstream build used 2,020 of 5,280 logic cells and routed at 37.33 MHz against a 16 MHz clock. That build predates two pin-map changes, and the board has not been flashed yet, so those timing numbers are not verification of the current layout. Routing details and pin changes are in [hardware/ROUTING.md](hardware/ROUTING.md).
 
-![case with the real board in it](docs/img/case-pcb-assembly.png)
+![Routed back of the PCB](docs/img/routed-bcu.svg)
 
-![frame](docs/img/case-frame-preview.png)
+The board is 70 mm across with a 4×4 LED grid. The case is printable without supports. More board images are in [`docs/img`](docs/img/README.md); the parts and cost are in the [BOM](docs/BOM.md).
 
-75.4mm, 12.9g, like 26c of PLA
-
-![front](docs/img/pcb-top.svg)
-
-front. 4x4 on 9mm pitch plus the reset button and the CDONE led. no tracks on
-this face on purpose, theres an F.Cu keepout over the whole grid
-
-![back](docs/img/routed-bcu.svg)
-
-back. fpga in the middle, ring of decaps then the resistor ring, and everything
-fanning out of a QFN-48 on 0.5mm pitch. all the pain was in there
-
-board was 60mm at first and everything overlapped. the resistor ring also sat
-180 out from its own leds for ages so every single anode trace ran straight
-under the QFN paddle. took me a while to spot that. both sorted now
-
-eight leds ended up on different fpga pins than they started on because the
-package fanout ran out of escape room. thats in ROUTING.md too
-
-![schematic](docs/img/schematic.svg)
-
-## if you order it
-
-gerbers and drill in `hardware/fab_output/`, all four routed copper layers.
-the board checks pass, but the updated pin map still needs a bitstream build
-
-- $203.73 is a real 4 layer quote, $6.27 of headroom under the $210 Complex cap.
-  re-quote if the BOM moves
-- fpga stock was 546 when i looked. oscillator 147
-- C7519 and C136491 tiers are guesses, confirm in the quote
-- QFN paddle is the only ground to the die, SG48 has no GND pin at all. window
-  the paste stencil
-
-case prints flat, no supports, 0.2mm layers, 3 perimeters
-
-## licence
+## License
 
 [AGPL-3.0-only](LICENSE)
