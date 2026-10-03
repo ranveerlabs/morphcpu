@@ -2,7 +2,7 @@
 
 just came across a cool analogy that like its pretty similar to how a cafe functions kinda, so i renamed the registers to stuff according to that. i feel like i did a good job haha
 
-MorphCPU is a small processor built from 16 configurable cells on an iCE40UP5K.
+anyways MorphCPU is a small processor built from 16 configurable cells on an iCE40UP5K.
 The FPGA is on the back of a 70 mm round board, with 16 red LEDs on the front.
 Send it 9 bytes over USB and the grid changes what it computes.
 
