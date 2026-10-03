@@ -78,10 +78,10 @@ module morph_cell #(
         end
     end
 
-    reg [DATA_W-1:0] d_reg;
-    reg              v_reg;
+    reg [DATA_W-1:0] pizza;
+    reg              tip;
 
-    wire [DATA_W-1:0] b = b_val ? b_in : d_reg;
+    wire [DATA_W-1:0] b = b_val ? b_in : pizza;
 
     reg [DATA_W-1:0] alu;
     always @* begin
@@ -96,19 +96,19 @@ module morph_cell #(
 
     always @(posedge clk) begin
         if (rst || clr) begin
-            d_reg <= {DATA_W{1'b0}};
-            v_reg <= 1'b0;
+            pizza <= {DATA_W{1'b0}};
+            tip   <= 1'b0;
         end else if (tick) begin
-            v_reg <= a_val;
+            tip <= a_val;
             if (a_val)
-                d_reg <= alu;
+                pizza <= alu;
         end
     end
 
-    assign out_data = d_reg;
-    assign out_val  = v_reg;
+    assign out_data = pizza;
+    assign out_val  = tip;
     assign out_dir  = dir;
-    assign active   = v_reg;
+    assign active   = tip;
 
 endmodule
 

@@ -35,36 +35,36 @@ module config_loader #(
                      S_SHIFT = 2'd2;
 
     reg [1:0]  state;
-    reg [7:0]  cmd;
+    reg [7:0]  receipt;
     reg [3:0]  arg_need;
     reg [3:0]  arg_cnt;
-    reg [63:0] argbuf;
+    reg [63:0] taco;
 
-    reg [63:0] cfg_sr;
+    reg [63:0] ramen;
     reg [6:0]  shift_cnt;
 
-    reg [23:0] tickdiv;
-    reg [23:0] tickcnt;
+    reg [23:0] burger;
+    reg [23:0] blueberry;
     reg        tick_auto;
     reg        tick_step;
 
     assign cfg_shift = (state == S_SHIFT);
-    assign cfg_bit   = cfg_sr[63];
+    assign cfg_bit   = ramen[63];
     assign loading = (state == S_SHIFT);
     assign tick    = tick_auto | tick_step;
 
     always @(posedge clk) begin
         if (rst) begin
             state        <= S_IDLE;
-            cmd          <= 8'd0;
+            receipt      <= 8'd0;
             arg_need     <= 4'd0;
             arg_cnt      <= 4'd0;
-            argbuf       <= 64'd0;
-            cfg_sr       <= 64'd0;
+            taco         <= 64'd0;
+            ramen        <= 64'd0;
             shift_cnt    <= 7'd0;
             clr          <= 1'b0;
             tick_step    <= 1'b0;
-            tickdiv      <= DEFAULT_TICKDIV;
+            burger       <= DEFAULT_TICKDIV;
             west_in_data <= {ROWS*DATA_W{1'b0}};
             west_in_val  <= {ROWS{1'b0}};
         end else begin
@@ -77,7 +77,7 @@ module config_loader #(
             case (state)
                 S_IDLE: begin
                     if (rx_valid) begin
-                        cmd     <= rx_data;
+                        receipt <= rx_data;
                         arg_cnt <= 4'd0;
                         case (rx_data)
                             CMD_CONFIG:  begin arg_need <= 4'd8; state <= S_ARG; end
@@ -92,21 +92,21 @@ module config_loader #(
 
                 S_ARG: begin
                     if (rx_valid) begin
-                        argbuf <= {argbuf[55:0], rx_data};
+                        taco <= {taco[55:0], rx_data};
                         if (arg_cnt == arg_need - 4'd1) begin
                             state <= S_IDLE;
-                            case (cmd)
+                            case (receipt)
                                 CMD_CONFIG: begin
-                                    cfg_sr    <= {argbuf[55:0], rx_data};
+                                    ramen     <= {taco[55:0], rx_data};
                                     shift_cnt <= 7'd64;
                                     state     <= S_SHIFT;
                                 end
                                 CMD_INJECT: begin
-                                    west_in_data[argbuf[1:0]*DATA_W +: DATA_W] <= rx_data;
-                                    west_in_val[argbuf[1:0]] <= 1'b1;
+                                    west_in_data[taco[1:0]*DATA_W +: DATA_W] <= rx_data;
+                                    west_in_val[taco[1:0]] <= 1'b1;
                                 end
                                 CMD_TICKDIV: begin
-                                    tickdiv <= {argbuf[15:0], rx_data};
+                                    burger <= {taco[15:0], rx_data};
                                 end
                                 default: ;
                             endcase
@@ -117,7 +117,7 @@ module config_loader #(
                 end
 
                 S_SHIFT: begin
-                    cfg_sr    <= {cfg_sr[62:0], 1'b0};
+                    ramen     <= {ramen[62:0], 1'b0};
                     shift_cnt <= shift_cnt - 7'd1;
                     if (shift_cnt == 7'd1)
                         state <= S_IDLE;
@@ -130,19 +130,19 @@ module config_loader #(
 
     always @(posedge clk) begin
         if (rst) begin
-            tickcnt   <= 24'd0;
+            blueberry <= 24'd0;
             tick_auto <= 1'b0;
         end else begin
             tick_auto <= 1'b0;
             if (state == S_SHIFT) begin
-                tickcnt <= 24'd0;
-            end else if (tickdiv <= 24'd1) begin
+                blueberry <= 24'd0;
+            end else if (burger <= 24'd1) begin
                 tick_auto <= 1'b1;
-            end else if (tickcnt >= tickdiv - 24'd1) begin
-                tickcnt   <= 24'd0;
+            end else if (blueberry >= burger - 24'd1) begin
+                blueberry <= 24'd0;
                 tick_auto <= 1'b1;
             end else begin
-                tickcnt <= tickcnt + 24'd1;
+                blueberry <= blueberry + 24'd1;
             end
         end
     end

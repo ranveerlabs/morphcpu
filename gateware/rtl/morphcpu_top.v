@@ -112,8 +112,8 @@ module morphcpu_top #(
         .active       (cell_active)
     );
 
-    reg [ROWS-1:0]        pend;
-    reg [ROWS*DATA_W-1:0] pend_data;
+    reg [ROWS-1:0]        orders;
+    reg [ROWS*DATA_W-1:0] plate;
 
     reg tick_d;
     always @(posedge clk) begin
@@ -121,25 +121,25 @@ module morphcpu_top #(
         else            tick_d <= tick;
     end
 
-    wire [1:0] nxt_row = pend[0] ? 2'd0 :
-                         pend[1] ? 2'd1 :
-                         pend[2] ? 2'd2 : 2'd3;
+    wire [1:0] nxt_row = orders[0] ? 2'd0 :
+                         orders[1] ? 2'd1 :
+                         orders[2] ? 2'd2 : 2'd3;
 
     always @(posedge clk) begin
         if (rst || clr) begin
-            pend      <= {ROWS{1'b0}};
-            pend_data <= {ROWS*DATA_W{1'b0}};
+            orders    <= {ROWS{1'b0}};
+            plate     <= {ROWS*DATA_W{1'b0}};
             tx_send   <= 1'b0;
             tx_byte   <= 8'd0;
         end else begin
             tx_send <= 1'b0;
             if (tick_d) begin
-                pend      <= east_out_val;
-                pend_data <= east_out_data;
-            end else if (|pend && !tx_busy && !tx_send) begin
-                tx_byte     <= pend_data[nxt_row*DATA_W +: DATA_W];
+                orders    <= east_out_val;
+                plate     <= east_out_data;
+            end else if (|orders && !tx_busy && !tx_send) begin
+                tx_byte     <= plate[nxt_row*DATA_W +: DATA_W];
                 tx_send     <= 1'b1;
-                pend[nxt_row] <= 1'b0;
+                orders[nxt_row] <= 1'b0;
             end
         end
     end
