@@ -84,6 +84,8 @@ has 13/13 and 5/5 checks passing. the build used 2020/5280 logic cells and
 routed at 37.33 MHz against the 16 MHz clock. morphcpu_top.bin is 104090 bytes.
 those are build results, i still havent flashed a board
 
+![routed 3D view of the FPGA side the build targets](docs/img/routed-3d-bottom.png)
+
 changed the licence to AGPL-3.0-only. removed explanatory comments from the
 case, constraints and generator files, and documented the SaveBoard trap in
 hardware/scripts/README.md: it can overwrite the project net classes and DRC
