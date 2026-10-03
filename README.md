@@ -8,6 +8,10 @@ Send it 9 bytes over USB and the grid changes what it computes.
 
 ![MorphCPU board front](docs/img/pcb-top.svg)
 
+![MorphCPU schematic](docs/img/schematic.svg)
+
+![Routed FPGA-side 3D model](docs/img/routed-3d-bottom.png)
+
 If you've poked at a systolic array before, it's close to that. 16 cells, each with an op and a direction. Data walks in from the west and leaves at the east edge over UART. One tick moves it one cell.
 
 It's Verilog for the iCE40UP5K. Python tooling generates the schematic and board layout. Yosys and nextpnr do synthesis and place-and-route.
@@ -57,7 +61,7 @@ The 4-layer PCB is routed: KiCad reports no violations or unconnected items. The
 
 ![Routed back of the PCB](docs/img/routed-bcu.svg)
 
-The board is 70 mm across with a 4×4 LED grid. The case is printable without supports. More board images are in [`docs/img`](docs/img/README.md); the parts and cost are in the [BOM](docs/BOM.md).
+The board is 70 mm across with a 4×4 LED grid. The case is printable without supports. More board images are in [`docs/img`](docs/img/README.md); the [23-row BOM table](docs/BOM.md#the-parts) and [BOM CSV](hardware/fab_output/morphcpu-bom.csv) list the parts and quantities.
 
 ## license
 
