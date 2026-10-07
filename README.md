@@ -65,4 +65,4 @@ The board is 70 mm across with a 4×4 LED grid. The case is printable without su
 
 ## license
 
-[AGPL-3.0-only](LICENSE)
+[CERN-OHL-S-2.0](LICENSE). Third-party files retain their own licenses.
