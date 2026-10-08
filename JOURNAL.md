@@ -1,10 +1,11 @@
 # morphcpu build journal
 
-**Total time: 151h, including 11h estimated**
+**Total time: 53h estimated**
 
-It's a spatially reconfigurable processor on a small, low-power FPGA. The first
-13 sessions took 140h. Sessions 014 and 015 add another 11h, estimated after the
-fact.
+It's a spatially reconfigurable processor on a small, low-power FPGA. I revised
+the total from 151h to 53h for the Forge payout. I don't have timer records for
+each session, so the 15 session figures below are approximate shares of the
+revised total.
 
 I spent most of that time getting the power-up sequence right and routing a QFN-48
 on 0.5 mm pitch. The fanout turned out to have less room than it needed.
@@ -20,30 +21,30 @@ violations, 0 unconnected items and 0 schematic mismatches.
 
 | # | date | time | focus |
 |---|---|---|---|
-| 001 | 2026-08-18 | 2h | repo + scaffolding |
-| 002 | 2026-08-18 | 14h | fabric rtl + fabric testbench |
-| 003 | 2026-08-18 | 12h | end to end uart testbench, build flow, constraints |
-| 004 | 2026-08-18 | 9h | case, parametric cad |
-| 005 | 2026-08-18 | 16h | electrical design spec + bom |
-| 006 | 2026-08-18 | 3h | readme restructure |
-| 007 | 2026-08-22 | 21h | datasheet items closed, schematic, pcb placement |
-| 008 | 2026-08-28 | 26h | 4 layers, first copper, 0 violations |
-| 009 | 2026-08-30 | 24h | fanout was full, six pins moved |
-| 010 | 2026-08-30 | 1h | ldo went out of stock, en divider was wrong |
-| 011 | 2026-08-30 | 1h | silkscreen, the board had none |
-| 012 | 2026-09-06 | 2h | seeed instead of jlc, bom had no qty column |
-| 013 | 2026-09-06 | 9h | decoupling was spread out, six of seven pins fixed |
-| 014 | 2026-09-12 | 3h estimated | build workflow, bitstream results, licence and docs |
-| 015 | 2026-09-22 | 8h estimated | closed the last two LED nets, cleaned routing and regenerated fab files |
+| 001 | 2026-08-18 | 1h estimated | repo + scaffolding |
+| 002 | 2026-08-18 | 5h estimated | fabric rtl + fabric testbench |
+| 003 | 2026-08-18 | 4h estimated | end to end uart testbench, build flow, constraints |
+| 004 | 2026-08-18 | 3h estimated | case, parametric cad |
+| 005 | 2026-08-18 | 5h estimated | electrical design spec + bom |
+| 006 | 2026-08-18 | 1h estimated | readme restructure |
+| 007 | 2026-08-22 | 7h estimated | datasheet items closed, schematic, pcb placement |
+| 008 | 2026-08-28 | 9h estimated | 4 layers, first copper, 0 violations |
+| 009 | 2026-08-30 | 8h estimated | fanout was full, six pins moved |
+| 010 | 2026-08-30 | 1h estimated | ldo went out of stock, en divider was wrong |
+| 011 | 2026-08-30 | 1h estimated | silkscreen, the board had none |
+| 012 | 2026-09-06 | 1h estimated | seeed instead of jlc, bom had no qty column |
+| 013 | 2026-09-06 | 3h estimated | decoupling was spread out, six of seven pins fixed |
+| 014 | 2026-09-12 | 1h estimated | build workflow, bitstream results, licence and docs |
+| 015 | 2026-09-22 | 3h estimated | closed the last two LED nets, cleaned routing and regenerated fab files |
 
 ---
 
 ## session 015 - 2026-09-22
 
-**Time spent:** 8h
-**Running total:** 151h
+**Time spent:** 3h estimated
+**Running total:** 53h estimated
 
-The 8h is an estimate. I backfilled it without a timer.
+This is an estimate. I backfilled it without a timer.
 
 I moved LED1 from U1 pin 3 to pin 45 and LED2 from pin 23 to pin 42. The source
 netlist, schematic, board and PCF now agree. Both routes leave the FPGA to the
@@ -70,8 +71,8 @@ shorter fanout and the routes into the resistor ring
 
 ## session 014 - 2026-09-12
 
-Time spent: 3h estimated, backfilled without a timer
-Running total: 143h, including this estimate
+Time spent: 1h estimated, backfilled without a timer
+Running total: 50h estimated, including this estimate
 
 added a GitHub Actions build with OSS CAD Suite pinned to 2026-09-12 on Ubuntu
 24.04. it runs both testbenches, builds the bitstream and keeps the output and
@@ -99,8 +100,8 @@ in session 013. no copper changed in this session. D2 and D3 are still open
 
 ## session 013 - 2026-09-06
 
-**Time spent:** 9h
-**Running total:** 140h
+**Time spent:** 3h estimated
+**Running total:** 49h estimated
 
 review came back on the layout, two things. decoupling caps too far from the
 power pins, and inner layer signal with no clean ground return under it. the
@@ -204,8 +205,8 @@ next:
 
 ## session 012 - 2026-09-06
 
-**Time spent:** 2h
-**Running total:** 131h
+**Time spent:** 1h estimated
+**Running total:** 46h estimated
 
 fab is seeed now instead of JLC. their uploader threw a quantity parse error on
 hardware/fab_output/morphcpu-bom.csv and the cause was dumber than anything i was
@@ -237,7 +238,7 @@ docs/BOM.md is still written round JLC end to end, the $203.73 4 layer quote, th
 $115.20 fab plus assembly gap, the stock and tier columns. all JLC numbers for a
 board going to seeed and i havent re-quoted, so treat that table as stale
 
-the 2h is catch up. the seeed move plus a pile of small stuff that never got its
+this is catch up. the seeed move plus a pile of small stuff that never got its
 own commit, logging it here rather than pretending the hours went somewhere else
 
 next:
@@ -248,8 +249,8 @@ next:
 
 ## session 011 - 2026-08-30
 
-**Time spent:** 1h
-**Running total:** 129h
+**Time spent:** 1h estimated
+**Running total:** 45h estimated
 
 the only graphic on this board was the edge cuts circle. no name no rev nothing,
 which someone pointed out is going to read as unfinished next to the actual
@@ -311,8 +312,8 @@ anything true. url and the part number stay, those are both real
 
 ## session 010 - 2026-08-30
 
-**Time spent:** 1h
-**Running total:** 128h
+**Time spent:** 1h estimated
+**Running total:** 44h estimated
 
 C82942 hit 0 stock at JLC, 11 day lead and a 196 MOQ sitting behind it, so the
 3V3 regulator is an AP2112K-3.3TRG1 now, C51118, 70,670 in stock. same SOT-23-5
@@ -363,8 +364,8 @@ next:
 
 ## session 009 - 2026-08-30
 
-**Time spent:** 24h
-**Running total:** 127h
+**Time spent:** 8h estimated
+**Running total:** 43h estimated
 
 seven connections would not route and every one of them had exactly one blocker,
 which i only found out after fixing four bugs in my own router. it was rasterising
@@ -427,8 +428,8 @@ next:
 
 ## session 008 - 2026-08-28
 
-**Time spent:** 26h
-**Running total:** 103h
+**Time spent:** 9h estimated
+**Running total:** 35h estimated
 
 went to 4 layers. 2 could not do it, the resistor ring and the decap ring both sit
 inside the F.Cu keepout over the led grid so every led escape was stuck on B.Cu on
@@ -457,8 +458,8 @@ one stitching via each and not a route at all
 
 ## session 007 - 2026-08-22
 
-**Time spent:** 21h
-**Running total:** 77h
+**Time spent:** 7h estimated
+**Running total:** 26h estimated
 
 closed all 8 open items in the design spec against the family datasheet + the
 symbol lib. one citation each. full 48 pin table lives in the spec now
@@ -552,8 +553,8 @@ next:
 
 ## session 006 - 2026-08-18
 
-**Time spent:** 3h
-**Running total:** 56h
+**Time spent:** 1h estimated
+**Running total:** 19h estimated
 
 ripped the project description and how-it-works section out of the readme, then
 left notes to put them back. kept the tables, grid, commands, repo layout and
@@ -576,8 +577,8 @@ next:
 
 ## session 005 - 2026-08-18
 
-**Time spent:** 16h
-**Running total:** 53h
+**Time spent:** 5h estimated
+**Running total:** 18h estimated
 
 wrote the design spec. power tree, net by net tables, decoupling per power pin
 group, pcb brief, assembly notes, and 8 open datasheet items i couldnt close yet
@@ -652,8 +653,8 @@ next:
 
 ## session 004 - 2026-08-18
 
-**Time spent:** 9h
-**Running total:** 37h
+**Time spent:** 3h estimated
+**Running total:** 13h estimated
 
 wrote the case as parametric source. slim open face frame, four standoff posts,
 usb-c cutout w an outer relief so a moulded plug boot clears the rim, eight
@@ -701,8 +702,8 @@ next:
 
 ## session 003 - 2026-08-18
 
-**Time spent:** 12h
-**Running total:** 28h
+**Time spent:** 4h estimated
+**Running total:** 10h estimated
 
 wrote an end to end testbench that drives the design only thru its uart pins,
 so it tests the wire protocol + the config bit packing not just the fabric. 5/5
@@ -750,8 +751,8 @@ next:
 
 ## session 002 - 2026-08-18
 
-**Time spent:** 14h
-**Running total:** 16h
+**Time spent:** 5h estimated
+**Running total:** 6h estimated
 
 wrote the whole fabric. the cell, the grid + neighbour interconnect, serial rx
 and tx, config loader and tick gen, top level. then a fabric testbench, 13
@@ -804,8 +805,8 @@ next:
 
 ## session 001 - 2026-08-18
 
-**Time spent:** 2h
-**Running total:** 2h
+**Time spent:** 1h estimated
+**Running total:** 1h estimated
 
 initialised the repo, folder structure, readme skeleton, this journal, ignore
 file. nothing interesting tbh. but starting the journal at 001 instead of
