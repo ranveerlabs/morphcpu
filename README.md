@@ -1,5 +1,7 @@
 # MorphCPU
 
+!!!!not autorouted, details are in routing.md if u think so. hours were already deflated by 100!!!!
+
 just came across a cool analogy that like its pretty similar to how a cafe functions kinda, so i renamed the registers to stuff according to that. i feel like i did a good job haha
 
 anyways MorphCPU is a small processor built from 16 configurable cells on an iCE40UP5K.
